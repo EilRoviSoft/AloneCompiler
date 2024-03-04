@@ -2,8 +2,12 @@
 //eil::vm
 #include <virtual_machine.hpp>
 
+//eil::isa
+#include <info.hpp>
+
 namespace eil::isa {
 	size_t halt(context_t& ctx) {
-		ctx.get_flags().run_flag = false;
+		ctx.flags.rf = false;
+		return info::inst_size;
 	}
 }

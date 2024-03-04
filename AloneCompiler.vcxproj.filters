@@ -32,5 +32,8 @@
     <ClInclude Include="src\isa\linker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\info.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

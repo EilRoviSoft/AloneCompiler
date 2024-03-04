@@ -3,78 +3,45 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
-#include <cstdint>
 #include <functional>
 #include <span>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+//eil::info
+#include <info.hpp>
+
 namespace eil {
-	using machine_word_t = size_t;
-	using register_t = std::shared_ptr <machine_word_t>;
-
-	enum class registers {
-		asx, //Address System register
-		rsx, //Result System register
-		lox, //Left Operand register
-		rox, //Right Operand register
-		ipx, //Instruction Pointer 
-		spx, //Stack Pointer
-		bpx, //Base Pointer
-		flags, //Flags register
-		grx //General Register
-	};
-
-	const size_t machine_word_size = 8,
-		registers_size = 1024,
-		system_registers_size = machine_word_size * (int)registers::grx,
-		general_registers_size = registers_size - system_registers_size,
-		memory_size = std::pow(2, 16); //65 536
-
-	struct flags_t {
-		bool run_flag : 1; //is program running
-		bool zero_flag : 1;
-		bool sign_flag : 1;
-		bool carry_flag : 1;
-		bool overflow_flag : 1;
-	};
-
 	struct memory_address_t {
 		memory_address_t() { this->val = 0; }
 		memory_address_t(size_t int_val) { this->val = int_val; }
-		memory_address_t(registers reg_val) { this->val = (size_t)reg_val * machine_word_size; }
+		memory_address_t(info::registers reg_val) { this->val = (size_t)reg_val * info::machine_word_size; }
 
 		operator size_t() { return val; }
 
 		size_t val;
 	};
 
-	memory_address_t operator+(registers lhs, size_t rhs) {
-		return (size_t)lhs * machine_word_size + rhs;
+	memory_address_t operator+(info::registers lhs, size_t rhs) {
+		return (size_t)lhs * info::machine_word_size + rhs;
 	}
 
 	struct context_t {
-		machine_word_t& asx;
-		machine_word_t& rsx;
-		machine_word_t& lox;
-		machine_word_t& rox;
-		machine_word_t& ipx;
-		machine_word_t& spx;
-		machine_word_t& bpx;
-		machine_word_t& flags;
+		info::machine_word_t& asx, rsx, lox, rox, ipx, spx, bpx;
+		info::flags_t& flags;
 		std::span <std::byte> mem;
 
 		context_t(std::span <std::byte> observed_memory) : 
 			mem(observed_memory),
-			asx(this->get_var <machine_word_t>(registers::asx)),
-			rsx(this->get_var <machine_word_t>(registers::rsx)),
-			lox(this->get_var <machine_word_t>(registers::lox)),
-			rox(this->get_var <machine_word_t>(registers::rox)),
-			ipx(this->get_var <machine_word_t>(registers::ipx)),
-			spx(this->get_var <machine_word_t>(registers::spx)),
-			bpx(this->get_var <machine_word_t>(registers::bpx)),
-			flags(this->get_var <machine_word_t>(registers::flags)) {
+			asx(this->get_var <info::machine_word_t>(info::registers::asx)),
+			rsx(this->get_var <info::machine_word_t>(info::registers::rsx)),
+			lox(this->get_var <info::machine_word_t>(info::registers::lox)),
+			rox(this->get_var <info::machine_word_t>(info::registers::rox)),
+			ipx(this->get_var <info::machine_word_t>(info::registers::ipx)),
+			spx(this->get_var <info::machine_word_t>(info::registers::spx)),
+			bpx(this->get_var <info::machine_word_t>(info::registers::bpx)),
+			flags(this->get_var <info::flags_t>(info::registers::flags)) {
 		}
 
 		template <class _T>
@@ -91,7 +58,7 @@ namespace eil {
 
 	class virtual_machine {
 	public:
-		virtual_machine(size_t allocated_memory_size = memory_size) : 
+		virtual_machine(size_t allocated_memory_size = info::memory_size) :
 			m_memory(allocated_memory_size),
 			m_ctx(this->m_memory) {
 		}
@@ -101,9 +68,9 @@ namespace eil {
 			for (size_t i = 0; i != what.size(); i++)
 				this->m_memory[program_start_idx + i] = what[i];
 
-			this->m_ctx.flags = true;
-			while (this->m_ctx.flags) {
-				size_t instruction_id = this->m_ctx.get_var <machine_word_t>(this->m_ctx.ipx);
+			this->m_ctx.flags.rf = true;
+			while (this->m_ctx.flags.rf) {
+				size_t instruction_id = this->m_ctx.get_var <info::machine_word_t>(this->m_ctx.ipx);
 				this->m_ctx.ipx += this->m_instructions[instruction_id](this->m_ctx);
 			}
 		}
