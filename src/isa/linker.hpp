@@ -1,6 +1,6 @@
 #pragma once
-//eil::isa
+//alone::isa
 
-namespace eil::isa {
+namespace alone::isa {
 	
 }

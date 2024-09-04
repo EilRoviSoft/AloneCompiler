@@ -1,11 +1,11 @@
 #pragma once
-//eil::vm
+//alone::alone
 #include <virtual_machine.hpp>
 
-//eil::isa
+//alone::isa
 #include <info.hpp>
 
-namespace eil::isa {
+namespace alone::isa {
 	size_t halt(context_t& ctx) {
 		ctx.flags.rf = false;
 		return info::inst_size;
