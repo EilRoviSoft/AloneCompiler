@@ -134,10 +134,10 @@
     <ClCompile Include="src\virtual_machine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\isa\general.hpp" />
+    <ClInclude Include="src\isa_general.hpp" />
     <ClInclude Include="src\info.hpp" />
-    <ClInclude Include="src\isa\linker.hpp" />
-    <ClInclude Include="src\isa\system.hpp" />
+    <ClInclude Include="src\isa_linker.hpp" />
+    <ClInclude Include="src\isa_system.hpp" />
     <ClInclude Include="src\util.hpp" />
     <ClInclude Include="src\virtual_machine.hpp" />
   </ItemGroup>

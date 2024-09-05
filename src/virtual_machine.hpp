@@ -2,7 +2,6 @@
 //std
 #include <array>
 #include <cstddef>
-#include <functional>
 #include <span>
 #include <unordered_map>
 
@@ -10,22 +9,25 @@
 #include "info.hpp"
 
 namespace alone {
-	class VirtualMachine;
-
-	template <typename T>
-	using array_t = std::tuple <size_t, T*>;
-
 	struct context_t {
-		void init(VirtualMachine& vm);
+		void init_spans(class VirtualMachine& vm);
+		void init_registers() const;
 
-		info::flags_t& flags();
+		
+		machine_word_t& asx() const;
+		machine_word_t& rsx() const;
+		machine_word_t& lox() const;
+		machine_word_t& rox() const;
+		machine_word_t& ipx() const;
+		machine_word_t& spx() const;
+		machine_word_t& bpx() const;
+		flags_t& flags() const;
+		machine_word_t& grx(uint64_t id) const;
 
 		size_t program_size;
 		std::span<std::byte> regs, program, stack;
 		std::span<array_t<std::byte>> heap;
 	};
-
-	using inst_func_t = std::function <context_t&>;
 
 	class VirtualMachine {
 		friend context_t;
@@ -34,21 +36,20 @@ namespace alone {
 
 		VirtualMachine();
 
+		void init_isa();
 		void exec(const std::vector <std::byte>& program);
 
-		void add_instruction(info::inst_code_t id, const inst_func_t& instruction) {
-			_inst_set.emplace(id, instruction);
-		}
-		void remove_instruction(info::inst_code_t id) {
-			_inst_set.erase(id);
-		}
+		void add_instruction(inst_code_t id, const inst_func_t& instruction);
+		void remove_instruction(inst_code_t id);
 
-		template <typename T>
-		array_t<T> get(info::address_t address);
+		template <class T>
+		T* get(address_t address);
+		template <class T>
+		array_t<T> get_array(address_t address);
 
 	private:
 		std::array<std::byte, info::p0_size> _p0;
 		std::array<array_t<std::byte>, info::p1_size> _p1;
-		std::unordered_map<info::inst_code_t, inst_func_t> _inst_set;
+		std::unordered_map<inst_code_t, inst_func_t> _inst_set;
 	};
 }
