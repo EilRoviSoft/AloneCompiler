@@ -2,7 +2,7 @@
 //std
 #include <tuple>
 
-namespace alone::util {
+namespace alone::vm::util {
 	//pos [1, sizeof(size_t)]
 	constexpr size_t gen_mask(size_t pos) {
 		return 1ull << (pos - 1);

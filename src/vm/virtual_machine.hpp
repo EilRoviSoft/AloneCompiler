@@ -6,9 +6,9 @@
 #include <unordered_map>
 
 //alone::info
-#include "info.hpp"
+#include "vm/info.hpp"
 
-namespace alone {
+namespace alone::vm {
 	struct context_t {
 		void init_spans(class VirtualMachine& vm);
 		void init_registers() const;

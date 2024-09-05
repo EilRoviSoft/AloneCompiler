@@ -4,7 +4,7 @@
 #include <functional>
 #include <tuple>
 
-namespace alone {
+namespace alone::vm {
 	template <typename T>
 	using array_t = std::tuple <size_t, T*>;
 
@@ -23,7 +23,7 @@ namespace alone {
 	};
 }
 
-namespace alone::info {
+namespace alone::vm::info {
 	enum registers {
 		asx = 0 * sizeof(machine_word_t), //Address System register
 		rsx = 1 * sizeof(machine_word_t), //Result System register

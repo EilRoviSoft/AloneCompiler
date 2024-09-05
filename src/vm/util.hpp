@@ -1,11 +1,8 @@
 #pragma once
-//std
-#include <array>
-#include <cstdint>
 //alone::info
-#include "info.hpp"
+#include "vm/info.hpp"
 
-namespace alone::util {
+namespace alone::vm::util {
 	constexpr size_t gen_mask(size_t pos);
 	constexpr std::tuple<info::memory_type, address_t> decompose(size_t address);
 }

@@ -18,30 +18,33 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util.cpp">
+    <ClCompile Include="src\vm\util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\virtual_machine.cpp">
+    <ClCompile Include="src\vm\virtual_machine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\virtual_machine.hpp">
+    <ClInclude Include="src\vm\virtual_machine.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\isa_general.hpp">
+    <ClInclude Include="src\vm\isa\general.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\isa_system.hpp">
+    <ClInclude Include="src\vm\isa\system.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\isa_linker.hpp">
+    <ClInclude Include="src\vm\isa\linker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\info.hpp">
+    <ClInclude Include="src\vm\info.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util.hpp">
+    <ClInclude Include="src\vm\util.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\compiler\main.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

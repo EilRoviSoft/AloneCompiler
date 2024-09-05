@@ -1,10 +1,11 @@
 #include "virtual_machine.hpp"
 //std
 #include <exception>
-//alone::util
-#include "util.hpp"
 
-namespace alone {
+//alone::util
+#include "vm/util.hpp"
+
+namespace alone::vm {
 	//context_t
 
 	void context_t::init_spans(VirtualMachine& vm) {

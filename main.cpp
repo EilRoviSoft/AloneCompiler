@@ -1,10 +1,6 @@
-//std
-#include <iostream>
-#include <vector>
-
+//alone::vm
 #include "src/virtual_machine.hpp"
-#include "src/info.hpp"
 
 int main() {
-	alone::VirtualMachine vm;
+	alone::vm::VirtualMachine vm;
 }

@@ -76,6 +76,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>;D:\programming\cpp\AloneCompiler\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +92,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>;D:\programming\cpp\AloneCompiler\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\eilrovisoft\programming\cpp\AloneCompiler\src;C:\eilrovisoft\lib\boost_1_83_0;C:\eilrovisoft\programming\cpp\AloneCompiler\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\eilrovisoft\programming\cpp\AloneCompiler\src;C:\eilrovisoft\lib\boost_1_83_0;C:\eilrovisoft\programming\cpp\AloneCompiler\lib;%(AdditionalIncludeDirectories);D:\programming\cpp\AloneCompiler\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -120,6 +124,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>;D:\programming\cpp\AloneCompiler\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,16 +136,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\util.cpp" />
-    <ClCompile Include="src\virtual_machine.cpp" />
+    <ClCompile Include="src\vm\util.cpp" />
+    <ClCompile Include="src\vm\virtual_machine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\isa_general.hpp" />
-    <ClInclude Include="src\info.hpp" />
-    <ClInclude Include="src\isa_linker.hpp" />
-    <ClInclude Include="src\isa_system.hpp" />
-    <ClInclude Include="src\util.hpp" />
-    <ClInclude Include="src\virtual_machine.hpp" />
+    <ClInclude Include="src\compiler\main.hpp" />
+    <ClInclude Include="src\vm\isa\general.hpp" />
+    <ClInclude Include="src\vm\info.hpp" />
+    <ClInclude Include="src\vm\isa\linker.hpp" />
+    <ClInclude Include="src\vm\isa\system.hpp" />
+    <ClInclude Include="src\vm\util.hpp" />
+    <ClInclude Include="src\vm\virtual_machine.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
