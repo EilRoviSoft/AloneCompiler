@@ -5,7 +5,7 @@
 #include <span>
 #include <unordered_map>
 
-//alone::info
+//alone::vm::info
 #include "vm/info.hpp"
 
 namespace alone::vm {
@@ -48,8 +48,8 @@ namespace alone::vm {
 		array_t<T> get_array(address_t address);
 
 	private:
-		std::array<std::byte, info::p0_size> _p0;
-		std::array<array_t<std::byte>, info::p1_size> _p1;
+		std::array<std::byte, info::mframe_size> _p0;
+		std::array<array_t<std::byte>, info::dframe_size> _p1;
 		std::unordered_map<inst_code_t, inst_func_t> _inst_set;
 	};
 }

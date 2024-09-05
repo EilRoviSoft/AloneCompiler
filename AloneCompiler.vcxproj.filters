@@ -47,5 +47,8 @@
     <ClInclude Include="src\compiler\main.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\compiler\info.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

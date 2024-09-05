@@ -2,7 +2,7 @@
 //std
 #include <exception>
 
-//alone::util
+//alone::vm::util
 #include "vm/util.hpp"
 
 namespace alone::vm {
@@ -11,8 +11,8 @@ namespace alone::vm {
 	void context_t::init_spans(VirtualMachine& vm) {
 		regs = std::span(vm._p0.begin(), info::registers_size);
 		program = std::span(vm._p0.begin() + info::registers_size, program_size);
-		stack = std::span(vm._p0.begin() + info::registers_size + program_size, info::p0_size - info::registers_size - program_size);
-		heap = std::span(vm._p1.begin(), info::p1_size);
+		stack = std::span(vm._p0.begin() + info::registers_size + program_size, info::mframe_size - info::registers_size - program_size);
+		heap = std::span(vm._p1.begin(), info::dframe_size);
 	}
 
 	//call it every time, when you run new program

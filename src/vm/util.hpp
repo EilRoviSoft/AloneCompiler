@@ -1,5 +1,5 @@
 #pragma once
-//alone::info
+//alone::vm::info
 #include "vm/info.hpp"
 
 namespace alone::vm::util {

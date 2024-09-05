@@ -30,8 +30,8 @@ namespace alone::vm::info {
 		lox = 2 * sizeof(machine_word_t), //Left Operand register
 		rox = 3 * sizeof(machine_word_t), //Right Operand register
 		ipx = 4 * sizeof(machine_word_t), //Instruction Pointer
-		spx = 5 * sizeof(machine_word_t), //Stack Pointer
-		bpx = 6 * sizeof(machine_word_t), //Base Pointer
+		bpx = 5 * sizeof(machine_word_t), //Stack Pointer
+		spx = 6 * sizeof(machine_word_t), //Base Pointer
 		flags = 7 * sizeof(machine_word_t), //Flags register
 		grx = 8 * sizeof(machine_word_t), //General Registers start
 	};
@@ -45,8 +45,8 @@ namespace alone::vm::info {
 	constexpr size_t machine_word_size = sizeof(uint64_t),
 		inst_code_size = sizeof(inst_code_t),
 		registers_size = 256,
-		system_registers_size = machine_word_size * (int) registers::grx,
+		system_registers_size = registers_size - grx,
 		general_registers_size = registers_size - system_registers_size,
-		p0_size = 2 << 16,
-		p1_size = 16;
+		mframe_size = 2 << 16,
+		dframe_size = 16;
 }
