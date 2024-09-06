@@ -6,12 +6,12 @@
 
 namespace alone::vm {
 	template <typename T>
-	using array_t = std::tuple <size_t, T*>;
+	using array_t = std::tuple<size_t, T*>;
 
 	using address_t = uint64_t;
 	using machine_word_t = uint64_t;
 	using inst_code_t = uint16_t;
-	using inst_func_t = std::function <size_t(const struct context_t&)>;
+	using inst_func_t = std::function<size_t(const struct context_t&)>;
 
 	struct flags_t {
 		bool rf : 1; //is program running
@@ -47,6 +47,6 @@ namespace alone::vm::info {
 		registers_size = 256,
 		system_registers_size = registers_size - grx,
 		general_registers_size = registers_size - system_registers_size,
-		mframe_size = 2 << 16,
+		mframe_size = 1 << 16,
 		dframe_size = 16;
 }

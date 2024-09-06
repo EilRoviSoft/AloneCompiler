@@ -17,15 +17,15 @@ There are 4 main sections of asm:
 # Variables, constants and registers
 You can define names for memory regions from stack and heap.
 This only affects compilation time.
-- `var %a, $uint64, [%spx - 8]`
+- `var %a, uint64, [%spx - 8]`
 
 Also allocate data before main program as constants.
-- `const %arr [$int32 * 3], [18, 24, 34]`
-- `str %msg [$uint8 * 12], "Hello world\n"`
+- `const %arr [int32 * 3], [18, 24, 34]`
+- `str %msg [uint8 * 12], "Hello world\n"`
 
 Registers are predefined as variables and can be accessed at any time using '%' operand
 | Register name | Place | Definition | Function |
-| - | - | - | - |
+| ------------- | ----- | ---------- | -------- |
 | %asx | 0x00 | Address | Contains address of last allocated pointer on heap; also can be used to create new struct objects |
 | %rsx | 0x08 | Result | Contains value of last evaluated math expression; can be used as general register for results of binary and unary operations |
 | %lox | 0x10 | Left operand | Can be used as general register for binary and unary operations |
@@ -65,10 +65,11 @@ add32u          # stores value '5' in %rsx
 
 # Functions
 ```
-func @add6432(%l: $int64, %r: $int32):		# uses pascal-call
-	add64i $l, $r
-	sub %spx, 12
-	push64 $asx
+func @add6432(int64, int32):	# uses pascal-call
+	mov %rox, [%spx - 4]
+	add64i [%spx - 12], %rox
+	sub64u %spx, 12
+	push64 asx
 	ret
 ```
 This function adds int64 and int32 from stack; removes these arguments from stack; pushes result on stack
@@ -77,19 +78,20 @@ This function adds int64 and int32 from stack; removes these arguments from stac
 
 # Struct
 ```
-struct $some_t:					# you can define rules for struct align
-	var %a, $int64, [%asx]		# and create struct members
-	var %b, $int32, [%asx + 8]	# members will be placed in order of defining
-	var %c, $int8, [%asx + 12]
-	var %d, $int8, [%asx + 16]
+struct some_t:						# you can define rules for struct align
+	var %a, int64, [%asx]			# and create struct members
+	var %b, int32, [%asx + 8]		# members will be placed in order of defining
+	var %c, int8, [%asx + 12]
+	var %d, int8, [%asx + 16]
 
-var %s, $some_t, [%spx]
-mov64 %s.a, 10
-mov32 %s.b, 20
-push64 %s.a
-push32 %s.b
-call @add6432(int64, int32)		# pascal-call automatically cleares stack from arguments
-ncall @print64u					# pascal-call too, if you want to create custom functions from C++, make wraper for it
+main:
+	var %s, some_t, [%spx]
+	mov64 %s.a, 10
+	mov32 %s.b, 20
+	push64 %s.a
+	push32 %s.b						
+	call @add6432(int64, int32)		# pascal-call automatically cleares stack from arguments
+	ncall @print64u					# if you want to create custom functions from C++, make wraper for it
 ```
 This program writes "30" in console
 
@@ -97,5 +99,5 @@ This program writes "30" in console
 
 # Labels and branches
 ```
-main__l0a:		#this branch is generated for loop purposes
+main__l0a:		# this branch is generated for loop purposes
 ```

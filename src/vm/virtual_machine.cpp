@@ -81,26 +81,23 @@ namespace alone::vm {
 		_inst_set.erase(id);
 	}
 
-	template <class T>
+	template<class T>
 	T* VirtualMachine::get(address_t address) {
 		T* result;
 
 		auto [mem_type, actual_address] = util::decompose(address);
-		switch (mem_type) {
-		case info::mframe:
+		if (mem_type == info::mframe) {
 			result = reinterpret_cast<T*>(&_p0[actual_address]);
-			break;
-		case info::dframe:
+		} else if (mem_type == info::dframe) {
 			auto [size, ptr] = _p1[actual_address];
 			result = reinterpret_cast<T*>(ptr);
-			break;
-		default:
+		} else {
 			throw(std::exception("This memory type doesn't exist."));
 		}
 
 		return result;
 	}
-	template <class T>
+	template<class T>
 	array_t<T> VirtualMachine::get_array(address_t address) {
 		array_t<T> result;
 

@@ -10,9 +10,12 @@
 
 namespace alone::vm {
 	struct context_t {
+		size_t program_size;
+		std::span<std::byte> regs, program, stack;
+		std::span<array_t<std::byte>> heap;
+
 		void init_spans(class VirtualMachine& vm);
 		void init_registers() const;
-
 		
 		machine_word_t& asx() const;
 		machine_word_t& rsx() const;
@@ -23,10 +26,6 @@ namespace alone::vm {
 		machine_word_t& bpx() const;
 		flags_t& flags() const;
 		machine_word_t& grx(uint64_t id) const;
-
-		size_t program_size;
-		std::span<std::byte> regs, program, stack;
-		std::span<array_t<std::byte>> heap;
 	};
 
 	class VirtualMachine {
@@ -42,9 +41,9 @@ namespace alone::vm {
 		void add_instruction(inst_code_t id, const inst_func_t& instruction);
 		void remove_instruction(inst_code_t id);
 
-		template <class T>
+		template<class T>
 		T* get(address_t address);
-		template <class T>
+		template<class T>
 		array_t<T> get_array(address_t address);
 
 	private:

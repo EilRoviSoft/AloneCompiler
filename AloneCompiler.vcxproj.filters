@@ -24,6 +24,9 @@
     <ClCompile Include="src\vm\virtual_machine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\amasm\include.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\vm\virtual_machine.hpp">
@@ -44,11 +47,16 @@
     <ClInclude Include="src\vm\util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\compiler\main.hpp">
+    <ClInclude Include="src\amasm\include.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\compiler\info.hpp">
+    <ClInclude Include="src\amasm\info.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="example.amasm">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

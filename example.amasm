@@ -1,0 +1,5 @@
+func @add(int64, int64):				# comment for testing1
+	add64i [%spx - 8], [%spx - 16]		# comment for testing2
+	sub64u %spx, 16
+	push64 %asx							# comment for testing3
+	ret

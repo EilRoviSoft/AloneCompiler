@@ -136,18 +136,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\amasm\include.cpp" />
     <ClCompile Include="src\vm\util.cpp" />
     <ClCompile Include="src\vm\virtual_machine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\compiler\info.hpp" />
-    <ClInclude Include="src\compiler\main.hpp" />
+    <ClInclude Include="src\amasm\info.hpp" />
+    <ClInclude Include="src\amasm\include.hpp" />
     <ClInclude Include="src\vm\isa\general.hpp" />
     <ClInclude Include="src\vm\info.hpp" />
     <ClInclude Include="src\vm\isa\linker.hpp" />
     <ClInclude Include="src\vm\isa\system.hpp" />
     <ClInclude Include="src\vm\util.hpp" />
     <ClInclude Include="src\vm\virtual_machine.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="example.amasm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
