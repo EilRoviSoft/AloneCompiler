@@ -4,7 +4,9 @@ namespace alone::amasm::info {
 		lparen, rparen, lbracket, rbracket,
 		dot, comma, colon, at, percent, quote,
 		plus, minus, star, slash,
-		keyword, instruction, identifier, string, number,
+		sector, label, function, container,
+		instruction, identifier, data_type, string,
+		integer, floating, hexadecimal, binary,
 		none
 	};
 }

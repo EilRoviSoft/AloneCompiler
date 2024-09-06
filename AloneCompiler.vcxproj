@@ -137,12 +137,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\amasm\include.cpp" />
-    <ClCompile Include="src\vm\util.cpp" />
     <ClCompile Include="src\vm\virtual_machine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\amasm\info.hpp" />
     <ClInclude Include="src\amasm\include.hpp" />
+    <ClInclude Include="src\amasm\util.hpp" />
     <ClInclude Include="src\vm\isa\general.hpp" />
     <ClInclude Include="src\vm\info.hpp" />
     <ClInclude Include="src\vm\isa\linker.hpp" />

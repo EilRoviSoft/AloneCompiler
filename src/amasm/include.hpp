@@ -4,14 +4,21 @@
 #include <functional>
 #include <istream>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 //alone::amasm::info
 #include "amasm/info.hpp"
 
 namespace alone::amasm {
-	bool is_numeric_alpha(char c);
+	constexpr bool is_alpha(char c);
+	constexpr bool is_binary(char c);
+	constexpr bool is_numeric(char c);
+	constexpr bool is_hexadecimal(char c);
+	constexpr bool is_alpha_numeric(char c);
+	constexpr bool is_whitespace(char c);
+
+	std::string gen_str(char a, char b);
 
 	struct token_t {
 		std::string v;
@@ -37,12 +44,14 @@ namespace alone::amasm {
 
 	private:
 		static const std::array<char, 14> _singular_characters;
-		static std::unordered_map <char, token_dispatcher_t> _token_machine;
+		static std::map<char, token_dispatcher_t> _token_machine;
+		static const std::string _alpha, _numeric, _alpha_numeric;
 		static bool _is_init;
 
 		static void _init();
 
 		static std::pair<char, token_dispatcher_t> _gen_single_char_token_pair(char c, info::token_type t);
 		static std::pair<char, token_dispatcher_t> _gen_identifier(char c);
+		static std::pair<char, token_dispatcher_t> _gen_number(char c);
 	};
 }

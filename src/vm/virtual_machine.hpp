@@ -3,9 +3,11 @@
 #include <array>
 #include <cstddef>
 #include <span>
-#include <unordered_map>
+#include <map>
 
 //alone::vm::info
+#include <map>
+
 #include "vm/info.hpp"
 
 namespace alone::vm {
@@ -49,6 +51,6 @@ namespace alone::vm {
 	private:
 		std::array<std::byte, info::mframe_size> _p0;
 		std::array<array_t<std::byte>, info::dframe_size> _p1;
-		std::unordered_map<inst_code_t, inst_func_t> _inst_set;
+		std::map<inst_code_t, inst_func_t> _inst_set;
 	};
 }
