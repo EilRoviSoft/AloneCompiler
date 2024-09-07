@@ -2,8 +2,9 @@
 #include <fstream>
 
 //alone::vm
+#include "amasm/lexer.hpp"
+#include "amasm/scanner.hpp"
 #include "vm/virtual_machine.hpp"
-#include "amasm/include.hpp"
 
 using namespace alone;
 

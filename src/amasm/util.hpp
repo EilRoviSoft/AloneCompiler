@@ -1,32 +1,45 @@
 #pragma once
+
 //std
-#include <set>
-#include <map>
 #include <string>
 
 //alone::amasm::info
-#include "info.hpp"
+#include "amasm/info.hpp"
 
 namespace alone::amasm::util {
-	inline std::set<std::string> data_types = {
-		"uint8", "uint16", "uint32", "uint64",
-		"int8", "int16", "int32", "int64",
-		"float32", "float64"
-	};
-	inline std::set<std::string> instructions;
-	inline std::map<std::string, info::token_type> identifiers = {
-		{ "sector", info::sector },
-		{ "label", info::label },
-		{ "func", info::function },
-		{ "struct", info::container }
-	};
-
-	inline void add_data_type(const std::string& v) {
-		data_types.emplace(v);
-		identifiers.emplace(v, info::data_type);
+	inline bool is_alpha(char c) {
+		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
 	}
-	inline void add_instruction(const std::string& v) {
-		instructions.emplace(v);
-		identifiers.emplace(v, info::instruction);
+	inline bool is_binary(char c) {
+		return c == '0' || c == '1';
+	}
+	inline bool is_numeric(char c) {
+		return c >= '0' && c <= '9';
+	}
+	inline bool is_hexadecimal(char c) {
+		return is_numeric(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
+	}
+	inline bool is_alpha_numeric(char c) {
+		return is_alpha(c) || is_numeric(c);
+	}
+	inline bool is_whitespace(char c) {
+		return c == ' ' || c == '\n' || c == '\t';
+	}
+
+	inline std::string gen_str(char a, char b) {
+		std::string result;
+
+		result.resize(b - a + 1);
+		for(char i = a; i <= b; ++i)
+			result[i - a] = i;
+
+		return result;
+	}
+
+	inline void sync_identifiers() {
+		for(const auto& it : info::data_types)
+			info::identifiers.try_emplace(it, info::data_type);
+		for(const auto& it : info::instructions)
+			info::identifiers.try_emplace(it, info::instruction);
 	}
 }

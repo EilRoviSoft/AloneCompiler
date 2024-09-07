@@ -1,4 +1,5 @@
 #pragma once
+
 //std
 #include <array>
 #include <cstddef>

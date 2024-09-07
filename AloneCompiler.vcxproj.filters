@@ -21,7 +21,10 @@
     <ClCompile Include="src\vm\virtual_machine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\amasm\include.cpp">
+    <ClCompile Include="src\amasm\lexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\amasm\scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,13 +47,19 @@
     <ClInclude Include="src\vm\util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\amasm\include.hpp">
+    <ClInclude Include="src\amasm\lexer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\amasm\info.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\amasm\util.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\amasm\scanner.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\amasm\data_types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
