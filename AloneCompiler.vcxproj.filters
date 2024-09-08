@@ -62,6 +62,9 @@
     <ClInclude Include="src\amasm\data_types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\general.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="example.amasm">

@@ -53,7 +53,10 @@ namespace alone::vm {
 
 	//VirtualMachine
 
-	VirtualMachine::VirtualMachine() : ctx(), _p0() {}
+	VirtualMachine::VirtualMachine() :
+		ctx(),
+		_p0() {
+	}
 
 	void VirtualMachine::init_isa() {
 
@@ -69,17 +72,17 @@ namespace alone::vm {
 
 		while(ctx.flags().rf && ctx.ipx() < info::registers_size + ctx.program_size) {
 			inst_code_t opcode = *get<inst_code_t>(ctx.ipx());
-			size_t offset = _inst_set[opcode](ctx);
-			ctx.ipx() += offset;
+			size_t offunordered_set = _inst_unordered_set[opcode](ctx);
+			ctx.ipx() += offunordered_set;
 		}
 	}
 
 	void VirtualMachine::add_instruction(inst_code_t id, const inst_func_t& instruction) {
-		_inst_set.emplace(id, instruction);
+		_inst_unordered_set.emplace(id, instruction);
 	}
 
 	void VirtualMachine::remove_instruction(inst_code_t id) {
-		_inst_set.erase(id);
+		_inst_unordered_set.erase(id);
 	}
 
 	template<class T>
@@ -92,9 +95,8 @@ namespace alone::vm {
 		} else if(mem_type == info::dframe) {
 			auto [size, ptr] = _p1[actual_address];
 			result = reinterpret_cast<T*>(ptr);
-		} else {
+		} else
 			throw(std::exception("This memory type doesn't exist."));
-		}
 
 		return result;
 	}
@@ -105,7 +107,7 @@ namespace alone::vm {
 		auto [mem_type, actual_address] = util::decompose(address);
 		switch(mem_type) {
 		case info::mframe:
-			result = { sizeof(T), reinterpret_cast<T*>(&_p0[actual_address]) };
+			result = { .size = sizeof(T), .ptr = reinterpret_cast<T*>(&_p0[actual_address]) };
 			break;
 		case info::dframe:
 			result = _p1[actual_address];

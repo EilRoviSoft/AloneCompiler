@@ -25,7 +25,7 @@ Also allocate data before main program as constants.
 
 Registers are predefined as variables and can be accessed at any time using '%' operand
 | Register name | Place | Definition | Function |
-| ------------- | ----- | ---------- | -------- |
+| - | - | - | - |
 | %asx | 0x00 | Address | Contains address of last allocated pointer on heap; also can be used to create new struct objects |
 | %rsx | 0x08 | Result | Contains value of last evaluated math expression; can be used as general register for results of binary and unary operations |
 | %lox | 0x10 | Left operand | Can be used as general register for binary and unary operations |
@@ -63,9 +63,16 @@ add32u          # stores value '5' in %rsx
 
 ---
 
+# Labels and branches
+```
+label main__l0a:		# this branch is generated for loop purposes
+```
+
+---
+
 # Functions
 ```
-func @add6432(int64, int32):	# uses pascal-call
+func add6432(int64, int32):	# uses pascal-call
 	mov %rox, [%spx - 4]
 	add64i [%spx - 12], %rox
 	sub64u %spx, 12
@@ -90,14 +97,9 @@ main:
 	mov32 %s.b, 20
 	push64 %s.a
 	push32 %s.b						
-	call @add6432(int64, int32)		# pascal-call automatically cleares stack from arguments
-	ncall @print64u					# if you want to create custom functions from C++, make wraper for it
+	call add6432(int64, int32)		# pascal-call automatically cleares stack from arguments
+	ncall print64u					# if you want to create custom functions from C++, make wraper for it
 ```
 This program writes "30" in console
 
 ---
-
-# Labels and branches
-```
-main__l0a:		# this branch is generated for loop purposes
-```

@@ -1,5 +1,16 @@
-func @add(int64, int64):				# comment for testing1
-	add64i [%spx - 8], [%spx - 16]		# comment for testing2
+struct vector2:
+	var %x, float64, [%asx]
+	var %y, float64, [%asx + 8]
+
+func @add(float64, float64):
+	add64f [%spx - 8], [%spx - 16]
 	sub64u %spx, 16
-	push64 %asx							# comment for testing3
+	push64 %asx
 	ret
+
+func @main():
+	var %v, vector2, [%asx]			# automatically replaces on add64u %spx, 16
+	push64 %v.y
+	push64 %v.x
+	call @add(float64, float64)
+	ncall @print64f(float64)

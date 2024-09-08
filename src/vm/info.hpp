@@ -3,12 +3,8 @@
 //std
 #include <cstdint>
 #include <functional>
-#include <tuple>
 
 namespace alone::vm {
-	template <typename T>
-	using array_t = std::tuple<size_t, T*>;
-
 	using address_t = uint64_t;
 	using machine_word_t = uint64_t;
 	using inst_code_t = uint16_t;

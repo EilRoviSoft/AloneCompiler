@@ -1,5 +1,8 @@
 #include "lexer.hpp"
 
+//alone
+#include "general.hpp"
+
 //alone::amasm::util
 #include "amasm/info.hpp"
 #include "amasm/util.hpp"
@@ -12,7 +15,7 @@ namespace alone::amasm {
 			_init();
 
 		for(size_t i = 0; i != code.size();) {
-			if (util::is_whitespace(code[i])) {
+			if (is_whitespace(code[i])) {
 				++i;
 				continue;
 			}
@@ -22,14 +25,14 @@ namespace alone::amasm {
 		return result;
 	}
 
-	const std::array<char, 14> Lexer::_singular_characters = {
+	const std::array<char, 15> Lexer::_singular_characters = {
 		'(', ')', '[', ']',
-		'.', ',', ':', '@', '%', '\"',
+		'.', ',', ':', '@', '$', '%', '\"',
 		'+', '-', '*', '/'
 	};
-	std::map<char, info::token_dispatcher_t> Lexer::_token_machine;
-	const std::string Lexer::_alpha = '_' + util::gen_str('a', 'z') + util::gen_str('A', 'Z');
-	const std::string Lexer::_numeric = util::gen_str('0', '9');
+	std::unordered_map<char, info::token_dispatcher_t> Lexer::_token_machine;
+	const std::string Lexer::_alpha = '_' + gen_str('a', 'z') + gen_str('A', 'Z');
+	const std::string Lexer::_numeric = gen_str('0', '9');
 	const std::string Lexer::_alpha_numeric = _alpha + _numeric;
 	bool Lexer::_is_init = false;
 
@@ -63,9 +66,9 @@ namespace alone::amasm {
 		return { c, info::token_dispatcher_t([](const std::string& s, size_t& i) {
 			info::token_t result;
 
-			result.v += _get_until(s, i, &util::is_alpha_numeric);
-			auto t = info::identifiers.find(result.v);
-			result.t = t != info::identifiers.end() ? t->second : info::none;
+			result.val += _get_until(s, i, &is_alpha_numeric);
+			auto t = info::identifiers.find(result.val);
+			result.type = t != info::identifiers.end() ? t->second : info::none;
 
 			return result;
 		}) };
@@ -80,24 +83,24 @@ namespace alone::amasm {
 				switch(s[i + 1]) {
 				case 'x':
 					result = { "0x", info::hexadecimal };
-					check_type = &util::is_hexadecimal;
+					check_type = &is_hexadecimal;
 					break;
 				case 'b':
 					result = { "0b", info::binary };
-					check_type = &util::is_binary;
+					check_type = &is_binary;
 					break;
 				default: 
 					throw(std::exception("Idk how you did this error..."));
 				}
 				i += 2;
-				result.v += _get_until(s, i, check_type);
+				result.val += _get_until(s, i, check_type);
 			} else { //it's integer or floating
-				result.v += _get_until(s, i, &util::is_numeric);
+				result.val += _get_until(s, i, &is_numeric);
 				if (s[i] == '.') {
-					result.t = info::floating;
-					result.v += _get_until(s, i, &util::is_numeric);
+					result.type = info::floating;
+					result.val += _get_until(s, i, &is_numeric);
 				} else
-					result.t = info::integer;
+					result.type = info::integer;
 			}
 
 			return result;

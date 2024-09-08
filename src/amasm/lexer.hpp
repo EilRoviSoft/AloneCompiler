@@ -3,7 +3,7 @@
 //std
 #include <array>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -16,8 +16,8 @@ namespace alone::amasm {
 		static info::token_array_t tokenize(const std::string& code);
 
 	private:
-		static const std::array<char, 14> _singular_characters;
-		static std::map<char, info::token_dispatcher_t> _token_machine;
+		static const std::array<char, 15> _singular_characters;
+		static std::unordered_map<char, info::token_dispatcher_t> _token_machine;
 		static const std::string _alpha, _numeric, _alpha_numeric;
 		static bool _is_init;
 

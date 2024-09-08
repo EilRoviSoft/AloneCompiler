@@ -11,7 +11,7 @@ using namespace alone;
 int main() {
 	vm::VirtualMachine vm;
 
-	std::fstream file("example.amasm");
+	std::ifstream file("example.amasm");
 	if (!file.is_open())
 		return -1;
 	auto scanned = amasm::Scanner::scan(file);

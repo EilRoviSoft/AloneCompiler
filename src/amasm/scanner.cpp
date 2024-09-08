@@ -4,13 +4,13 @@
 #include <vector>
 
 namespace alone::amasm {
-	std::string Scanner::scan(std::istream& input) {
+	std::string Scanner::scan(std::ifstream& file) {
 		std::string temp, buffer;
 
-		do {
-			std::getline(input, buffer);
+		while(!file.eof()) {
+			std::getline(file, buffer);
 			temp += buffer + '\n';
-		} while(!buffer.empty());
+		}
 
 		return scan(temp);
 	}
