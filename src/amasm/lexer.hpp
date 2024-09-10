@@ -13,11 +13,11 @@
 namespace alone::amasm {
 	class Lexer {
 	public:
-		static info::token_array_t tokenize(const std::string& code);
+		static std::vector<info::token_t> tokenize(const std::string& code);
 
 	private:
-		static const std::array<char, 15> _singular_characters;
-		static std::unordered_map<char, info::token_dispatcher_t> _token_machine;
+		static const std::array<char, 17> _singular_characters;
+		static std::unordered_map<char, info::token_dispatcher_t> _token_generator;
 		static const std::string _alpha, _numeric, _alpha_numeric;
 		static bool _is_init;
 

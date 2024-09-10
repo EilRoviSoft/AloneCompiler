@@ -10,7 +10,12 @@
 #include "general.hpp"
 
 namespace alone::amasm::info {
-	using poles_t = std::optional<std::vector<std::shared_ptr<struct data_type_t>>>;
+	struct var_t {
+		size_t offset, scope_level;
+		std::string name;
+		std::shared_ptr<struct data_type_t> type;
+	};
+	using poles_t = std::optional<std::vector<var_t>>;
 
 	struct data_type_t {
 		std::string literal;
@@ -21,12 +26,6 @@ namespace alone::amasm::info {
 			literal(std::move(l)),
 			size(s),
 			poles(std::move(p)) {
-		}
-	};
-
-	struct data_type_hasher {
-		size_t operator()(const std::shared_ptr<data_type_t>& type) const {
-			return string_hasher(type->literal);
 		}
 	};
 }

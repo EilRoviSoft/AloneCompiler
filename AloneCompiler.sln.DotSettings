@@ -127,6 +127,7 @@
 	<s:Boolean x:Key="/Default/Housekeeping/UpgradeFromExceptionReport/UpgradePerformed/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/Housekeeping/WhatsNewShown/WhatsNewShownIndexedEntry/=RS0/@EntryIndexedValue">2024.1</s:String>
 	<s:String x:Key="/Default/TeamCityAddin/DotCoverIntegration/CacheHomeDir/@EntryValue">C:\Users\elrov\AppData\Local\Temp</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=amasm/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=dframe/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=eframe/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=iend/@EntryIndexedValue">True</s:Boolean>

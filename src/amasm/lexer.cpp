@@ -8,8 +8,8 @@
 #include "amasm/util.hpp"
 
 namespace alone::amasm {
-	info::token_array_t Lexer::tokenize(const std::string& code) {
-		info::token_array_t result;
+	std::vector<info::token_t> Lexer::tokenize(const std::string& code) {
+		std::vector<info::token_t> result;
 
 		if(!_is_init)
 			_init();
@@ -19,18 +19,19 @@ namespace alone::amasm {
 				++i;
 				continue;
 			}
-			result.emplace_back(_token_machine[code[i]](code, i));
+			result.emplace_back(_token_generator[code[i]](code, i));
 		}
-
+		
+		result.shrink_to_fit();
 		return result;
 	}
 
-	const std::array<char, 15> Lexer::_singular_characters = {
-		'(', ')', '[', ']',
+	const std::array<char, 17> Lexer::_singular_characters = {
+		'(', ')', '[', ']', '{', '}',
 		'.', ',', ':', '@', '$', '%', '\"',
 		'+', '-', '*', '/'
 	};
-	std::unordered_map<char, info::token_dispatcher_t> Lexer::_token_machine;
+	std::unordered_map<char, info::token_dispatcher_t> Lexer::_token_generator;
 	const std::string Lexer::_alpha = '_' + gen_str('a', 'z') + gen_str('A', 'Z');
 	const std::string Lexer::_numeric = gen_str('0', '9');
 	const std::string Lexer::_alpha_numeric = _alpha + _numeric;
@@ -39,11 +40,14 @@ namespace alone::amasm {
 	void Lexer::_init() {
 		util::sync_identifiers();
 		for(size_t i = 0; i != _singular_characters.size(); ++i)
-			_token_machine.emplace(_gen_single_char_token_pair(_singular_characters[i], (info::token_type) i));
+			_token_generator.emplace(_gen_single_char_token_pair(_singular_characters[i], (info::token_type) i));
 		for(auto c : _alpha)
-			_token_machine.emplace(_gen_identifier(c));
+			_token_generator.emplace(_gen_identifier(c));
 		for(auto c : _numeric)
-			_token_machine.emplace(_gen_number(c));
+			_token_generator.emplace(_gen_number(c));
+		_token_generator.emplace('\"', [](const std::string& s, size_t& i) {
+			return info::token_t(_get_until(s, i, [](char c) { return c == '\"'; }), info::string);
+		});
 	}
 
 	std::string Lexer::_get_until(const std::string& s, size_t& i, const std::function<bool(char)>& f) {
@@ -68,7 +72,7 @@ namespace alone::amasm {
 
 			result.val += _get_until(s, i, &is_alpha_numeric);
 			auto t = info::identifiers.find(result.val);
-			result.type = t != info::identifiers.end() ? t->second : info::none;
+			result.type = t != info::identifiers.end() ? t->second : info::identifier;
 
 			return result;
 		}) };

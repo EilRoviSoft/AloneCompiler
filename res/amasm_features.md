@@ -72,12 +72,13 @@ label main__l0a:		# this branch is generated for loop purposes
 
 # Functions
 ```
-func add6432(int64, int32):	# uses pascal-call
+func add6432(int64, int32): int64 {		# uses pascal-call
 	mov %rox, [%spx - 4]
 	add64i [%spx - 12], %rox
 	sub64u %spx, 12
 	push64 asx
 	ret
+}
 ```
 This function adds int64 and int32 from stack; removes these arguments from stack; pushes result on stack
 
@@ -85,13 +86,14 @@ This function adds int64 and int32 from stack; removes these arguments from stac
 
 # Struct
 ```
-struct some_t:						# you can define rules for struct align
-	var %a, int64, [%asx]			# and create struct members
-	var %b, int32, [%asx + 8]		# members will be placed in order of defining
-	var %c, int8, [%asx + 12]
-	var %d, int8, [%asx + 16]
+struct some_t {						# you can define rules for struct align
+	var %a, int64, [%this + 8]		# and create struct members
+	var %b, int32, [%this + 8]		# members will be placed in order of defining
+	var %c, int8, [%this + 12]
+	var %d, int8, [%this + 16]
+}
 
-main:
+func @main() {
 	var %s, some_t, [%spx]
 	mov64 %s.a, 10
 	mov32 %s.b, 20
@@ -99,6 +101,7 @@ main:
 	push32 %s.b						
 	call add6432(int64, int32)		# pascal-call automatically cleares stack from arguments
 	ncall print64u					# if you want to create custom functions from C++, make wraper for it
+}
 ```
 This program writes "30" in console
 

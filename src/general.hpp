@@ -10,7 +10,19 @@ namespace alone {
 	inline auto string_hasher = std::hash<std::string>();
 
 	constexpr size_t gen_mask(size_t pos) {
-		return 1ull << (pos - 1);
+		return 1ull << pos;
+	}
+	constexpr size_t gen_mask(std::initializer_list<size_t> positions) {
+		size_t result = 0;
+		for(auto it : positions)
+			result += 1ull << it;
+		return result;
+	}
+	constexpr size_t gen_mask(size_t a, size_t b) {
+		size_t result = 0;
+		for(size_t i = a; i <= b; ++i)
+			result += 1ull << i;
+		return result;
 	}
 
 	template <typename T>

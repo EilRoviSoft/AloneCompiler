@@ -39,6 +39,7 @@ namespace alone::amasm {
 		for(auto range : ranges)
 			result += input.substr(range.first, range.second - range.first) + '\n';
 
+		result.shrink_to_fit();
 		return result;
 	}
 }

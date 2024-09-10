@@ -20,7 +20,7 @@ namespace alone::vm {
 	void context_t::init_registers() const {
 		ipx() = info::registers_size;
 		spx() = info::registers_size + program_size;
-		flags().rf = true;
+		flags()[info::rf] = true;
 	}
 
 	machine_word_t& context_t::asx() const {
@@ -70,26 +70,26 @@ namespace alone::vm {
 		ctx.init_spans(*this);
 		ctx.init_registers();
 
-		while(ctx.flags().rf && ctx.ipx() < info::registers_size + ctx.program_size) {
+		while(ctx.flags()[info::rf] && ctx.ipx() < info::registers_size + ctx.program_size) {
 			inst_code_t opcode = *get<inst_code_t>(ctx.ipx());
-			size_t offunordered_set = _inst_unordered_set[opcode](ctx);
-			ctx.ipx() += offunordered_set;
+			size_t offset = _inst_set[opcode](ctx);
+			ctx.ipx() += offset;
 		}
 	}
 
 	void VirtualMachine::add_instruction(inst_code_t id, const inst_func_t& instruction) {
-		_inst_unordered_set.emplace(id, instruction);
+		_inst_set.emplace(id, instruction);
 	}
 
 	void VirtualMachine::remove_instruction(inst_code_t id) {
-		_inst_unordered_set.erase(id);
+		_inst_set.erase(id);
 	}
 
 	template<class T>
 	T* VirtualMachine::get(address_t address) {
 		T* result;
 
-		auto [mem_type, actual_address] = util::decompose(address);
+		auto [actual_address, mem_type] = util::decompose_address(address);
 		if(mem_type == info::mframe) {
 			result = reinterpret_cast<T*>(&_p0[actual_address]);
 		} else if(mem_type == info::dframe) {
@@ -104,7 +104,7 @@ namespace alone::vm {
 	array_t<T> VirtualMachine::get_array(address_t address) {
 		array_t<T> result;
 
-		auto [mem_type, actual_address] = util::decompose(address);
+		auto [actual_address, mem_type] = util::decompose_address(address);
 		switch(mem_type) {
 		case info::mframe:
 			result = { .size = sizeof(T), .ptr = reinterpret_cast<T*>(&_p0[actual_address]) };

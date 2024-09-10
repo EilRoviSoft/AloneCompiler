@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\amasm\lexer.cpp" />
+    <ClCompile Include="src\amasm\parser.cpp" />
     <ClCompile Include="src\amasm\scanner.cpp" />
     <ClCompile Include="src\vm\virtual_machine.cpp" />
   </ItemGroup>
@@ -144,6 +145,7 @@
     <ClInclude Include="src\amasm\data_types.hpp" />
     <ClInclude Include="src\amasm\info.hpp" />
     <ClInclude Include="src\amasm\lexer.hpp" />
+    <ClInclude Include="src\amasm\parser.hpp" />
     <ClInclude Include="src\amasm\scanner.hpp" />
     <ClInclude Include="src\amasm\util.hpp" />
     <ClInclude Include="src\general.hpp" />
