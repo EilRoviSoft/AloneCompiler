@@ -20,7 +20,7 @@ namespace alone::vm {
 
 		void init_spans(class VirtualMachine& vm);
 		void init_registers() const;
-		
+
 		machine_word_t& asx() const;
 		machine_word_t& rsx() const;
 		machine_word_t& lox() const;
@@ -51,8 +51,8 @@ namespace alone::vm {
 		array_t<T> get_array(address_t address);
 
 	private:
-		std::array<std::byte, info::mframe_size> _p0;
-		std::array<array_t<std::byte>, info::dframe_size> _p1;
+		std::array<std::byte, mframe_size> _p0;
+		std::array<array_t<std::byte>, dframe_size> _p1;
 		std::unordered_map<inst_code_t, inst_func_t> _inst_set;
 	};
 }

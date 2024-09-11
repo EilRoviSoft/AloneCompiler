@@ -6,6 +6,6 @@
 #include <vector>
 #include <memory>
 
-namespace alone::amasm::info {
+namespace alone::amasm {
 	
 }

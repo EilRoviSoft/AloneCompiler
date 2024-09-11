@@ -7,7 +7,7 @@ namespace alone::amasm {
 	std::string Scanner::scan(std::ifstream& file) {
 		std::string temp, buffer;
 
-		while(!file.eof()) {
+		while (!file.eof()) {
 			std::getline(file, buffer);
 			temp += buffer + '\n';
 		}
@@ -21,14 +21,14 @@ namespace alone::amasm {
 		size_t line_start_pos = 0;
 		bool comment_flag = false;
 
-		for(size_t i = 0; i != input.size(); ++i) {
-			if(input[i] == '#') {
+		for (size_t i = 0; i != input.size(); ++i) {
+			if (input[i] == '#') {
 				comment_flag = true;
 				size_t j;
-				for(j = i; input[j - 1] == '\t' || input[j - 1] == ' '; --j);
+				for (j = i; input[j - 1] == '\t' || input[j - 1] == ' '; --j);
 				ranges.emplace_back(line_start_pos, j);
-			} else if(input[i] == '\n') {
-				if(!comment_flag && line_start_pos != i)
+			} else if (input[i] == '\n') {
+				if (!comment_flag && line_start_pos != i)
 					ranges.emplace_back(line_start_pos, i);
 				line_start_pos = i + 1;
 				comment_flag = false;
@@ -36,7 +36,7 @@ namespace alone::amasm {
 		}
 
 		result.reserve(ranges.size());
-		for(auto range : ranges)
+		for (auto range : ranges)
 			result += input.substr(range.first, range.second - range.first) + '\n';
 
 		result.shrink_to_fit();

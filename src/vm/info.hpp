@@ -11,9 +11,7 @@ namespace alone::vm {
 	using inst_code_t = uint32_t;
 	using inst_func_t = std::function<size_t(const struct context_t&)>;
 	using flags_t = std::bitset<64>;
-}
 
-namespace alone::vm::info {
 	enum class regs_set : size_t {
 		asx = 0 * sizeof(machine_word_t), //Address System register
 		rsx = 1 * sizeof(machine_word_t), //Result System register
@@ -42,7 +40,7 @@ namespace alone::vm::info {
 		memory,
 		immediate,
 		indirect,
-		indirect_with_displacement
+		indirect_with_displacement,
 	};
 
 	constexpr size_t machine_word_size = sizeof(uint64_t),

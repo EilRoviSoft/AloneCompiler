@@ -9,6 +9,6 @@
 //alone::amasm::info
 #include "amasm/info.hpp"
 
-namespace alone::amasm::util {
-
+namespace alone::amasm {
+	
 }
