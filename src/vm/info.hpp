@@ -14,7 +14,7 @@ namespace alone::vm {
 }
 
 namespace alone::vm::info {
-	enum registers {
+	enum class regs_set : size_t {
 		asx = 0 * sizeof(machine_word_t), //Address System register
 		rsx = 1 * sizeof(machine_word_t), //Result System register
 		lox = 2 * sizeof(machine_word_t), //Left Operand register
@@ -25,20 +25,20 @@ namespace alone::vm::info {
 		flags = 7 * sizeof(machine_word_t), //Flags register
 		grx = 8 * sizeof(machine_word_t), //General Registers start
 	};
-	enum flags {
+	enum class flags_set : size_t {
 		rf = 0, //is program running flag
 		zf = 1, //zero flag
 		sf = 2, //sign flag
 		cf = 3, //carry flag
 		of = 4, //overflow flag
 	};
-	enum memory_type {
+	enum class memory_type : size_t {
 		mframe, //registers + application + stack
 		dframe, //pointers
 		eframe, //external memory
 		sframe, //static memory
 	};
-	enum argument_type {
+	enum class argument_type : size_t {
 		memory,
 		immediate,
 		indirect,
@@ -48,7 +48,7 @@ namespace alone::vm::info {
 	constexpr size_t machine_word_size = sizeof(uint64_t),
 		inst_code_size = sizeof(inst_code_t),
 		registers_size = 256,
-		system_registers_size = registers_size - grx,
+		system_registers_size = registers_size - static_cast<int>(regs_set::grx),
 		general_registers_size = registers_size - system_registers_size,
 		mframe_size = 1 << 16,
 		dframe_size = 16;

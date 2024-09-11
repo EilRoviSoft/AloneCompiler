@@ -20,35 +20,35 @@ namespace alone::vm {
 	void context_t::init_registers() const {
 		ipx() = info::registers_size;
 		spx() = info::registers_size + program_size;
-		flags()[info::rf] = true;
+		flags()[static_cast<unsigned long long>(info::flags_set::rf)] = true;
 	}
 
 	machine_word_t& context_t::asx() const {
-		return reinterpret_cast<machine_word_t&>(regs[info::asx]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::asx]);
 	}
 	machine_word_t& context_t::rsx() const {
-		return reinterpret_cast<machine_word_t&>(regs[info::rsx]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::rsx]);
 	}
 	machine_word_t& context_t::lox() const {
-		return reinterpret_cast<machine_word_t&>(regs[info::lox]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::lox]);
 	}
 	machine_word_t& context_t::rox() const {
-		return reinterpret_cast<machine_word_t&>(regs[info::rox]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::rox]);
 	}
 	machine_word_t& context_t::ipx() const {
-		return reinterpret_cast<machine_word_t&>(regs[info::ipx]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::ipx]);
 	}
 	machine_word_t& context_t::spx() const {
-		return reinterpret_cast<machine_word_t&>(regs[info::spx]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::spx]);
 	}
 	machine_word_t& context_t::bpx() const {
-		return reinterpret_cast<machine_word_t&>(regs[info::bpx]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::bpx]);
 	}
 	flags_t& context_t::flags() const {
-		return reinterpret_cast<flags_t&>(regs[info::flags]);
+		return reinterpret_cast<flags_t&>(regs[(machine_word_t) info::regs_set::flags]);
 	}
 	machine_word_t& context_t::grx(uint64_t id) const {
-		return reinterpret_cast<machine_word_t&>(regs[info::grx + id * sizeof(machine_word_t)]);
+		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) info::regs_set::grx + id * sizeof(machine_word_t)]);
 	}
 
 	//VirtualMachine
@@ -70,7 +70,7 @@ namespace alone::vm {
 		ctx.init_spans(*this);
 		ctx.init_registers();
 
-		while(ctx.flags()[info::rf] && ctx.ipx() < info::registers_size + ctx.program_size) {
+		while(ctx.flags()[(size_t) info::flags_set::rf] && ctx.ipx() < info::registers_size + ctx.program_size) {
 			inst_code_t opcode = *get<inst_code_t>(ctx.ipx());
 			size_t offset = _inst_set[opcode](ctx);
 			ctx.ipx() += offset;
@@ -90,9 +90,9 @@ namespace alone::vm {
 		T* result;
 
 		auto [actual_address, mem_type] = util::decompose_address(address);
-		if(mem_type == info::mframe) {
+		if(mem_type == info::memory_type::mframe) {
 			result = reinterpret_cast<T*>(&_p0[actual_address]);
-		} else if(mem_type == info::dframe) {
+		} else if(mem_type == info::memory_type::dframe) {
 			auto [size, ptr] = _p1[actual_address];
 			result = reinterpret_cast<T*>(ptr);
 		} else
@@ -106,10 +106,10 @@ namespace alone::vm {
 
 		auto [actual_address, mem_type] = util::decompose_address(address);
 		switch(mem_type) {
-		case info::mframe:
+		case info::memory_type::mframe:
 			result = { .size = sizeof(T), .ptr = reinterpret_cast<T*>(&_p0[actual_address]) };
 			break;
-		case info::dframe:
+		case info::memory_type::dframe:
 			result = _p1[actual_address];
 			break;
 		default:
