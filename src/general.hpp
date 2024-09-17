@@ -7,7 +7,7 @@
 
 namespace alone {
 	template<typename... Ts>
-	struct overloaded : Ts... { using Ts::operator()...; };
+	struct overloaded : Ts ... { using Ts::operator()...; };
 
 	inline auto string_hasher = std::hash<std::string>();
 
@@ -16,7 +16,7 @@ namespace alone {
 	}
 	constexpr size_t gen_mask(std::initializer_list<size_t> positions) {
 		size_t result = 0;
-		for (auto it : positions)
+		for (auto it: positions)
 			result += 1ull << it;
 		return result;
 	}
@@ -27,7 +27,7 @@ namespace alone {
 		return result;
 	}
 
-	template <typename T>
+	template<typename T>
 	struct array_t {
 		size_t size;
 		T* ptr;
@@ -54,7 +54,7 @@ namespace alone {
 
 	constexpr bool check_on_property(const std::string& s, const std::function<bool(char)>& property) {
 		bool result = true;
-		for (auto c : s)
+		for (auto c: s)
 			if (!property(c)) {
 				result = false;
 				break;
