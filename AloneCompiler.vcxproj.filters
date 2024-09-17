@@ -30,6 +30,9 @@
     <ClCompile Include="src\amasm\parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\amasm\info.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\vm\virtual_machine.hpp">

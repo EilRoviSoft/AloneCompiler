@@ -27,13 +27,6 @@ namespace alone {
 		return result;
 	}
 
-	/*inline std::unordered_set<char> gen_set(char a, char b) {
-		std::unordered_set<char> result;
-		for (char i = a; i <= b; ++i)
-			result.emplace(i);
-		return result;
-	}*/
-
 	template <typename T>
 	struct array_t {
 		size_t size;

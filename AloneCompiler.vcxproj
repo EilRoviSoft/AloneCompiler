@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\amasm\info.cpp" />
     <ClCompile Include="src\amasm\lexer.cpp" />
     <ClCompile Include="src\amasm\parser.cpp" />
     <ClCompile Include="src\amasm\scanner.cpp" />

@@ -97,7 +97,7 @@ namespace alone::vm {
 			auto [size, ptr] = _p1[actual_address];
 			result = reinterpret_cast<T*>(ptr);
 		} else
-			throw(std::exception("virtual_machine.cpp, 99: This memory type doesn't exist."));
+			throw std::exception("virtual_machine.cpp: This memory type doesn't exist.");
 
 		return result;
 	}
@@ -114,7 +114,7 @@ namespace alone::vm {
 			result = _p1[actual_address];
 			break;
 		default:
-			throw(std::exception("virtual_machine.cpp, 116: This memory type doesn't exist."));
+			throw std::exception("virtual_machine.cpp: This memory type doesn't exist.");
 		}
 
 		return result;

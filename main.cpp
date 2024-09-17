@@ -14,6 +14,18 @@ using namespace alone;
 
 std::vector<std::function<int()>> tests = {
 	[]() {
+		std::vector<amasm::token_t> tokens = {
+
+		};
+		amasm::Parser::_match_rules(
+			{ "identifier", "address_with_displacement" },
+			{},
+			0
+		);
+
+		return 0;
+	},
+	[]() {
 		vm::VirtualMachine vm;
 
 		std::ifstream input_file("example.amasm");
@@ -30,10 +42,12 @@ std::vector<std::function<int()>> tests = {
 };
 
 int main() {
+	amasm::Parser::init();
+
 	int result = 0;
 	for (size_t i = 0; i != tests.size(); ++i) {
 		std::cout << "test " << i << ":\n";
-		if ((result = tests[i]()) != 0)
+		if (result = tests[i]())
 			break;
 		std::cout << '\n';
 	}
