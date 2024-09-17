@@ -1,7 +1,7 @@
 #include "virtual_machine.hpp"
 
 //std
-#include <exception>
+#include <stdexcept>
 
 //alone::vm::util
 #include "vm/util.hpp"
@@ -59,11 +59,9 @@ namespace alone::vm {
 		_p1() {
 	}
 
-	void VirtualMachine::init_isa() {
+	void VirtualMachine::init_isa() {}
 
-	}
-
-	void VirtualMachine::exec(const std::vector <std::byte>& program) {
+	void VirtualMachine::exec(const std::vector<std::byte>& program) {
 		ctx.program_size = program.size();
 		for (size_t i = 0; i != ctx.program_size; ++i)
 			_p0[i + registers_size] = program[i];
@@ -97,7 +95,7 @@ namespace alone::vm {
 			auto [size, ptr] = _p1[actual_address];
 			result = reinterpret_cast<T*>(ptr);
 		} else
-			throw std::exception("virtual_machine.cpp: This memory type doesn't exist.");
+			throw std::runtime_error("virtual_machine.cpp: This memory type doesn't exist.");
 
 		return result;
 	}
@@ -114,7 +112,7 @@ namespace alone::vm {
 			result = _p1[actual_address];
 			break;
 		default:
-			throw std::exception("virtual_machine.cpp: This memory type doesn't exist.");
+			throw std::runtime_error("virtual_machine.cpp: This memory type doesn't exist.");
 		}
 
 		return result;

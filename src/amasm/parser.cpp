@@ -2,6 +2,8 @@
 
 //std
 #include <memory>
+#include <stdexcept>
+#include <stack>
 
 //alone
 #include "general.hpp"
@@ -37,14 +39,16 @@ namespace alone::amasm {
 		rules.emplace("identifier", make_rule(token_type::identifier));
 		rules.emplace("number", make_rule(token_type::number));
 
-		rules.emplace("address_with_displacement", make_rule(std::initializer_list<std::string>{
+		rules.emplace("address_with_displacement", make_rule(std::initializer_list<std::string> {
 			"lbracket", "percent", "identifier", "or", "plus", "minus", "rbracket"
 		}));
 	}
 
-	bool Parser::_match_rules(const std::vector<std::string>& what, const std::vector<token_t>& tokens, size_t start_idx) {
+	bool
+	Parser::_match_rules(const std::vector<std::string>& what, const std::vector<token_t>& tokens, size_t start_idx) {
 		bool result = true;
 		std::vector<parse_rule_ptr> rule_container;
+		std::stack<token_t> stack;
 		size_t di = 0, dj = 0;
 		parse_rule_flag flag = parse_rule_flag::none;
 		std::function<bool(size_t i, size_t j)> compare = [&rule_container, &tokens](size_t i, size_t j) {
@@ -57,13 +61,13 @@ namespace alone::amasm {
 			} else if (rule->type == parse_rule_type::literal) {
 				result = rule->get_literal() == token.literal;
 			} else
-				throw std::exception("parser.cpp: idk how you got here...");
+				throw std::runtime_error("parser.cpp: idk how you got here...");
 
 			return result;
 		};
 
 		rule_container.reserve(what.size());
-		for (const auto& it : what)
+		for (const auto& it: what)
 			rule_container.push_back(rules[it]);
 
 		//replace all complex rules
@@ -83,7 +87,7 @@ namespace alone::amasm {
 				continue;
 			}
 
-			switch(flag) {
+			switch (flag) {
 			case parse_rule_flag::none:
 				result = compare(i, j);
 				di = dj = 1;

@@ -7,8 +7,8 @@
 #include "general.hpp"
 
 //alone::amasm::info
-#include "amasm/info.hpp"
+#include "info.hpp"
 
 namespace alone::amasm {
-	
+
 }

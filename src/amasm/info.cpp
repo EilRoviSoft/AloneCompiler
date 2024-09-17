@@ -9,11 +9,11 @@ namespace alone::amasm {
 	token_t::token_t() :
 		type(token_type::none) {
 	}
-	token_t::token_t(token_type t, char c):
+	token_t::token_t(token_type t, char c) :
 		type(t),
 		literal(1, c) {
 	}
-	token_t::token_t(token_type t, std::string s):
+	token_t::token_t(token_type t, std::string s) :
 		type(t),
 		literal(std::move(s)) {
 	}
@@ -28,7 +28,7 @@ namespace alone::amasm {
 		content(t),
 		type(parse_rule_type::singular_token) {
 	}
-	parse_rule_t::parse_rule_t(std::string s):
+	parse_rule_t::parse_rule_t(std::string s) :
 		content(std::move(s)),
 		type(parse_rule_type::literal) {
 	}
@@ -36,7 +36,7 @@ namespace alone::amasm {
 		type(parse_rule_type::sequence) {
 		std::vector<parse_rule_ptr> temp;
 		temp.reserve(str_v.size());
-		for (const auto& s : str_v)
+		for (const auto& s: str_v)
 			temp.emplace_back(rules[s]);
 		content = temp;
 	}
@@ -50,7 +50,7 @@ namespace alone::amasm {
 	const std::string& parse_rule_t::get_literal() const {
 		return std::get<std::string>(content);
 	}
-	const std::vector<parse_rule_ptr> parse_rule_t::get_seq() const {
+	const std::vector<parse_rule_ptr>& parse_rule_t::get_seq() const {
 		return std::get<std::vector<parse_rule_ptr>>(content);
 	}
 

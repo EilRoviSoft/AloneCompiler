@@ -1,7 +1,7 @@
 #include "lexer.hpp"
 
 //std
-#include <exception>
+#include <stdexcept>
 
 //alone
 #include "general.hpp"
@@ -17,7 +17,7 @@ namespace alone::amasm {
 			} else if (check_on_property(s, &is_hexadecimal)) {
 				result = token_type::number;
 			} else
-				throw std::exception("lexer.cpp: Wrong input");
+				throw std::runtime_error("lexer.cpp: Wrong input");
 			return result;
 		};
 

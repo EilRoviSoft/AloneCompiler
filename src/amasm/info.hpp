@@ -8,8 +8,6 @@
 #include <variant>
 #include <vector>
 
-#include "info.hpp"
-
 namespace alone::amasm {
 	enum class token_type : uint8_t {
 		none = 0x0,

@@ -5,9 +5,9 @@
 #include <vector>
 
 //alone::vm
-#include "amasm/lexer.hpp"
-#include "amasm/parser.hpp"
-#include "amasm/scanner.hpp"
+#include "lexer.hpp"
+#include "parser.hpp"
+#include "scanner.hpp"
 #include "vm/virtual_machine.hpp"
 
 using namespace alone;
@@ -15,7 +15,6 @@ using namespace alone;
 std::vector<std::function<int()>> tests = {
 	[]() {
 		std::vector<amasm::token_t> tokens = {
-
 		};
 		amasm::Parser::_match_rules(
 			{ "identifier", "address_with_displacement" },
@@ -28,7 +27,7 @@ std::vector<std::function<int()>> tests = {
 	[]() {
 		vm::VirtualMachine vm;
 
-		std::ifstream input_file("example.amasm");
+		std::ifstream input_file("res/example.amasm");
 		if (!input_file.is_open())
 			return -1;
 		auto scanned = amasm::Scanner::scan(input_file);
@@ -47,7 +46,7 @@ int main() {
 	int result = 0;
 	for (size_t i = 0; i != tests.size(); ++i) {
 		std::cout << "test " << i << ":\n";
-		if (result = tests[i]())
+		if ((result = tests[i]()))
 			break;
 		std::cout << '\n';
 	}

@@ -6,7 +6,7 @@
 
 namespace alone::vm::isa {
 	inline size_t halt(const context_t& ctx) {
-		ctx.flags().rf = false;
-		return info::inst_code_size;
+		ctx.flags()[flags_set::cf] = false;
+		return inst_code_size;
 	}
 }

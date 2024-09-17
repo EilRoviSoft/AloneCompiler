@@ -20,6 +20,6 @@ namespace alone::vm {
 		std::array<argument_type, 4> args;
 		for (size_t i = 0; i != 4; ++i)
 			args[i] = argument_type((instruction & gen_mask(i * 2, 1 + i * 2)) >> i * 2);
-		return {(instruction & ~gen_mask(0, 7)) >> 8,args };
+		return { (instruction & ~gen_mask(0, 7)) >> 8, args };
 	}
 }

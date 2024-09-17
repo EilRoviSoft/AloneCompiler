@@ -7,5 +7,5 @@
 #include <memory>
 
 namespace alone::amasm {
-	
+
 }
