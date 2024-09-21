@@ -28,14 +28,11 @@ namespace alone::amasm {
 		token_t(token_type t, std::string s);
 	};
 
-	using parse_rule_ptr = std::shared_ptr<struct parse_rule_t>;
-
 	enum class parse_rule_flag {
 		none = 0,
 		optional,
-		or_flag
+		variant
 	};
-
 	enum class parse_rule_type {
 		none = 0,
 		flag,
@@ -44,24 +41,22 @@ namespace alone::amasm {
 		sequence
 	};
 
+	struct parse_rule_t;
+
+	using parse_rule_ptr = std::shared_ptr<parse_rule_t>;
+
 	//TODO: multiline_code, multiple_argument dispatching, data_type and function_signature
 	struct parse_rule_t {
-		std::variant<parse_rule_flag, token_type, std::string, std::vector<parse_rule_ptr>> content;
-		parse_rule_type type;
+		std::variant<parse_rule_flag, token_type, std::string, std::vector<parse_rule_ptr>> c;
+		parse_rule_type t;
 
-		//for complex rules, wrote in reversed polish notation
-		parse_rule_t(parse_rule_flag f);
-		//for identifiers and tokens
-		parse_rule_t(token_type t);
-		//for keywords and rules
-		parse_rule_t(std::string s);
-		//for long sequences
-		parse_rule_t(const std::initializer_list<std::string>& str_v);
+		explicit parse_rule_t(parse_rule_flag ptr);
+		explicit parse_rule_t(token_type token);
+		explicit parse_rule_t(std::string str);
+		explicit parse_rule_t(const std::vector<std::string>& str_vec);
 
-		token_type get_token_type() const;
-		parse_rule_flag get_parse_rule_flag() const;
-		const std::string& get_literal() const;
-		const std::vector<parse_rule_ptr>& get_seq() const;
+		template<typename T>
+		const T& get();
 	};
 
 	using token_array_t = std::vector<token_t>;

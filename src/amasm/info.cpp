@@ -20,39 +20,34 @@ namespace alone::amasm {
 
 	//parse_rule_t
 
-	parse_rule_t::parse_rule_t(parse_rule_flag f) :
-		content(f),
-		type(parse_rule_type::flag) {
-	}
-	parse_rule_t::parse_rule_t(token_type t) :
-		content(t),
-		type(parse_rule_type::singular_token) {
-	}
-	parse_rule_t::parse_rule_t(std::string s) :
-		content(std::move(s)),
-		type(parse_rule_type::literal) {
-	}
-	parse_rule_t::parse_rule_t(const std::initializer_list<std::string>& str_v) :
-		type(parse_rule_type::sequence) {
-		std::vector<parse_rule_ptr> temp;
-		temp.reserve(str_v.size());
-		for (const auto& s: str_v)
-			temp.emplace_back(rules[s]);
-		content = temp;
-	}
-
-	token_type parse_rule_t::get_token_type() const {
-		return std::get<token_type>(content);
-	}
-	parse_rule_flag parse_rule_t::get_parse_rule_flag() const {
-		return std::get<parse_rule_flag>(content);
-	}
-	const std::string& parse_rule_t::get_literal() const {
-		return std::get<std::string>(content);
-	}
-	const std::vector<parse_rule_ptr>& parse_rule_t::get_seq() const {
-		return std::get<std::vector<parse_rule_ptr>>(content);
-	}
-
 	std::unordered_map<std::string, parse_rule_ptr> rules;
+
+	parse_rule_t::parse_rule_t(parse_rule_flag flag) :
+		c(flag),
+		t(parse_rule_type::flag) {
+		if (flag != parse_rule_flag::optional)
+			throw std::runtime_error("info.hpp: Wrong parse_rule_t flag.");
+	}
+	parse_rule_t::parse_rule_t(token_type token) :
+		c(token),
+		t(parse_rule_type::singular_token) {
+	}
+	parse_rule_t::parse_rule_t(std::string str) :
+		c(str),
+		t(parse_rule_type::literal) {
+	}
+	parse_rule_t::parse_rule_t(const std::vector<std::string>& str_vec) :
+		t(parse_rule_type::sequence) {
+		std::vector<parse_rule_ptr> on_place;
+		on_place.reserve(str_vec.size());
+		for (const auto& it: str_vec)
+			on_place.push_back(rules[it]);
+		c = on_place;
+	}
+
+	template<typename T>
+	const T& parse_rule_t::get() {
+		return std::get<const T&>(c);
+	}
+
 }

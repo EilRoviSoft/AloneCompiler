@@ -54,21 +54,18 @@ namespace alone {
 
 	constexpr bool check_on_property(const std::string& s, const std::function<bool(char)>& property) {
 		bool result = true;
-		for (auto c: s)
-			if (!property(c)) {
+		for (size_t i = 0; i != s.size() && result; ++i) {
+			if (!property(s[i]))
 				result = false;
-				break;
-			}
+		}
 		return result;
 	}
 
 	inline std::string gen_str(char a, char b) {
 		std::string result;
-
 		result.resize(b - a + 1);
 		for (char i = a; i <= b; ++i)
 			result[i - a] = i;
-
 		return result;
 	}
 }

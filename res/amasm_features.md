@@ -54,7 +54,8 @@ mov32 %lox, %rox
 ```
 This can be read as "moves contents of %rox register to %lox register"
 ## Simple operands
-Doesn't require any operands other than instruction's name
+
+Doesn'flag require any operands other than instruction's name
 ```
 mov32 %lox, 2
 mov32 %rox, 3

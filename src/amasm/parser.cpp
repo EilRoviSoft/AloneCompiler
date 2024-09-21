@@ -3,7 +3,7 @@
 //std
 #include <memory>
 #include <stdexcept>
-#include <stack>
+//#include <stack>
 
 //alone
 #include "general.hpp"
@@ -17,7 +17,7 @@ namespace alone::amasm {
 
 	void Parser::_init_basic_rules() {
 		rules.emplace("optional", make_rule(parse_rule_flag::optional));
-		rules.emplace("or", make_rule(parse_rule_flag::or_flag));
+		rules.emplace("or", make_rule(parse_rule_flag::variant));
 		rules.emplace("lparen", make_rule(token_type::lparen));
 		rules.emplace("rparen", make_rule(token_type::rparen));
 		rules.emplace("lbracket", make_rule(token_type::lbracket));
@@ -48,21 +48,18 @@ namespace alone::amasm {
 	Parser::_match_rules(const std::vector<std::string>& what, const std::vector<token_t>& tokens, size_t start_idx) {
 		bool result = true;
 		std::vector<parse_rule_ptr> rule_container;
-		std::stack<token_t> stack;
-		size_t di = 0, dj = 0;
+		size_t di = 0, dj = 0, diff = 0;
 		parse_rule_flag flag = parse_rule_flag::none;
 		std::function<bool(size_t i, size_t j)> compare = [&rule_container, &tokens](size_t i, size_t j) {
 			bool result;
-			const auto& rule = rule_container[i];
-			const auto& token = tokens[j];
-
-			if (rule->type == parse_rule_type::singular_token) {
-				result = rule->get_token_type() == token.type;
-			} else if (rule->type == parse_rule_type::literal) {
-				result = rule->get_literal() == token.literal;
+			if (rule_container[i]->t == parse_rule_type::singular_token) {
+				auto temp = rule_container[i]->get<token_type>();
+				result = temp == tokens[j].type;
+			} else if (rule_container[i]->t == parse_rule_type::literal) {
+				auto temp = rule_container[i]->get<std::string>();
+				result = temp == tokens[j].literal;
 			} else
 				throw std::runtime_error("parser.cpp: idk how you got here...");
-
 			return result;
 		};
 
@@ -72,8 +69,8 @@ namespace alone::amasm {
 
 		//replace all complex rules
 		for (size_t i = 0; i != rule_container.size(); ++i) {
-			if (rule_container[i]->type == parse_rule_type::sequence) {
-				auto seq = rule_container[i]->get_seq();
+			if (rule_container[i]->t == parse_rule_type::sequence) {
+				auto seq = rule_container[i]->get < std::vector < parse_rule_ptr >> ();
 				rule_container.insert(rule_container.begin() + i, seq.begin(), seq.end());
 				rule_container.erase(rule_container.begin() + i + seq.size());
 			}
@@ -81,8 +78,8 @@ namespace alone::amasm {
 
 		//directly matching
 		for (size_t i = 0, j = start_idx; i != rule_container.size() && result; i += di, j += dj, di = 0, dj = 0) {
-			if (rule_container[i]->type == parse_rule_type::flag) {
-				flag = rule_container[i]->get_parse_rule_flag();
+			if (rule_container[i]->t == parse_rule_type::flag) {
+				flag = rule_container[i]->get<parse_rule_flag>();
 				di = 1;
 				continue;
 			}
@@ -95,7 +92,7 @@ namespace alone::amasm {
 			case parse_rule_flag::optional:
 				di = dj = compare(i, j);
 				break;
-			case parse_rule_flag::or_flag:
+			case parse_rule_flag::variant:
 				result = compare(i, j) || compare(i + 1, j + 1);
 				di = dj = 2;
 				break;

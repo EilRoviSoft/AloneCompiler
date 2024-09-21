@@ -9,8 +9,6 @@
 #include "info.hpp"
 
 namespace alone::amasm {
-	using match_result = std::tuple<bool, ptrdiff_t, parse_rule_flag>;
-
 	class Parser {
 	public:
 		static bool init();
