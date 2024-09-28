@@ -15,6 +15,12 @@ namespace alone::amasm {
 		return scan(temp);
 	}
 
+	std::string Scanner::scan(std::istream& stream, size_t size) {
+		std::string temp;
+		stream.read(temp.data(), size);
+		return temp;
+	}
+
 	std::string Scanner::scan(const std::string& input) {
 		std::string result;
 		std::vector<std::pair<size_t, size_t>> ranges;

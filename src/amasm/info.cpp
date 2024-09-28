@@ -1,5 +1,8 @@
 #include "info.hpp"
 
+//std
+#include <stdexcept>
+
 //alone
 #include "general.hpp"
 
@@ -9,13 +12,18 @@ namespace alone::amasm {
 	token_t::token_t() :
 		type(token_type::none) {
 	}
-	token_t::token_t(token_type t, char c) :
-		type(t),
+	token_t::token_t(char c) :
+		type((token_type) c),
 		literal(1, c) {
 	}
-	token_t::token_t(token_type t, std::string s) :
-		type(t),
+	token_t::token_t(std::string s) :
 		literal(std::move(s)) {
+		if (is_alpha(literal[0]) && check_on_property(literal.substr(1), &is_alpha_numeric)) {
+			type = token_type::identifier;
+		} else if (check_on_property(literal, &is_hexadecimal)) {
+			type = token_type::number;
+		} else
+			throw std::runtime_error("lexer.cpp: Wrong input");
 	}
 
 	//parse_rule_t
@@ -25,8 +33,6 @@ namespace alone::amasm {
 	parse_rule_t::parse_rule_t(parse_rule_flag flag) :
 		c(flag),
 		t(parse_rule_type::flag) {
-		if (flag != parse_rule_flag::optional)
-			throw std::runtime_error("info.hpp: Wrong parse_rule_t flag.");
 	}
 	parse_rule_t::parse_rule_t(token_type token) :
 		c(token),
@@ -45,9 +51,16 @@ namespace alone::amasm {
 		c = on_place;
 	}
 
-	template<typename T>
-	const T& parse_rule_t::get() {
-		return std::get<const T&>(c);
+	const parse_rule_flag& parse_rule_t::get_flag() {
+		return std::get<parse_rule_flag>(c);
 	}
-
+	const token_type& parse_rule_t::get_token() {
+		return std::get<token_type>(c);
+	}
+	const std::string& parse_rule_t::get_literal() {
+		return std::get<std::string>(c);
+	}
+	const std::vector<parse_rule_ptr>& parse_rule_t::get_sequence() {
+		return std::get<std::vector<parse_rule_ptr>>(c);
+	}
 }

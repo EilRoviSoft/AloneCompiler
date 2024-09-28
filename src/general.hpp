@@ -52,10 +52,10 @@ namespace alone {
 		return c == ' ' || c == '\n' || c == '\t';
 	}
 
-	constexpr bool check_on_property(const std::string& s, const std::function<bool(char)>& property) {
+	constexpr bool check_on_property(const std::string& s, const std::function<bool(char)>& p) {
 		bool result = true;
 		for (size_t i = 0; i != s.size() && result; ++i) {
-			if (!property(s[i]))
+			if (!p(s[i]))
 				result = false;
 		}
 		return result;

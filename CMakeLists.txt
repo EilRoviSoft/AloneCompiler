@@ -29,6 +29,8 @@ add_executable(AloneCompiler
         src/amasm/info.hpp
         src/amasm/info.cpp)
 
+add_compile_definitions(DEBUG_STATUS)
+
 target_include_directories(AloneCompiler PRIVATE
         src
         src/amasm

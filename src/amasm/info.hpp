@@ -24,8 +24,8 @@ namespace alone::amasm {
 		std::string literal;
 
 		token_t();
-		token_t(token_type t, char c);
-		token_t(token_type t, std::string s);
+		explicit token_t(char c);
+		explicit token_t(std::string s);
 	};
 
 	enum class parse_rule_flag {
@@ -55,8 +55,10 @@ namespace alone::amasm {
 		explicit parse_rule_t(std::string str);
 		explicit parse_rule_t(const std::vector<std::string>& str_vec);
 
-		template<typename T>
-		const T& get();
+		const parse_rule_flag& get_flag();
+		const token_type& get_token();
+		const std::string& get_literal();
+		const std::vector<parse_rule_ptr>& get_sequence();
 	};
 
 	using token_array_t = std::vector<token_t>;

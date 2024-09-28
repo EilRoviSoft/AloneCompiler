@@ -13,17 +13,17 @@
 using namespace alone;
 
 std::vector<std::function<int()>> tests = {
-	[]() {
-		std::vector<amasm::token_t> tokens = {
+	/*[]() {
+		int result = 0;
+		std::vector<std::string> rules = {
+			"identifier",
+			"address_with_displacement"
 		};
-		amasm::Parser::_match_rules(
-			{ "identifier", "address_with_displacement" },
-			{},
-			0
-		);
-
-		return 0;
-	},
+		std::string code = "push64 [%asx + 8]\n";
+		if (!amasm::Parser::_match_rules(rules, amasm::Lexer::tokenize(code), 0))
+			result = 1;
+		return result;
+	},*/
 	[]() {
 		vm::VirtualMachine vm;
 

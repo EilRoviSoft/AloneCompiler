@@ -44,8 +44,7 @@ namespace alone::amasm {
 		}));
 	}
 
-	bool
-	Parser::_match_rules(const std::vector<std::string>& what, const std::vector<token_t>& tokens, size_t start_idx) {
+	bool Parser::_match_rules(const std::vector<std::string>& guide, const std::vector<token_t>& tokens, size_t start_idx) {
 		bool result = true;
 		std::vector<parse_rule_ptr> rule_container;
 		size_t di = 0, dj = 0, diff = 0;
@@ -53,24 +52,24 @@ namespace alone::amasm {
 		std::function<bool(size_t i, size_t j)> compare = [&rule_container, &tokens](size_t i, size_t j) {
 			bool result;
 			if (rule_container[i]->t == parse_rule_type::singular_token) {
-				auto temp = rule_container[i]->get<token_type>();
+				auto temp = rule_container[i]->get_token();
 				result = temp == tokens[j].type;
 			} else if (rule_container[i]->t == parse_rule_type::literal) {
-				auto temp = rule_container[i]->get<std::string>();
+				auto temp = rule_container[i]->get_literal();
 				result = temp == tokens[j].literal;
 			} else
 				throw std::runtime_error("parser.cpp: idk how you got here...");
 			return result;
 		};
 
-		rule_container.reserve(what.size());
-		for (const auto& it: what)
+		rule_container.reserve(guide.size());
+		for (const auto& it: guide)
 			rule_container.push_back(rules[it]);
 
 		//replace all complex rules
 		for (size_t i = 0; i != rule_container.size(); ++i) {
 			if (rule_container[i]->t == parse_rule_type::sequence) {
-				auto seq = rule_container[i]->get < std::vector < parse_rule_ptr >> ();
+				auto seq = rule_container[i]->get_sequence();
 				rule_container.insert(rule_container.begin() + i, seq.begin(), seq.end());
 				rule_container.erase(rule_container.begin() + i + seq.size());
 			}
@@ -79,7 +78,7 @@ namespace alone::amasm {
 		//directly matching
 		for (size_t i = 0, j = start_idx; i != rule_container.size() && result; i += di, j += dj, di = 0, dj = 0) {
 			if (rule_container[i]->t == parse_rule_type::flag) {
-				flag = rule_container[i]->get<parse_rule_flag>();
+				flag = rule_container[i]->get_flag();
 				di = 1;
 				continue;
 			}
@@ -93,7 +92,7 @@ namespace alone::amasm {
 				di = dj = compare(i, j);
 				break;
 			case parse_rule_flag::variant:
-				result = compare(i, j) || compare(i + 1, j + 1);
+				result = compare(i, j) || compare(i + 1, j);
 				di = dj = 2;
 				break;
 			}
