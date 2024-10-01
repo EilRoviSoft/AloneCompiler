@@ -3,103 +3,71 @@
 //std
 #include <memory>
 #include <stdexcept>
-//#include <stack>
-
-//alone
-#include "general.hpp"
+#include <stack>
 
 namespace alone::amasm {
-	bool Parser::init() {
-		_init_basic_rules();
+	//sizes is more than 1, if it is variant
+	struct flag_stack_cell {
+		parse_rule_flag f;
+		std::vector<size_t> s;
 
-		return true;
-	}
+		flag_stack_cell(parse_rule_flag flag, size_t size) :
+			f(flag) {
+			s.reserve(size);
+		}
+	};
 
-	void Parser::_init_basic_rules() {
-		rules.emplace("optional", make_rule(parse_rule_flag::optional));
-		rules.emplace("or", make_rule(parse_rule_flag::variant));
-		rules.emplace("lparen", make_rule(token_type::lparen));
-		rules.emplace("rparen", make_rule(token_type::rparen));
-		rules.emplace("lbracket", make_rule(token_type::lbracket));
-		rules.emplace("rbracket", make_rule(token_type::rbracket));
-		rules.emplace("lbrace", make_rule(token_type::lbrace));
-		rules.emplace("rbrace", make_rule(token_type::rbrace));
-		rules.emplace("dot", make_rule(token_type::dot));
-		rules.emplace("comma", make_rule(token_type::comma));
-		rules.emplace("colon", make_rule(token_type::colon));
-		rules.emplace("semicolon", make_rule(token_type::semicolon));
-		rules.emplace("at", make_rule(token_type::at));
-		rules.emplace("dollar", make_rule(token_type::dollar));
-		rules.emplace("percent", make_rule(token_type::percent));
-		rules.emplace("quote", make_rule(token_type::quote));
-		rules.emplace("plus", make_rule(token_type::plus));
-		rules.emplace("minus", make_rule(token_type::minus));
-		rules.emplace("star", make_rule(token_type::star));
-		rules.emplace("slash", make_rule(token_type::slash));
-		rules.emplace("identifier", make_rule(token_type::identifier));
-		rules.emplace("number", make_rule(token_type::number));
-
-		rules.emplace("address_with_displacement", make_rule(std::initializer_list<std::string> {
-			"lbracket", "percent", "identifier", "or", "plus", "minus", "rbracket"
-		}));
-	}
-
-	bool Parser::_match_rules(const std::vector<std::string>& guide, const std::vector<token_t>& tokens, size_t start_idx) {
+	//TODO: WIP
+	bool Parser::match_rules(const std::vector<std::string>& guide, const std::vector<token_t>& tokens, size_t start_idx) {
 		bool result = true;
-		std::vector<parse_rule_ptr> rule_container;
-		size_t di = 0, dj = 0, diff = 0;
-		parse_rule_flag flag = parse_rule_flag::none;
-		std::function<bool(size_t i, size_t j)> compare = [&rule_container, &tokens](size_t i, size_t j) {
-			bool result;
-			if (rule_container[i]->t == parse_rule_type::singular_token) {
-				auto temp = rule_container[i]->get_token();
-				result = temp == tokens[j].type;
-			} else if (rule_container[i]->t == parse_rule_type::literal) {
-				auto temp = rule_container[i]->get_literal();
-				result = temp == tokens[j].literal;
-			} else
-				throw std::runtime_error("parser.cpp: idk how you got here...");
-			return result;
-		};
+		Stack<parse_rule_ptr> main_stack;
+		Stack<flag_stack_cell> flags_stack;
 
-		rule_container.reserve(guide.size());
-		for (const auto& it: guide)
-			rule_container.push_back(rules[it]);
-
-		//replace all complex rules
-		for (size_t i = 0; i != rule_container.size(); ++i) {
-			if (rule_container[i]->t == parse_rule_type::sequence) {
-				auto seq = rule_container[i]->get_sequence();
-				rule_container.insert(rule_container.begin() + i, seq.begin(), seq.end());
-				rule_container.erase(rule_container.begin() + i + seq.size());
-			}
+		for (const auto& str: guide | std::views::reverse) {
+			parse_rule_ptr on_push;
+			if (check_type(str) == literal_type::word)
+				on_push = rules_collection[str];
+			else
+				on_push = make_rule(std::stoull(str, nullptr, 10));
+			main_stack.push(on_push);
 		}
 
-		//directly matching
-		for (size_t i = 0, j = start_idx; i != rule_container.size() && result; i += di, j += dj, di = 0, dj = 0) {
-			if (rule_container[i]->t == parse_rule_type::flag) {
-				flag = rule_container[i]->get_flag();
-				di = 1;
+		for (size_t i = start_idx, di = 0; result && !main_stack.is_empty(); i += di, di = 0) {
+			if (main_stack.top()->type == parse_rule_type::flag) {
+				auto arg0 = main_stack.pop();
+				auto arg1 = main_stack.pop();
+				flag_stack_cell on_push(arg0->get_flag(), arg1->get_number());
+				for (size_t j = 0; j != on_push.s.capacity(); ++j)
+					on_push.s.push_back(parse_rule_t::get_length(main_stack.get(j)));
+				flags_stack.push(std::move(on_push));
 				continue;
+			} else if (main_stack.top()->type == parse_rule_type::sequence) {
+				auto seq = main_stack.pop()->get_sequence();
+				for (const auto& it: seq | std::views::reverse)
+					main_stack.push(it);
+			} else {
+				result &= _check_simple_rule(main_stack.pop(), tokens[i]);
+				di = 1;
 			}
-
-			switch (flag) {
-			case parse_rule_flag::none:
-				result = compare(i, j);
-				di = dj = 1;
-				break;
-			case parse_rule_flag::optional:
-				di = dj = compare(i, j);
-				break;
-			case parse_rule_flag::variant:
-				result = compare(i, j) || compare(i + 1, j);
-				di = dj = 2;
-				break;
-			}
-
-			flag = parse_rule_flag::none;
 		}
 
+		return result;
+	}
+	bool Parser::_check_simple_rule(const parse_rule_ptr& rule, const token_t& token) {
+		bool result;
+		switch (rule->type) {
+		case parse_rule_type::singular_token:
+			result = rule->get_token() == token.type;
+			break;
+		case parse_rule_type::literal:
+			result = rule->get_literal() == token.literal;
+			break;
+		case parse_rule_type::number:
+			result = rule->get_number() == std::stoull(token.literal);
+			break;
+		default:
+			throw std::runtime_error("parser.cpp: Wrong parse_rule_type");
+		}
 		return result;
 	}
 }

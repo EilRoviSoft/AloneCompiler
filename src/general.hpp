@@ -2,8 +2,10 @@
 
 //std
 #include <functional>
+#include <vector>
 #include <string>
 #include <unordered_set>
+#include <stdexcept>
 
 namespace alone {
 	template<typename... Ts>
@@ -27,12 +29,6 @@ namespace alone {
 		return result;
 	}
 
-	template<typename T>
-	struct array_t {
-		size_t size;
-		T* ptr;
-	};
-
 	constexpr bool is_alpha(char c) {
 		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
 	}
@@ -52,12 +48,58 @@ namespace alone {
 		return c == ' ' || c == '\n' || c == '\t';
 	}
 
-	constexpr bool check_on_property(const std::string& s, const std::function<bool(char)>& p) {
-		bool result = true;
-		for (size_t i = 0; i != s.size() && result; ++i) {
-			if (!p(s[i]))
-				result = false;
-		}
+	enum class literal_type {
+		none = 0,
+		word,
+		binary, decimal, hexadecimal, floating
+	};
+
+	inline literal_type check_type(const std::string& l) {
+		literal_type result;
+
+		if (is_alpha(l.front())) {
+			for (auto c: l.substr(1)) {
+				if (!is_alpha_numeric(c))
+					throw std::runtime_error("general.hpp: Wrong word definition");
+			}
+			result = literal_type::word;
+		} else if (is_numeric(l.front())) {
+			if (l.contains('.')) {
+				size_t i = 1;
+				while (l[i] != '.') {
+					if (!is_numeric(l[i]))
+						throw std::runtime_error("general.hpp: Wrong floating definition");
+					++i;
+				}
+				++i;
+				while (i != l.size()) {
+					if (!is_numeric(l[i]))
+						throw std::runtime_error("general.hpp: Wrong floating definition after '.'");
+					++i;
+				}
+				result = literal_type::floating;
+			} else if (l.starts_with("0b")) {
+				for (auto c: l.substr(2)) {
+					if (c != '0' && c != '1')
+						throw std::runtime_error("general.hpp: Wrong binary definition");
+				}
+				result = literal_type::binary;
+			} else if (l.starts_with("0x")) {
+				for (auto c: l.substr(2)) {
+					if (!is_hexadecimal(c))
+						throw std::runtime_error("general.hpp: Wrong hex definition");
+				}
+				result = literal_type::hexadecimal;
+			} else {
+				for (auto c: l) {
+					if (!is_numeric(c))
+						throw std::runtime_error("general.hpp: Wrong decimal definition");
+				}
+				result = literal_type::decimal;
+			}
+		} else
+			result = literal_type::none;
+
 		return result;
 	}
 
@@ -68,4 +110,40 @@ namespace alone {
 			result[i - a] = i;
 		return result;
 	}
+
+	template<typename _T>
+	struct array_t {
+		size_t size;
+		_T* ptr;
+	};
+
+	template<typename _T>
+	class Stack {
+	public:
+		void push(const _T& what) { _content.push_back(what); }
+		void push(_T&& what) { _content.push_back(std::move(what)); }
+
+		template<typename... _TArgs>
+		void emplace(_TArgs... args) {
+			_content.emplace_back(args...);
+		}
+
+		_T& top() { return _content.back(); }
+		const _T& top() const { return _content.back(); }
+
+		_T&& pop() {
+			_T&& on_remove = std::move(_content.back());
+			_content.pop_back();
+			return std::move(on_remove);
+		}
+
+		const _T& get(size_t offset_from_top) const {
+			return _content[_content.size() - offset_from_top - 1];
+		}
+
+		[[nodiscard]]
+		bool is_empty() const { return _content.empty(); }
+	private:
+		std::vector<_T> _content;
+	};
 }

@@ -13,17 +13,18 @@
 using namespace alone;
 
 std::vector<std::function<int()>> tests = {
-	/*[]() {
-		int result = 0;
-		std::vector<std::string> rules = {
-			"identifier",
+	[]() {
+		std::vector<std::string> guide = {
 			"address_with_displacement"
 		};
-		std::string code = "push64 [%asx + 8]\n";
-		if (!amasm::Parser::_match_rules(rules, amasm::Lexer::tokenize(code), 0))
-			result = 1;
-		return result;
-	},*/
+		std::string code = "[%asx - 4]";
+
+		return amasm::Parser::match_rules(
+			guide,
+			amasm::Lexer::tokenize(code),
+			0
+		);
+	},
 	[]() {
 		vm::VirtualMachine vm;
 
@@ -41,7 +42,7 @@ std::vector<std::function<int()>> tests = {
 };
 
 int main() {
-	amasm::Parser::init();
+	amasm::init_consts();
 
 	int result = 0;
 	for (size_t i = 0; i != tests.size(); ++i) {
