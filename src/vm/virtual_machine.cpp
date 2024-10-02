@@ -2,6 +2,7 @@
 
 //std
 #include <stdexcept>
+#include <ranges>
 
 //alone::vm::util
 #include "vm/util.hpp"

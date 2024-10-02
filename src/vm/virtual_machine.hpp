@@ -21,14 +21,23 @@ namespace alone::vm {
 		void init_spans(class VirtualMachine& vm);
 		void init_registers() const;
 
+		[[nodiscard]]
 		machine_word_t& asx() const;
+		[[nodiscard]]
 		machine_word_t& rsx() const;
+		[[nodiscard]]
 		machine_word_t& lox() const;
+		[[nodiscard]]
 		machine_word_t& rox() const;
+		[[nodiscard]]
 		machine_word_t& ipx() const;
+		[[nodiscard]]
 		machine_word_t& spx() const;
+		[[nodiscard]]
 		machine_word_t& bpx() const;
+		[[nodiscard]]
 		flags_t& flags() const;
+		[[nodiscard]]
 		machine_word_t& grx(uint64_t id) const;
 	};
 

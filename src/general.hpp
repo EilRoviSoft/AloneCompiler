@@ -18,7 +18,7 @@ namespace alone {
 	}
 	constexpr size_t gen_mask(std::initializer_list<size_t> positions) {
 		size_t result = 0;
-		for (auto it: positions)
+		for (auto it : positions)
 			result += 1ull << it;
 		return result;
 	}
@@ -58,40 +58,37 @@ namespace alone {
 		literal_type result;
 
 		if (is_alpha(l.front())) {
-			for (auto c: l.substr(1)) {
+			for (auto c : l | std::views::drop(1)) {
 				if (!is_alpha_numeric(c))
 					throw std::runtime_error("general.hpp: Wrong word definition");
 			}
 			result = literal_type::word;
 		} else if (is_numeric(l.front())) {
 			if (l.contains('.')) {
-				size_t i = 1;
-				while (l[i] != '.') {
+				size_t i;
+				for (i = 1; l[i] != '.'; ++i) {
 					if (!is_numeric(l[i]))
 						throw std::runtime_error("general.hpp: Wrong floating definition");
-					++i;
 				}
-				++i;
-				while (i != l.size()) {
+				for (++i; i != l.size(); ++i) {
 					if (!is_numeric(l[i]))
 						throw std::runtime_error("general.hpp: Wrong floating definition after '.'");
-					++i;
 				}
 				result = literal_type::floating;
 			} else if (l.starts_with("0b")) {
-				for (auto c: l.substr(2)) {
+				for (auto c : l | std::views::drop(2)) {
 					if (c != '0' && c != '1')
 						throw std::runtime_error("general.hpp: Wrong binary definition");
 				}
 				result = literal_type::binary;
 			} else if (l.starts_with("0x")) {
-				for (auto c: l.substr(2)) {
+				for (auto c : l | std::views::drop(2)) {
 					if (!is_hexadecimal(c))
 						throw std::runtime_error("general.hpp: Wrong hex definition");
 				}
 				result = literal_type::hexadecimal;
 			} else {
-				for (auto c: l) {
+				for (auto c : l) {
 					if (!is_numeric(c))
 						throw std::runtime_error("general.hpp: Wrong decimal definition");
 				}
@@ -106,7 +103,7 @@ namespace alone {
 	inline std::string gen_str(char a, char b) {
 		std::string result;
 		result.resize(b - a + 1);
-		for (char i = a; i <= b; ++i)
+		for (char i : std::views::iota(a, b))
 			result[i - a] = i;
 		return result;
 	}
@@ -115,35 +112,5 @@ namespace alone {
 	struct array_t {
 		size_t size;
 		_T* ptr;
-	};
-
-	template<typename _T>
-	class Stack {
-	public:
-		void push(const _T& what) { _content.push_back(what); }
-		void push(_T&& what) { _content.push_back(std::move(what)); }
-
-		template<typename... _TArgs>
-		void emplace(_TArgs... args) {
-			_content.emplace_back(args...);
-		}
-
-		_T& top() { return _content.back(); }
-		const _T& top() const { return _content.back(); }
-
-		_T&& pop() {
-			_T&& on_remove = std::move(_content.back());
-			_content.pop_back();
-			return std::move(on_remove);
-		}
-
-		const _T& get(size_t offset_from_top) const {
-			return _content[_content.size() - offset_from_top - 1];
-		}
-
-		[[nodiscard]]
-		bool is_empty() const { return _content.empty(); }
-	private:
-		std::vector<_T> _content;
 	};
 }

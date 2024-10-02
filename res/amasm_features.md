@@ -8,8 +8,8 @@
 * [Variables, constants and registers](#variables-constants-and-registers)
 * [Comments](#comments)
 * [Addressing modes](#addressing-modes)
-  * [Direct operands](#direct-operands)
-  * [Simple operands](#simple-operands)
+    * [Direct operands](#direct-operands)
+    * [Simple operands](#simple-operands)
 * [Labels and branches](#labels-and-branches)
 * [Functions](#functions)
 * [Struct](#struct)
@@ -93,7 +93,7 @@ This can be read as "moves contents of %rox register to %lox register"
 
 ## Simple operands
 
-Doesn'type require any operands other than instruction's name
+Doesn'type require any operands other than instruction'sizes name
 
 ```asm
 mov32 %lox, 2;
@@ -138,11 +138,11 @@ struct some_t {	                # you can define rules_collection for struct ali
 }
 
 func @main() {
-    var %s, some_t, [%spx];
-    mov64 %s.a, 10;
-    mov32 %s.b, 20;
-    push64 %s.a;
-    push32 %s.b;
+    var %sizes, some_t, [%spx];
+    mov64 %sizes.a, 10;
+    mov32 %sizes.b, 20;
+    push64 %sizes.a;
+    push32 %sizes.b;
     call @add6432(int64, int32); # pascal-call automatically cleares stack from arguments
     ncall @print64u;	         # if you want to create custom functions from C++, make wraper for it
 }

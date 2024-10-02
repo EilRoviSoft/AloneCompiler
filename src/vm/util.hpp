@@ -2,6 +2,7 @@
 
 //std
 #include <tuple>
+#include <ranges>
 
 //alone::general
 #include "general.hpp"
@@ -17,8 +18,8 @@ namespace alone::vm {
 		};
 	}
 	inline std::tuple<inst_code_t, std::array<argument_type, 4>> decompose_instruction(inst_code_t instruction) {
-		std::array<argument_type, 4> args;
-		for (size_t i = 0; i != 4; ++i)
+		std::array<argument_type, 4> args = {};
+		for (size_t i : std::views::iota(0, 4))
 			args[i] = argument_type((instruction & gen_mask(i * 2, 1 + i * 2)) >> i * 2);
 		return { (instruction & ~gen_mask(0, 7)) >> 8, args };
 	}

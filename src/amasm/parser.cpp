@@ -8,45 +8,55 @@
 namespace alone::amasm {
 	//sizes is more than 1, if it is variant
 	struct flag_stack_cell {
-		parse_rule_flag f;
-		std::vector<size_t> s;
+		parse_rule_flag flag;
+		std::vector<size_t> sizes;
 
-		flag_stack_cell(parse_rule_flag flag, size_t size) :
-			f(flag) {
-			s.reserve(size);
+		flag_stack_cell(parse_rule_flag f, size_t ns) :
+			flag(f) {
+			sizes.reserve(ns);
 		}
 	};
 
 	//TODO: WIP
 	bool Parser::match_rules(const std::vector<std::string>& guide, const std::vector<token_t>& tokens, size_t start_idx) {
 		bool result = true;
-		Stack<parse_rule_ptr> main_stack;
-		Stack<flag_stack_cell> flags_stack;
+		std::stack<parse_rule_ptr> main;
+		std::stack<flag_stack_cell> flags;
+		std::function pop_from_stack = [&main]() {
+			parse_rule_ptr result = main.top();
+			main.pop();
+			return result;
+		};
 
-		for (const auto& str: guide | std::views::reverse) {
+		for (const auto& str : guide | std::views::reverse) {
 			parse_rule_ptr on_push;
 			if (check_type(str) == literal_type::word)
 				on_push = rules_collection[str];
 			else
 				on_push = make_rule(std::stoull(str, nullptr, 10));
-			main_stack.push(on_push);
+			main.push(on_push);
 		}
 
-		for (size_t i = start_idx, di = 0; result && !main_stack.is_empty(); i += di, di = 0) {
-			if (main_stack.top()->type == parse_rule_type::flag) {
-				auto arg0 = main_stack.pop();
-				auto arg1 = main_stack.pop();
+		for (size_t i = start_idx, di = 0; result && !main.empty(); i += di, di = 0) {
+			if (main.top()->type == parse_rule_type::flag) {
+				auto arg0 = pop_from_stack();
+				auto arg1 = pop_from_stack();
 				flag_stack_cell on_push(arg0->get_flag(), arg1->get_number());
-				for (size_t j = 0; j != on_push.s.capacity(); ++j)
-					on_push.s.push_back(parse_rule_t::get_length(main_stack.get(j)));
-				flags_stack.push(std::move(on_push));
+				flags.push(std::move(on_push));
 				continue;
-			} else if (main_stack.top()->type == parse_rule_type::sequence) {
-				auto seq = main_stack.pop()->get_sequence();
-				for (const auto& it: seq | std::views::reverse)
-					main_stack.push(it);
+			}
+
+			auto elem = pop_from_stack();
+			/*switch (flags.top().flag) {
+			case parse_rule_flag::variant:
+			}*/
+
+			if (main.top()->type == parse_rule_type::sequence) {
+				auto seq = elem->get_sequence();
+				for (const auto& it : seq | std::views::reverse)
+					main.push(it);
 			} else {
-				result &= _check_simple_rule(main_stack.pop(), tokens[i]);
+				result &= _check_simple_rule(elem, tokens[i]);
 				di = 1;
 			}
 		}

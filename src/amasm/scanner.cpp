@@ -2,23 +2,16 @@
 
 //std
 #include <vector>
+#include <ranges>
 
 namespace alone::amasm {
-	std::string Scanner::scan(std::ifstream& file) {
+	std::string Scanner::scan(std::istream& file) {
 		std::string temp, buffer;
 
-		while (!file.eof()) {
-			std::getline(file, buffer);
+		for (auto line : std::views::istream<std::string>(file))
 			temp += buffer + '\n';
-		}
 
 		return scan(temp);
-	}
-
-	std::string Scanner::scan(std::istream& stream, size_t size) {
-		std::string temp;
-		stream.read(temp.data(), size);
-		return temp;
 	}
 
 	std::string Scanner::scan(const std::string& input) {
@@ -42,7 +35,7 @@ namespace alone::amasm {
 		}
 
 		result.reserve(ranges.size());
-		for (auto range: ranges)
+		for (auto range : ranges)
 			result += input.substr(range.first, range.second - range.first) + '\n';
 
 		result.shrink_to_fit();

@@ -3,6 +3,7 @@
 //std
 #include <stdexcept>
 #include <ranges>
+#include <stack>
 
 //alone
 #include "general.hpp"
@@ -82,7 +83,7 @@ namespace alone::amasm {
 		type(parse_rule_type::sequence) {
 		std::vector<parse_rule_ptr> on_place;
 		on_place.reserve(str_vec.size());
-		for (const auto& it: str_vec) {
+		for (const auto& it : str_vec) {
 			auto lt = check_type(it);
 			if (lt == literal_type::word || lt == literal_type::none)
 				on_place.push_back(rules_collection.at(it));
@@ -110,15 +111,16 @@ namespace alone::amasm {
 
 	size_t parse_rule_t::get_length(const parse_rule_ptr& ptr) {
 		size_t result = 0;
-		Stack<parse_rule_ptr> stack;
+		std::stack<parse_rule_ptr> stack;
 
 		stack.push(ptr);
-		while (!stack.is_empty()) {
-			auto top = stack.pop();
+		while (!stack.empty()) {
+			auto top = stack.top();
+			stack.pop();
 			switch (top->type) {
 			case parse_rule_type::sequence: {
 				const auto& seq = top->get_sequence();
-				for (const auto& it: seq | std::views::reverse)
+				for (const auto& it : seq | std::views::reverse)
 					stack.push(it);
 			}
 				break;
