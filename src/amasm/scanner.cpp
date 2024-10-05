@@ -5,11 +5,13 @@
 #include <ranges>
 
 namespace alone::amasm {
-	std::string Scanner::scan(std::istream& file) {
+	std::string Scanner::scan(std::fstream& input) {
 		std::string temp, buffer;
 
-		for (auto line : std::views::istream<std::string>(file))
+		while (!input.eof()) {
+			std::getline(input, buffer, '\n');
 			temp += buffer + '\n';
+		}
 
 		return scan(temp);
 	}

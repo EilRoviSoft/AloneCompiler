@@ -1,19 +1,19 @@
 struct vector2 {
-	var %x, float64, [%this];
-	var %y, float64, [%this + 8];
+	var %x, float64, [%this]
+	var %y, float64, [%this + 8]
 }
 
 func @add(float64, float64): float64 {
-	add64f [%spx - 8], [%spx - 16];
-	sub64u %spx, 16;
-	push64 %asx;
-	ret;
+	add64f [%spx - 8], [%spx - 16]
+	sub64u %spx, 16
+	push64 %asx
+	ret
 }
 
 func @main() {							# type for void function is optional
-	var %v, vector2, [%asx];			# automatically replaces on add64u %spx, 16
-	push64 %v.y;
-	push64 %v.x;
-	call @add(float64, float64);
-	ncall @print64f(float64);
+	var %v, vector2, [%asx] 			# automatically replaces on add64u %spx, 16
+	push64 %v.y
+	push64 %v.x
+	call @add(float64, float64)
+	ncall @print64f(float64)
 }

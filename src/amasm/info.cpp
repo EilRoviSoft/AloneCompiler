@@ -22,7 +22,7 @@ namespace alone::amasm {
 		literal(std::move(s)) {
 		switch (check_type(literal)) {
 		case literal_type::word: {
-			auto temp = keyword_tokens.find(s);
+			auto temp = keyword_tokens.find(literal);
 			type = temp == keyword_tokens.end() ? token_type::identifier : temp->second;
 			break;
 		}
@@ -157,8 +157,11 @@ namespace alone::amasm {
 			{ "struct", token_type::struct_keyword }
 		};
 
+		//simple rules
+
 		rules_collection.emplace("?", make_rule(parse_rule_flag::optional));
 		rules_collection.emplace("|", make_rule(parse_rule_flag::variant));
+		rules_collection.emplace("->", make_rule(parse_rule_flag::skip_until_next_token));
 		rules_collection.emplace("(", make_rule(token_type::lparen));
 		rules_collection.emplace(")", make_rule(token_type::rparen));
 		rules_collection.emplace("[", make_rule(token_type::lbracket));
@@ -184,13 +187,11 @@ namespace alone::amasm {
 		rules_collection.emplace("label_keyword", make_rule(token_type::label_keyword));
 		rules_collection.emplace("func_keyword", make_rule(token_type::function_keyword));
 		rules_collection.emplace("struct_keyword", make_rule(token_type::struct_keyword));
-		rules_collection.emplace(
-			"address_with_displacement",
-			make_rule(std::initializer_list<std::string> { "[", "%", "identifier", "|", "2", "+", "-", "]" })
-		);
-		rules_collection.emplace(
-			"alloc_array_size",
-			make_rule(std::initializer_list<std::string> { "[", "data_type", "*", "number", "]" })
-		);
+
+		//complex rules
+
+		rules_collection.emplace("struct_definition", make_rule(std::initializer_list<std::string> {
+			"struct_keyword", "identifier", "{", "->", "}"
+		}));
 	}
 }

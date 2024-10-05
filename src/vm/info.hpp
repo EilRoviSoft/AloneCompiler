@@ -37,9 +37,9 @@ namespace alone::vm {
 		sframe, //static memory
 	};
 	enum class argument_type : size_t {
+		empty = 0,
 		memory,
 		immediate,
-		indirect,
 		indirect_with_displacement,
 	};
 

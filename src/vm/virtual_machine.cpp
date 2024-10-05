@@ -62,7 +62,7 @@ namespace alone::vm {
 
 	void VirtualMachine::init_isa() {}
 
-	void VirtualMachine::exec(const std::vector<std::byte>& program) {
+	void VirtualMachine::exec(const code_t& program) {
 		ctx.program_size = program.size();
 		for (size_t i = 0; i != ctx.program_size; ++i)
 			_p0[i + registers_size] = program[i];

@@ -12,13 +12,19 @@
 namespace alone::amasm {
 	class Parser {
 	public:
-		/*static bool init();*/
+		static code_t parse(const token_array_t& tokens);
 
 		static bool match_rules(const std::vector<std::string>& guide,
-		                        const std::vector<token_t>& tokens,
+		                        const token_array_t& tokens,
 		                        size_t start_idx);
-
-	private:
-		static bool _check_simple_rule(const parse_rule_ptr& rule, const token_t& token);
+		static bool match_rules(const std::string& guide,
+		                        const token_array_t& tokens,
+		                        size_t start_idx);
+		static bool match_rules(const parse_rule_ptr& guide,
+		                        const token_array_t& tokens,
+		                        size_t start_idx);
+		static bool match_rules(const std::vector<parse_rule_ptr>& guide,
+		                        const token_array_t& tokens,
+		                        size_t start_idx);
 	};
 }

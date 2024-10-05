@@ -14,12 +14,14 @@ using namespace alone;
 
 std::vector<std::function<int()>> tests = {
 	[]() {
-		std::vector<std::string> guide = {
-			"address_with_displacement"
-		};
-		std::string code = "[%asx - 4]";
+		std::string guide = "struct_definition";
+		std::fstream file("res/example.amasm");
+		if (!file.is_open())
+			return 1;
+		std::string code = amasm::Scanner::scan(file);
+		file.close();
 
-		return amasm::Parser::match_rules(
+		return (int) !amasm::Parser::match_rules(
 			guide,
 			amasm::Lexer::tokenize(code),
 			0
@@ -28,7 +30,7 @@ std::vector<std::function<int()>> tests = {
 	[]() {
 		vm::VirtualMachine vm;
 
-		std::ifstream input_file("res/example.amasm");
+		std::fstream input_file("res/example.amasm");
 		if (!input_file.is_open())
 			return -1;
 		auto scanned = amasm::Scanner::scan(input_file);

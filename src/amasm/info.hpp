@@ -21,20 +21,11 @@ namespace alone::amasm {
 		section_keyword, label_keyword, function_keyword, struct_keyword,
 		max = 0xFF
 	};
-
-	struct token_t {
-		token_type type;
-		std::string literal;
-
-		token_t();
-		explicit token_t(char c);
-		explicit token_t(std::string s);
-	};
-
 	enum class parse_rule_flag {
 		none = 0,
 		optional,
-		variant
+		variant,
+		skip_until_next_token
 	};
 	enum class parse_rule_type {
 		none = 0,
@@ -45,8 +36,18 @@ namespace alone::amasm {
 		sequence
 	};
 
-	struct parse_rule_t;
+	struct token_t {
+		token_type type;
+		std::string literal;
 
+		token_t();
+		explicit token_t(char c);
+		explicit token_t(std::string s);
+	};
+
+	using token_array_t = std::vector<token_t>;
+
+	struct parse_rule_t;
 	using parse_rule_ptr = std::shared_ptr<parse_rule_t>;
 
 	//TODO: multiline_code, multiple_argument dispatching, data_type and function_signature
@@ -69,10 +70,8 @@ namespace alone::amasm {
 		static size_t get_length(const parse_rule_ptr& ptr);
 	};
 
-	using token_array_t = std::vector<token_t>;
-
-	template<typename _T>
-	parse_rule_ptr make_rule(_T arg) {
+	template<typename T>
+	parse_rule_ptr make_rule(T arg) {
 		return std::make_shared<parse_rule_t>(arg);
 	}
 

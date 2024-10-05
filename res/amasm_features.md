@@ -1,19 +1,17 @@
 # Table of contents
 
 <!-- TOC -->
-
 * [Table of contents](#table-of-contents)
 * [Code sections](#code-sections)
 * [Memory types](#memory-types)
 * [Variables, constants and registers](#variables-constants-and-registers)
 * [Comments](#comments)
 * [Addressing modes](#addressing-modes)
-    * [Direct operands](#direct-operands)
-    * [Simple operands](#simple-operands)
+	* [Direct operands](#direct-operands)
+	* [Simple operands](#simple-operands)
 * [Labels and branches](#labels-and-branches)
 * [Functions](#functions)
 * [Struct](#struct)
-
 <!-- TOC -->
 
 ---
@@ -43,14 +41,14 @@ You can define names for memory regions from stack and heap.
 This only affects compilation time.
 
 ```asm
-var %a, uint64, [%spx - 8];
+var %a, uint64, [%spx - 8]
 ```
 
 Also allocate data before main program as constants.
 
 ```asm
-const %arr [int32 * 3], [18, 24, 34];
-str %msg [uint8 * 12], "Hello world\n";
+const %arr [int32 * 3], [18, 24, 34]
+str %msg [uint8 * 12], "Hello world\n"
 ```
 
 Registers are predefined as variables and can be accessed at any time using '%' operand
@@ -72,7 +70,7 @@ Registers are predefined as variables and can be accessed at any time using '%' 
 # Comments
 
 ```asm
-mov32 %lox, %rox; # can be read as "moves contents of %rox register to %lox register"
+mov32 %lox, %rox # can be read as "moves contents of %rox register to %lox register"
 ```
 
 ---
@@ -86,19 +84,19 @@ There are 4 types of addressing modes for several binary functions
 Works directly with given part of memories without changing it
 
 ```asm
-mov32 %lox, %rox;
+mov32 %lox, %rox
 ```
 
 This can be read as "moves contents of %rox register to %lox register"
 
 ## Simple operands
 
-Doesn'type require any operands other than instruction'sizes name
+Doesn't require any operands other than instruction'sizes name
 
 ```asm
-mov32 %lox, 2;
-mov32 %rox, 3;
-add32u;         # stores value '5' in %rsx 
+mov32 %lox, 2
+mov32 %rox, 3
+add32u         # stores value '5' in %rsx 
 ```
 
 ---
@@ -115,11 +113,11 @@ label main__l0a:  # this branch is generated for loop purposes
 
 ```asm
 func @add6432(int64, int32): int64 { # uses pascal-call
-    mov %rox, [%spx - 4];
-    add64i [%spx - 12], %rox;
-    sub64u %spx, 12;
-    push64 %asx;
-    ret;
+    mov %rox, [%spx - 4]
+    add64i [%spx - 12], %rox
+    sub64u %spx, 12
+    push64 %asx
+    ret
 }
 ```
 
@@ -131,20 +129,20 @@ This function adds int64 and int32 from stack; removes these arguments from stac
 
 ```asm
 struct some_t {	                # you can define rules_collection for struct align
-    var %a, int64, [%this + 8];  # and create struct members
-    var %b, int32, [%this + 8];  # members will be placed in order of defining
-    var %c, int8, [%this + 12];
-    var %d, int8, [%this + 16];
+    var %a, int64, [%this + 8]  # and create struct members
+    var %b, int32, [%this + 8]  # members will be placed in order of defining
+    var %c, int8, [%this + 12]
+    var %d, int8, [%this + 16]
 }
 
 func @main() {
-    var %sizes, some_t, [%spx];
-    mov64 %sizes.a, 10;
-    mov32 %sizes.b, 20;
-    push64 %sizes.a;
-    push32 %sizes.b;
-    call @add6432(int64, int32); # pascal-call automatically cleares stack from arguments
-    ncall @print64u;	         # if you want to create custom functions from C++, make wraper for it
+    var %sizes, some_t, [%spx]
+    mov64 %sizes.a, 10
+    mov32 %sizes.b, 20
+    push64 %sizes.a
+    push32 %sizes.b
+    call @add6432(int64, int32)  # pascal-call automatically cleares stack from arguments
+    ncall @print64u 	         # if you want to create custom functions from C++, make wraper for it
 }
 ```
 

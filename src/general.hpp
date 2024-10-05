@@ -6,12 +6,26 @@
 #include <string>
 #include <unordered_set>
 #include <stdexcept>
+#include <ranges>
 
 namespace alone {
-	template<typename... Ts>
-	struct overloaded : Ts ... { using Ts::operator()...; };
+	//enums
+
+	enum class literal_type {
+		none = 0,
+		word,
+		binary, decimal, hexadecimal, floating
+	};
+
+	//alias types
+
+	using code_t = std::vector<std::byte>;
+
+	//objects
 
 	inline auto string_hasher = std::hash<std::string>();
+
+	//functions
 
 	constexpr size_t gen_mask(size_t pos) {
 		return 1ull << pos;
@@ -47,12 +61,6 @@ namespace alone {
 	constexpr bool is_whitespace(char c) {
 		return c == ' ' || c == '\n' || c == '\t';
 	}
-
-	enum class literal_type {
-		none = 0,
-		word,
-		binary, decimal, hexadecimal, floating
-	};
 
 	inline literal_type check_type(const std::string& l) {
 		literal_type result;
@@ -108,9 +116,19 @@ namespace alone {
 		return result;
 	}
 
-	template<typename _T>
+	//structs
+
+	template<typename... Ts>
+	struct overloaded : Ts ... { using Ts::operator()...; };
+
+	template<typename T>
 	struct array_t {
 		size_t size;
-		_T* ptr;
+		T* ptr;
+	};
+
+	template<typename T>
+	struct limit_t {
+		T cur, max;
 	};
 }
