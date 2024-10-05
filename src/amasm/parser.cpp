@@ -8,7 +8,7 @@
 namespace alone::amasm {
 	//sizes is more than 1, if it is variant
 	struct flag_stack_cell {
-		parse_rule_flag type = parse_rule_flag::none;
+		parse_flag_type type = parse_flag_type::none;
 		size_t active_id = 0;
 		std::vector<limit_t<size_t>> counters;
 		std::vector<parse_rule_ptr> remembered;
@@ -86,8 +86,10 @@ namespace alone::amasm {
 
 				on_push.type = main.top()->get_flag();
 				main.pop();
-				on_push.counters.reserve(main.top()->get_number());
-				main.pop();
+				if (flags_with_size.contains(on_push.type)) {
+					on_push.counters.reserve(main.top()->get_number());
+					main.pop();
+				}
 				flags.push(std::move(on_push));
 				continue;
 			}
@@ -105,12 +107,12 @@ namespace alone::amasm {
 			}
 
 			switch (current_flag.type) {
-			case parse_rule_flag::none:
+			case parse_flag_type::none:
 				result = check_simple_rule(main.top(), tokens[i]);
 				di = 1;
 				main.pop();
 				break;
-			case parse_rule_flag::optional:
+			case parse_flag_type::optional:
 				if (current_flag.active().cur == current_flag.active().max) {
 					flags.pop();
 				} else if (check_simple_rule(main.top(), tokens[i])) {
@@ -123,7 +125,7 @@ namespace alone::amasm {
 					flags.pop();
 				}
 				break;
-			case parse_rule_flag::variant:
+			case parse_flag_type::variant:
 				if (current_flag.active().cur == current_flag.active().max) {
 					flags.pop();
 				} else if (check_simple_rule(main.top(), tokens[i])) {
@@ -137,7 +139,7 @@ namespace alone::amasm {
 				} else
 					result = false;
 				break;
-			case parse_rule_flag::skip_until_next_token:
+			case parse_flag_type::skip_until_next:
 				if (check_simple_rule(main.top(), tokens[i + 1]))
 					flags.pop();
 				di = 1;

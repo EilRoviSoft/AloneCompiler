@@ -12,8 +12,8 @@
 
 using namespace alone;
 
-std::vector<std::function<int()>> tests = {
-	[]() {
+std::vector<std::pair<bool, std::function<int()>>> tests = {
+	std::make_pair(true, []() {
 		std::string guide = "struct_definition";
 		std::fstream file("res/example.amasm");
 		if (!file.is_open())
@@ -26,8 +26,8 @@ std::vector<std::function<int()>> tests = {
 			amasm::Lexer::tokenize(code),
 			0
 		);
-	},
-	[]() {
+	}),
+	std::make_pair(false, []() {
 		vm::VirtualMachine vm;
 
 		std::fstream input_file("res/example.amasm");
@@ -40,18 +40,21 @@ std::vector<std::function<int()>> tests = {
 		//auto parsed = amasm::Parser::parse(tokenized);
 
 		return 0;
-	}
+	})
 };
 
 int main() {
 	amasm::init_consts();
 
-	int result = 0;
-	for (size_t i = 0; i != tests.size(); ++i) {
-		std::cout << "test " << i << ":\n";
-		if ((result = tests[i]()))
-			break;
-		std::cout << '\n';
+	auto f = [](const std::pair<bool, std::function<int()>>& item) {
+		return item.first;
+	};
+
+	int result = 0, i = 0;
+	for (const auto& it : tests | std::views::filter(f) | std::views::values) {
+		result = it();
+		std::cout << "test: " << i << " | " << (result ? "fail" : "success") << '\n';
+		++i;
 	}
 
 	return result;

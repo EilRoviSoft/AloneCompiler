@@ -21,19 +21,19 @@ namespace alone::amasm {
 		section_keyword, label_keyword, function_keyword, struct_keyword,
 		max = 0xFF
 	};
-	enum class parse_rule_flag {
-		none = 0,
-		optional,
-		variant,
-		skip_until_next_token
-	};
 	enum class parse_rule_type {
 		none = 0,
-		flag,
 		singular_token,
 		literal,
 		number,
-		sequence
+		sequence,
+		flag
+	};
+	enum class parse_flag_type {
+		none = 0,
+		optional,
+		variant,
+		skip_until_next
 	};
 
 	struct token_t {
@@ -50,22 +50,38 @@ namespace alone::amasm {
 	struct parse_rule_t;
 	using parse_rule_ptr = std::shared_ptr<parse_rule_t>;
 
-	//TODO: multiline_code, multiple_argument dispatching, data_type and function_signature
+	struct singular_token_rule_t {
+		token_type c;
+	};
+	struct literal_rule_t {
+		std::string c;
+	};
+	struct number_rule_t {
+		size_t c;
+	};
+	struct sequence_rule_t {
+		std::vector<parse_rule_ptr> c;
+	};
+	struct parse_flag_rule_t {
+		parse_flag_type c;
+	};
+
 	struct parse_rule_t {
-		std::variant<parse_rule_flag, token_type, std::string, size_t, std::vector<parse_rule_ptr>> data;
+		std::variant<singular_token_rule_t, literal_rule_t, number_rule_t, sequence_rule_t, parse_flag_rule_t> data;
 		parse_rule_type type;
 
-		explicit parse_rule_t(parse_rule_flag ptr);
-		explicit parse_rule_t(token_type token);
-		explicit parse_rule_t(const std::string& str);
-		explicit parse_rule_t(size_t num);
-		explicit parse_rule_t(const std::vector<std::string>& str_vec);
+		explicit parse_rule_t(token_type nc);
+		explicit parse_rule_t(const std::string& nc);
+		explicit parse_rule_t(size_t nc);
+		explicit parse_rule_t(const std::vector<std::string>& nc);
+		//nc = [optional, variant, skip_until_next]
+		explicit parse_rule_t(parse_flag_type nc);
 
-		const parse_rule_flag& get_flag();
 		const token_type& get_token();
 		const std::string& get_literal();
 		const size_t& get_number();
 		const std::vector<parse_rule_ptr>& get_sequence();
+		const parse_flag_type& get_flag();
 
 		static size_t get_length(const parse_rule_ptr& ptr);
 	};
@@ -75,6 +91,7 @@ namespace alone::amasm {
 		return std::make_shared<parse_rule_t>(arg);
 	}
 
+	extern std::unordered_set<parse_flag_type> flags_with_size;
 	extern std::unordered_set<char> singular_tokens;
 	extern std::unordered_map<std::string, token_type> keyword_tokens;
 	extern std::unordered_map<std::string, parse_rule_ptr> rules_collection;
