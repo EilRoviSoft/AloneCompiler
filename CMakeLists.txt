@@ -9,7 +9,6 @@ include_directories(src/vm)
 include_directories(src/vm/isa)
 
 add_executable(AloneCompiler
-        src/amasm/data_types.hpp
         src/amasm/lexer.hpp
         src/amasm/lexer.cpp
         src/amasm/parser.hpp
@@ -26,8 +25,16 @@ add_executable(AloneCompiler
         src/vm/virtual_machine.cpp
         src/general.hpp
         src/main.cpp
-        src/amasm/info.hpp
-        src/amasm/info.cpp)
+        src/amasm/info/info.hpp
+        src/amasm/info/tokens.hpp
+        src/amasm/info/tokens.cpp
+        src/amasm/info/data_types.cpp
+        src/amasm/info/data_types.hpp
+        src/amasm/info/parse_rules.cpp
+        src/amasm/info/parse_rules.hpp
+        src/amasm/info/consts.cpp
+        src/amasm/info/consts.hpp
+        src/amasm/info/include.hpp)
 
 add_compile_definitions(DEBUG_STATUS)
 

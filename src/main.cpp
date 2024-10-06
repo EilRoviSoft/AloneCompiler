@@ -4,18 +4,20 @@
 #include <iostream>
 #include <vector>
 
+//alone::amasm
+#include "amasm/lexer.hpp"
+#include "amasm/parser.hpp"
+#include "amasm/scanner.hpp"
+
 //alone::vm
-#include "lexer.hpp"
-#include "parser.hpp"
-#include "scanner.hpp"
 #include "vm/virtual_machine.hpp"
 
 using namespace alone;
 
 std::vector<std::pair<bool, std::function<int()>>> tests = {
 	std::make_pair(true, []() {
-		std::string guide = "struct_definition";
-		std::fstream file("res/example.amasm");
+		std::string guide = "address_with_displacement";
+		std::fstream file("res/match_test.amasm");
 		if (!file.is_open())
 			return 1;
 		std::string code = amasm::Scanner::scan(file);
@@ -23,7 +25,7 @@ std::vector<std::pair<bool, std::function<int()>>> tests = {
 
 		return (int) !amasm::Parser::match_rules(
 			guide,
-			amasm::Lexer::tokenize(code),
+			amasm::Lexer::tokenize_code(code),
 			0
 		);
 	}),
@@ -36,7 +38,7 @@ std::vector<std::pair<bool, std::function<int()>>> tests = {
 		auto scanned = amasm::Scanner::scan(input_file);
 		input_file.close();
 
-		auto tokenized = amasm::Lexer::tokenize(scanned);
+		auto tokenized = amasm::Lexer::tokenize_code(scanned);
 		//auto parsed = amasm::Parser::parse(tokenized);
 
 		return 0;

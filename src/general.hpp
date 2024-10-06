@@ -129,6 +129,6 @@ namespace alone {
 
 	template<typename T>
 	struct limit_t {
-		T cur, max;
+		T n, max;
 	};
 }
