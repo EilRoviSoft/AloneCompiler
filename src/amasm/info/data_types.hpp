@@ -30,11 +30,7 @@ namespace alone::amasm {
 
 	template<typename T>
 	requires std::constructible_from<data_type_t, std::string, T>
-	data_type_ptr make_data_type(std::string n, T id_arg) {
-		return std::make_shared<data_type_t>(std::move(n), id_arg);
+	std::pair<std::string, data_type_ptr> make_data_type(std::string n, T id_arg) {
+		return std::make_pair(n, std::make_shared<data_type_t>(n, id_arg));
 	}
-
-	struct data_type_hasher {
-		size_t operator()(const data_type_ptr& val) const;
-	};
 }

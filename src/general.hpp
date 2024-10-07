@@ -111,7 +111,7 @@ namespace alone {
 	inline std::string gen_str(char a, char b) {
 		std::string result;
 		result.resize(b - a + 1);
-		for (char i : std::views::iota(a, b))
+		for (char i = a; i <= b; ++i)
 			result[i - a] = i;
 		return result;
 	}

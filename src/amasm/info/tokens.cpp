@@ -32,7 +32,7 @@ namespace alone::amasm {
 			type = token_type::number;
 			break;
 		default:
-			throw std::runtime_error("lexer.cpp: Wrong input");
+			throw std::runtime_error("tokens.cpp: Wrong input");
 		}
 	}
 }

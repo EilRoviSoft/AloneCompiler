@@ -19,7 +19,8 @@ namespace alone::amasm {
 				temp.clear();
 			}
 
-			if (singular_tokens.contains(c)) result.emplace_back(c);
+			if (singular_tokens.contains(c))
+				result.emplace_back(c);
 		}
 
 		return result;
@@ -29,22 +30,26 @@ namespace alone::amasm {
 		std::string temp;
 		bool flag = true;
 
-		for (auto c : seq) {
+		for (char c : seq) {
 			if (is_alpha_numeric(c)) {
 				temp += c;
 				flag = false;
 			} else if (!temp.empty()) {
-				auto type = check_type(temp);
-				switch (type) {
+				switch (auto type = check_type(temp); type) {
 				case literal_type::word:
-					result.emplace_back(rules[temp]);
+					result.emplace_back(rules.at(temp));
 					break;
+				case literal_type::none:
+					throw std::runtime_error("lexer.cpp: Wrong literal type.");
 				default:
+					result.emplace_back(make_rule(temp));
+					break;
 				}
 				temp.clear();
 			}
 
-			if (flag && rules.contains(std::string(1, c))) result.emplace_back(rules[temp]);
+			if (auto s = std::string(1, c); flag && rules.contains(s))
+				result.push_back(rules.at(s));
 
 			flag = true;
 		}

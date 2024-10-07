@@ -39,7 +39,7 @@ namespace alone::amasm {
 			break;
 		}
 		default:
-			throw std::runtime_error("info.cpp: Wrong l");
+			throw std::runtime_error("data_types.cpp: Wrong l");
 		}
 	}
 	parse_rule_t::parse_rule_t(size_t n) :
@@ -50,7 +50,7 @@ namespace alone::amasm {
 		type(parse_rule_type::sequence) {
 		std::vector<parse_rule_ptr> on_place;
 		on_place.reserve(v.size());
-		for (const auto& it : v) {
+		for (const std::string& it : v) {
 			if (auto lt = check_type(it); lt == literal_type::word || lt == literal_type::none)
 				on_place.push_back(rules.at(it));
 			else
@@ -94,9 +94,8 @@ namespace alone::amasm {
 			switch (top->type) {
 			case parse_rule_type::sequence: {
 				const auto& seq = top->get_sequence();
-				for (const auto& it : seq | std::views::reverse) {
+				for (const auto& it : seq | std::views::reverse)
 					stack.push(it);
-				}
 			}
 				break;
 			case parse_rule_type::singular_token:

@@ -15,7 +15,7 @@ namespace alone::amasm {
 	extern std::unordered_set<char> singular_tokens;
 	extern std::unordered_map<std::string, token_type> defined_tokens;
 	extern std::unordered_map<std::string, parse_rule_ptr> rules;
-	extern std::unordered_set<data_type_ptr, data_type_hasher> data_types;
+	extern std::unordered_map<std::string, data_type_ptr> data_types;
 
 	void add_data_type(const data_type_ptr& ptr);
 	//void add_inst();
