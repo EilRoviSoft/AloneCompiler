@@ -193,8 +193,11 @@ namespace alone::amasm {
 					flags.pop();
 				delta = 1;
 				break;
+			case parse_flag_type::skip_args:
+
+				break;
 			default:
-				throw std::runtime_error("parser.cpp: Wrong flag type");
+				throw std::runtime_error("parser.cpp: wrong flag type.");
 			}
 		}
 

@@ -7,7 +7,7 @@
 
 //alone::amasm
 #include "data_types.hpp"
-#include "info.hpp"
+#include "enums.hpp"
 #include "parse_rules.hpp"
 
 namespace alone::amasm {

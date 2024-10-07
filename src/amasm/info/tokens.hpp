@@ -5,7 +5,7 @@
 #include <vector>
 
 //alone::amasm
-#include "info.hpp"
+#include "enums.hpp"
 
 namespace alone::amasm {
 	struct token_t {

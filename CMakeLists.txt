@@ -25,7 +25,7 @@ add_executable(AloneCompiler
         src/vm/virtual_machine.cpp
         src/general.hpp
         src/main.cpp
-        src/amasm/info/info.hpp
+        src/amasm/info/enums.hpp
         src/amasm/info/tokens.hpp
         src/amasm/info/tokens.cpp
         src/amasm/info/data_types.cpp

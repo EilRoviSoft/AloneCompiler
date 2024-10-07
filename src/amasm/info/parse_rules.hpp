@@ -8,7 +8,7 @@
 #include <concepts>
 
 //alone::amasm
-#include "info.hpp"
+#include "enums.hpp"
 
 namespace alone::amasm {
 	struct parse_rule_t;

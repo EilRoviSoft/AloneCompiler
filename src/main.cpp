@@ -19,11 +19,11 @@ std::vector<std::pair<bool, std::function<int()>>> tests = {
 		std::string guide = "address_with_displacement";
 		std::fstream file("res/match_test.amasm");
 		if (!file.is_open())
-			return 1;
+			return -1;
 		auto text = amasm::Scanner::scan(file);
 		file.close();
 
-		return (int) amasm::Parser::match_rules(
+		return (int) !amasm::Parser::match_rules(
 			guide,
 			amasm::Lexer::tokenize_code(text),
 			0
@@ -32,20 +32,20 @@ std::vector<std::pair<bool, std::function<int()>>> tests = {
 	std::make_pair(true, []() {
 		std::fstream file("res/example.amasm");
 		if (!file.is_open())
-			return 1;
+			return -1;
 		auto text = amasm::Scanner::scan(file);
 		file.close();
 
 		auto tokens = amasm::Lexer::tokenize_code(text);
 		auto code = amasm::Parser::parse(tokens);
 
-		return 1;
+		return 0;
 	}),
 	std::make_pair(true, []() {
 		for (const auto& it : amasm::data_types | std::views::keys)
 			std::cout << it << '\n';
 
-		return 1;
+		return 0;
 	}),
 	std::make_pair(false, []() {
 		vm::VirtualMachine vm;
@@ -59,7 +59,7 @@ std::vector<std::pair<bool, std::function<int()>>> tests = {
 		auto tokenized = amasm::Lexer::tokenize_code(scanned);
 		//auto parsed = amasm::Parser::parse(tokenized);
 
-		return 1;
+		return 0;
 	})
 };
 
@@ -73,7 +73,7 @@ int main() {
 	int result = 0, i = 0;
 	for (const auto& it : tests | std::views::filter(f) | std::views::values) {
 		result = it();
-		std::cout << "test: " << i << " | " << (result ? "success" : "fail") << '\n';
+		std::cout << "test: " << i << " | " << (result ? "fail" : "success") << '\n';
 		++i;
 	}
 
