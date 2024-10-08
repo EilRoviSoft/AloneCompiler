@@ -1,8 +1,8 @@
 #include "virtual_machine.hpp"
 
 //std
-#include <stdexcept>
 #include <ranges>
+#include <stdexcept>
 
 //alone::vm::util
 #include "vm/util.hpp"
@@ -57,8 +57,7 @@ namespace alone::vm {
 	VirtualMachine::VirtualMachine() :
 		ctx(),
 		_p0(),
-		_p1() {
-	}
+		_p1() {}
 
 	void VirtualMachine::init_isa() {}
 
@@ -85,8 +84,7 @@ namespace alone::vm {
 		_inst_set.erase(id);
 	}
 
-	template<class T>
-	T* VirtualMachine::get(address_t address) {
+	template<class T> T* VirtualMachine::get(address_t address) {
 		T* result;
 
 		auto [actual_address, mem_type] = decompose_address(address);
@@ -100,8 +98,7 @@ namespace alone::vm {
 
 		return result;
 	}
-	template<class T>
-	array_t<T> VirtualMachine::get_array(address_t address) {
+	template<class T> array_t<T> VirtualMachine::get_array(address_t address) {
 		array_t<T> result;
 
 		auto [actual_address, mem_type] = decompose_address(address);

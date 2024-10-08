@@ -1,11 +1,11 @@
 #pragma once
 
 //std
+#include <concepts>
 #include <memory>
 #include <string>
-#include <vector>
 #include <variant>
-#include <concepts>
+#include <vector>
 
 //alone::amasm
 #include "enums.hpp"
@@ -44,8 +44,9 @@ namespace alone::amasm {
 		static size_t get_length(const parse_rule_ptr& ptr);
 	};
 
-	template<typename T>
-	requires std::constructible_from<parse_rule_t, T>
+	using parse_array_t = std::vector<parse_rule_ptr>;
+
+	template<typename T> requires std::constructible_from<parse_rule_t, T>
 	inline parse_rule_ptr make_rule(const T& arg) {
 		return std::make_shared<parse_rule_t>(arg);
 	}

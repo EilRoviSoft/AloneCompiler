@@ -2,11 +2,10 @@
 
 //std
 #include <functional>
-#include <vector>
-#include <string>
-#include <unordered_set>
-#include <stdexcept>
 #include <ranges>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace alone {
 	//enums
@@ -118,17 +117,16 @@ namespace alone {
 
 	//structs
 
-	template<typename... Ts>
-	struct overloaded : Ts ... { using Ts::operator()...; };
+	template<typename... Ts> struct overloaded : Ts... {
+		using Ts::operator()...;
+	};
 
-	template<typename T>
-	struct array_t {
+	template<typename T> struct array_t {
 		size_t size;
 		T* ptr;
 	};
 
-	template<typename T>
-	struct limit_t {
+	template<typename T> struct limit_t {
 		T n, max;
 	};
 }

@@ -1,8 +1,8 @@
 #pragma once
 
 //std
-#include <tuple>
 #include <ranges>
+#include <tuple>
 
 //alone::general
 #include "general.hpp"
@@ -12,10 +12,7 @@
 
 namespace alone::vm {
 	inline std::tuple<address_t, memory_type> decompose_address(address_t address) {
-		return {
-			(address & ~gen_mask(0, 1)) >> 2,
-			memory_type(address & gen_mask(0, 1))
-		};
+		return { (address & ~gen_mask(0, 1)) >> 2, memory_type(address & gen_mask(0, 1)) };
 	}
 	inline std::tuple<inst_code_t, std::array<argument_type, 4>> decompose_instruction(inst_code_t instruction) {
 		std::array<argument_type, 4> args = {};

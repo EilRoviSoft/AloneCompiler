@@ -28,8 +28,7 @@ namespace alone::amasm {
 		explicit data_type_t(std::string n, std::vector<pole_t> v);
 	};
 
-	template<typename T>
-	requires std::constructible_from<data_type_t, std::string, T>
+	template<typename T> requires std::constructible_from<data_type_t, std::string, T>
 	std::pair<std::string, data_type_ptr> make_data_type(std::string n, T id_arg) {
 		return std::make_pair(n, std::make_shared<data_type_t>(n, id_arg));
 	}

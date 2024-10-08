@@ -2,8 +2,8 @@
 
 //std
 #include <memory>
-#include <stdexcept>
 #include <stack>
+#include <stdexcept>
 
 //alone
 #include "error_codes.hpp"
@@ -44,8 +44,7 @@ namespace alone::amasm {
 				if (stack.top().first != "struct_definition")
 					throw AMASM_PARSER_WRONG_POLE_DEFINITION;
 				auto& v = std::get<struct_info_t>(stack.top().second);
-				v.poles.emplace_back(
-					tokens[i + 2].literal,
+				v.poles.emplace_back(tokens[i + 2].literal,
 					data_types[tokens[i + 4].literal],
 					l == 10 ? 0 : std::stoull(tokens[i + 10].literal)
 				);
@@ -75,9 +74,7 @@ namespace alone::amasm {
 	};
 
 	ptrdiff_t Parser::match_rules(
-		const std::vector<std::string>& guide,
-		const token_array_t& tokens,
-		size_t start_idx
+		const std::vector<std::string>& guide, const token_array_t& tokens, size_t start_idx
 	) {
 		std::vector<parse_rule_ptr> temp;
 
@@ -105,11 +102,7 @@ namespace alone::amasm {
 	ptrdiff_t Parser::match_rules(const parse_rule_ptr& guide, const token_array_t& tokens, size_t start_idx) {
 		return match_rules(std::vector(1, guide), tokens, start_idx);
 	}
-	ptrdiff_t Parser::match_rules(
-		const std::vector<parse_rule_ptr>& guide,
-		const token_array_t& tokens,
-		size_t start_idx
-	) {
+	ptrdiff_t Parser::match_rules(const parse_array_t& guide, const token_array_t& tokens, size_t start_idx) {
 		bool cond_flag = true;
 		ptrdiff_t delta = 0, result = 0;
 		std::stack<parse_rule_ptr> main;

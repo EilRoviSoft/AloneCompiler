@@ -4,8 +4,8 @@
 #include <stdexcept>
 
 //alone
-#include "general.hpp"
 #include "error_codes.hpp"
+#include "general.hpp"
 
 namespace alone::amasm {
 	token_array_t Lexer::tokenize_code(const std::string& code) {

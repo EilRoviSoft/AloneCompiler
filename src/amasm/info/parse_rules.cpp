@@ -4,8 +4,8 @@
 #include <stack>
 
 //alone
-#include "general.hpp"
 #include "error_codes.hpp"
+#include "general.hpp"
 
 //alone::amasm
 #include "consts.hpp"
@@ -13,8 +13,7 @@
 namespace alone::amasm {
 	parse_rule_t::parse_rule_t(token_type t) :
 		data(singular_token_rule_t { t }),
-		type(parse_rule_type::singular_token) { //
-	}
+		type(parse_rule_type::singular_token) {}
 	parse_rule_t::parse_rule_t(const std::string& l) {
 		switch (check_type(l)) {
 		case literal_type::word:
@@ -45,8 +44,7 @@ namespace alone::amasm {
 	}
 	parse_rule_t::parse_rule_t(size_t n) :
 		data(number_rule_t { n }),
-		type(parse_rule_type::number) { //
-	}
+		type(parse_rule_type::number) {}
 	parse_rule_t::parse_rule_t(const std::initializer_list<std::string>& v) :
 		type(parse_rule_type::sequence) {
 		std::vector<parse_rule_ptr> on_place;
@@ -61,12 +59,10 @@ namespace alone::amasm {
 	}
 	parse_rule_t::parse_rule_t(const parse_rule_t::sequence_rule_t& v) :
 		data(v),
-		type(parse_rule_type::sequence) { //
-	}
+		type(parse_rule_type::sequence) {}
 	parse_rule_t::parse_rule_t(parse_flag_type f) :
 		data(parse_flag_rule_t { f }),
-		type(parse_rule_type::flag) { //
-	}
+		type(parse_rule_type::flag) {}
 
 	const token_type& parse_rule_t::get_token() const {
 		return std::get<singular_token_rule_t>(data);
@@ -94,11 +90,10 @@ namespace alone::amasm {
 			stack.pop();
 			switch (top->type) {
 			case parse_rule_type::sequence: {
-				const auto& seq = top->get_sequence();
-				for (const auto& it : seq | std::views::reverse)
+				for (const auto& it : top->get_sequence() | std::views::reverse)
 					stack.push(it);
 			}
-				break;
+			break;
 			case parse_rule_type::singular_token:
 			case parse_rule_type::literal:
 			case parse_rule_type::number:

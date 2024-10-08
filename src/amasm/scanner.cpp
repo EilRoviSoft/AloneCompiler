@@ -1,8 +1,8 @@
 ﻿#include "scanner.hpp"
 
 //std
-#include <vector>
 #include <ranges>
+#include <vector>
 
 namespace alone::amasm {
 	std::string Scanner::scan(std::fstream& input) {
