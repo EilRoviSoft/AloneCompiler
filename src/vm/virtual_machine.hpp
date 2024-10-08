@@ -40,7 +40,7 @@ namespace alone::vm {
 		VirtualMachine();
 
 		void init_isa();
-		void exec(const code_t& program);
+		void exec(const byte_array_t& program);
 
 		void add_instruction(inst_code_t id, const inst_func_t& instruction);
 		void remove_instruction(inst_code_t id);

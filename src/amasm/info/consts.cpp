@@ -2,16 +2,16 @@
 
 //std
 #include <ranges>
-#include <stdexcept>
 
 //alone::amasm
 #include "lexer.hpp"
 
 namespace alone::amasm {
 	std::unordered_set<char> singular_tokens;
+	std::unordered_set<std::string> instructions;
 	std::unordered_map<std::string, token_type> defined_tokens;
-	std::unordered_map<std::string, parse_rule_ptr> rules;
 	std::unordered_map<std::string, data_type_ptr> data_types;
+	std::unordered_map<std::string, std::vector<token_type>> rules;
 
 	void add_data_type(const data_type_ptr& ptr) {
 		if (data_types.contains(ptr->name))
@@ -19,9 +19,13 @@ namespace alone::amasm {
 		data_types.emplace(ptr->name, ptr);
 		defined_tokens.emplace(ptr->name, token_type::data_type);
 	}
-
-	void init_consts() {
+	void init_singular_tokens() {
 		singular_tokens = { '(', ')', '[', ']', '{', '}', '.', ',', ':', ';', '@', '$', '%', '\"', '+', '-', '*', '/' };
+	}
+	void init_instructions() {
+		instructions = {};
+	}
+	void init_defined_tokens() {
 		defined_tokens = {
 			{ "this", token_type::kw_this },
 			{ "var", token_type::kw_var },
@@ -30,93 +34,42 @@ namespace alone::amasm {
 			{ "func", token_type::kw_func },
 			{ "struct", token_type::kw_struct },
 		};
+	}
+	void init_data_types() {
 		data_types = {
-			make_data_type("void", 0),
-			make_data_type("uint8", 1),
-			make_data_type("uint16", 2),
-			make_data_type("uint32", 4),
-			make_data_type("uint64", 8),
-			make_data_type("int8", 1),
-			make_data_type("int16", 2),
-			make_data_type("int32", 4),
-			make_data_type("int64", 8),
-			make_data_type("float32", 4),
-			make_data_type("float64", 8)
+			{ "void", make_data_type("void", 0) },
+			{ "uint8", make_data_type("uint8", 1) },
+			{ "uin16", make_data_type("uin16", 2) },
+			{ "uint32", make_data_type("uint32", 4) },
+			{ "uint64", make_data_type("uint64", 8) },
+			{ "int8", make_data_type("int8", 1) },
+			{ "int16", make_data_type("int16", 2) },
+			{ "int32", make_data_type("int32", 4) },
+			{ "int64", make_data_type("int64", 8) },
+			{ "float32", make_data_type("float32", 4) },
+			{ "float64", make_data_type("float64", 8) }
 		};
+	}
+	void init_rules() {
+		using enum token_type;
+		rules = {
+			{ "struct_definition", std::vector { kw_struct, identifier, lbrace } },
+			{ "pole_definition", std::vector { kw_var, percent, identifier, comma, data_type } }
+		};
+	}
 
-		for (const auto& it : data_types | std::views::filter(
-				[](const auto& it) {
-					return !defined_tokens.contains(it.first);
-				}
-			) | std::views::keys) {
+	void init_consts() {
+		init_singular_tokens();
+		init_instructions();
+		init_defined_tokens();
+		init_data_types();
+
+		auto data_type_filter = [](const auto& it) {
+			return !defined_tokens.contains(it.first);
+		};
+		for (const auto& it : data_types | std::views::filter(data_type_filter) | std::views::keys)
 			defined_tokens.emplace(it, token_type::data_type);
-		}
 
-		//simple rules
-
-		rules.emplace("?", make_rule(parse_flag_type::optional));
-		rules.emplace("|", make_rule(parse_flag_type::variant));
-		rules.emplace("skip_body", make_rule(parse_flag_type::skip_body));
-		rules.emplace("skip_args", make_rule(parse_flag_type::skip_args));
-		rules.emplace("(", make_rule(token_type::lparen));
-		rules.emplace(")", make_rule(token_type::rparen));
-		rules.emplace("[", make_rule(token_type::lbracket));
-		rules.emplace("]", make_rule(token_type::rbracket));
-		rules.emplace("{", make_rule(token_type::lbrace));
-		rules.emplace("}", make_rule(token_type::rbrace));
-		rules.emplace(".", make_rule(token_type::dot));
-		rules.emplace(",", make_rule(token_type::comma));
-		rules.emplace(":", make_rule(token_type::colon));
-		rules.emplace(";", make_rule(token_type::semicolon));
-		rules.emplace("@", make_rule(token_type::at));
-		rules.emplace("$", make_rule(token_type::dollar));
-		rules.emplace("%", make_rule(token_type::percent));
-		rules.emplace("\"", make_rule(token_type::quote));
-		rules.emplace("+", make_rule(token_type::plus));
-		rules.emplace("-", make_rule(token_type::minus));
-		rules.emplace("*", make_rule(token_type::star));
-		rules.emplace("/", make_rule(token_type::slash));
-
-		rules.emplace("identifier", make_rule(token_type::identifier));
-		rules.emplace("number", make_rule(token_type::number));
-		rules.emplace("data_type", make_rule(token_type::data_type));
-		rules.emplace("inst_name", make_rule(token_type::inst_name));
-
-		rules.emplace("kw_this", make_rule(token_type::kw_this));
-		rules.emplace("kw_var", make_rule(token_type::kw_var));
-		rules.emplace("kw_section", make_rule(token_type::kw_section));
-		rules.emplace("kw_label", make_rule(token_type::kw_label));
-		rules.emplace("kw_func", make_rule(token_type::kw_func));
-		rules.emplace("kw_struct", make_rule(token_type::kw_struct));
-
-		rules.emplace("kw_call", make_rule(token_type::kw_call));
-		rules.emplace("kw_ncall", make_rule(token_type::kw_ncall));
-
-		//complex rules
-
-		rules.emplace(
-			"address_with_displacement",
-			make_rule(Lexer::tokenize_rule_sequence("[%identifier |2 +- number]"))
-		);
-		rules.emplace(
-			"pole_definition",
-			make_rule(Lexer::tokenize_rule_sequence("kw_var %identifier, data_type, [%kw_this ?2 + number]"))
-		);
-
-		rules.emplace(
-			"function_definition",
-			make_rule(Lexer::tokenize_rule_sequence("kw_func @identifier(skip_args) ?2 : data_type { skip_body }"))
-		);
-
-		rules.emplace(
-			"struct_definition",
-			make_rule(Lexer::tokenize_rule_sequence("kw_struct identifier { skip_body }"))
-		);
-
-		//instruction rules
-
-		rules.emplace("call", make_rule(Lexer::tokenize_rule_sequence("kw_call @identifier(skip_args)")));
-		rules.emplace("ncall", make_rule(Lexer::tokenize_rule_sequence("kw_ncall @identifier(skip_args)")));
-		rules.emplace("inst0", make_rule(Lexer::tokenize_rule_sequence("identifier")));
+		init_rules();
 	}
 }

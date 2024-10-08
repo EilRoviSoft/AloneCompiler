@@ -43,7 +43,11 @@ namespace alone::vm {
 		indirect_with_displacement,
 	};
 
-	constexpr size_t machine_word_size = sizeof(uint64_t), inst_code_size = sizeof(inst_code_t), registers_size = 256,
-					system_registers_size = registers_size - static_cast<int>(regs_set::grx), general_registers_size =
-							registers_size - system_registers_size, mframe_size = 1 << 16, dframe_size = 16;
+	constexpr size_t machine_word_size = sizeof(uint64_t);
+	constexpr size_t inst_code_size = sizeof(inst_code_t);
+	constexpr size_t registers_size = 256;
+	constexpr size_t system_registers_size = registers_size - static_cast<int>(regs_set::grx);
+	constexpr size_t general_registers_size = registers_size - system_registers_size;
+	constexpr size_t mframe_size = 1 << 16;
+	constexpr size_t dframe_size = 16;
 }

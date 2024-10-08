@@ -23,8 +23,6 @@ add_executable(AloneCompiler
         src/amasm/info/tokens.cpp
         src/amasm/info/data_types.cpp
         src/amasm/info/data_types.hpp
-        src/amasm/info/parse_rules.cpp
-        src/amasm/info/parse_rules.hpp
         src/amasm/info/consts.cpp
         src/amasm/info/consts.hpp
         src/amasm/info/include.hpp

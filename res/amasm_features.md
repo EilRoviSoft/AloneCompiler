@@ -130,9 +130,9 @@ This function adds int64 and int32 from stack; removes these arguments from stac
 # Struct
 
 ```asm
-struct some_t {	                # you can define rules for struct align
-    var %a, int64, [%this + 8]  # and create struct members
-    var %b, int32, [%this + 8]  # members will be placed in order of defining
+struct some_t {	                 # you can define rules for struct align
+    var %a, int64, [%this + 8]   # and create struct members
+    var %b, int32, [%this + 8]   # members will be placed in order of defining
     var %c, int8, [%this + 12]
     var %d, int8, [%this + 16]
 }
@@ -143,7 +143,7 @@ func @main() {
     mov32 %sizes.b, 20
     push64 %sizes.a
     push32 %sizes.b
-    call @add6432(int64, int32)  # pascal-call automatically cleares stack from arguments
+    fcall @add6432(int64, int32)  # pascal-call automatically cleares stack from arguments
     ncall @print64u 	         # if you want to create custom functions from C++, make wraper for it
 }
 ```

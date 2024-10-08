@@ -1,8 +1,5 @@
 #include "data_types.hpp"
 
-//std
-#include <stdexcept>
-
 //alone
 #include "error_codes.hpp"
 
@@ -14,10 +11,7 @@ namespace alone::amasm {
 
 	data_type_t::data_type_t(std::string n, size_t s) :
 		name(std::move(n)),
-		size(s) {
-		if (s == 0)
-			throw AMASM_DATA_TYPES_EMPTY_STRUCT;
-	}
+		size(s) {}
 	data_type_t::data_type_t(std::string n, std::vector<pole_t> v) :
 		name(std::move(n)),
 		poles(std::move(v)) {
@@ -25,7 +19,13 @@ namespace alone::amasm {
 			size = 0;
 			for (const pole_t& it : poles)
 				size += it.type->size;
+			for (size_t i = 0; i != poles.size() - 1; ++i)
+				poles.back().offset + poles.back().type->size;
 		} else
 			throw AMASM_DATA_TYPES_WRONG_CONSTRUCTOR_USAGE;
+	}
+
+	void data_type_t::add_pole(const std::string& n, const data_type_ptr& t, size_t o) {
+		poles.emplace_back(n, t, poles.empty() ? o : poles.back().offset + poles.back().type->size);
 	}
 }

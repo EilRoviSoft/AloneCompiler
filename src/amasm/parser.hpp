@@ -1,9 +1,7 @@
 #pragma once
 
 //std
-#include <fstream>
 #include <string>
-#include <variant>
 
 //alone
 #include "general.hpp"
@@ -12,19 +10,11 @@
 #include "info/include.hpp"
 
 namespace alone::amasm {
-	//TODO: match_rules return matched size
 	class Parser {
 	public:
-		static code_t parse(const token_array_t& tokens);
+		//TODO: make tree-based parsing
+		static byte_array_t parse(const token_array_t& tokens);
 
-		static ptrdiff_t match_rules(
-			const std::vector<std::string>& guide, const token_array_t& tokens, size_t start_idx
-		);
-		static ptrdiff_t match_rules(const std::string& guide, const token_array_t& tokens, size_t start_idx);
-		static ptrdiff_t match_rules(const parse_rule_ptr& guide, const token_array_t& tokens, size_t start_idx);
-		static ptrdiff_t match_rules(const parse_array_t& guide, const token_array_t& tokens, size_t start_idx);
-
-	private:
-		static bool _match_simple_rule(const parse_rule_ptr& rule, const token_t& token);
+		static bool match_rules(const std::string& rule_name, const token_array_t& tokens, size_t start_idx);
 	};
 }

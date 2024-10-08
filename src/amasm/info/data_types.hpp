@@ -21,15 +21,22 @@ namespace alone::amasm {
 	struct data_type_t {
 		std::string name;
 		size_t size;
-		//if poles.empty(), this type is simple, otherwise complex
 		std::vector<pole_t> poles;
 
 		explicit data_type_t(std::string n, size_t s);
 		explicit data_type_t(std::string n, std::vector<pole_t> v);
+
+		void add_pole(const std::string& n, const data_type_ptr& t, size_t o = 0);
 	};
 
-	template<typename T> requires std::constructible_from<data_type_t, std::string, T>
-	std::pair<std::string, data_type_ptr> make_data_type(std::string n, T id_arg) {
-		return std::make_pair(n, std::make_shared<data_type_t>(n, id_arg));
+	struct variable_t {
+		std::string name;
+		data_type_ptr type;
+	};
+
+	template<typename T>
+		requires std::constructible_from<data_type_t, std::string, T>
+	data_type_ptr make_data_type(std::string n, T id_arg) {
+		return std::make_shared<data_type_t>(n, id_arg);
 	}
 }

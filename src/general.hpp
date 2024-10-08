@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+//alone
+#include "error_codes.hpp"
+
 namespace alone {
 	//enums
 
@@ -18,7 +21,8 @@ namespace alone {
 
 	//alias types
 
-	using code_t = std::vector<std::byte>;
+	using byte_array_t = std::vector<std::byte>;
+	//using string_array_t = std::vector<std::string>;
 
 	//objects
 
@@ -67,7 +71,7 @@ namespace alone {
 		if (is_alpha(l.front())) {
 			for (auto c : l | std::views::drop(1)) {
 				if (!is_alpha_numeric(c))
-					throw std::runtime_error("general.hpp: Wrong word definition");
+					throw GENERAL_WRONG_WORD_VALUE;
 			}
 			result = literal_type::word;
 		} else if (is_numeric(l.front())) {
@@ -75,29 +79,29 @@ namespace alone {
 				size_t i;
 				for (i = 1; l[i] != '.'; ++i) {
 					if (!is_numeric(l[i]))
-						throw std::runtime_error("general.hpp: Wrong floating definition");
+						throw GENERAL_WRONG_FLOATING_VALUE;
 				}
 				for (++i; i != l.size(); ++i) {
 					if (!is_numeric(l[i]))
-						throw std::runtime_error("general.hpp: Wrong floating definition after '.'");
+						throw GENERAL_WRONG_FLOATING_VALUE_AFTER_DOT;
 				}
 				result = literal_type::floating;
 			} else if (l.starts_with("0b")) {
 				for (auto c : l | std::views::drop(2)) {
 					if (c != '0' && c != '1')
-						throw std::runtime_error("general.hpp: Wrong binary definition");
+						throw GENERAL_WRONG_BINARY_VALUE;
 				}
 				result = literal_type::binary;
 			} else if (l.starts_with("0x")) {
 				for (auto c : l | std::views::drop(2)) {
 					if (!is_hexadecimal(c))
-						throw std::runtime_error("general.hpp: Wrong hex definition");
+						throw GENERAL_WRONG_HEX_VALUE;
 				}
 				result = literal_type::hexadecimal;
 			} else {
 				for (auto c : l) {
 					if (!is_numeric(c))
-						throw std::runtime_error("general.hpp: Wrong decimal definition");
+						throw GENERAL_WRONG_DECIMAL_VALUE;
 				}
 				result = literal_type::decimal;
 			}
@@ -128,5 +132,9 @@ namespace alone {
 
 	template<typename T> struct limit_t {
 		T n, max;
+
+		bool is_lim() {
+			return n == max;
+		}
 	};
 }

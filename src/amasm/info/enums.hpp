@@ -13,7 +13,6 @@ namespace alone::amasm {
 		identifier = 0x80, number,
 		data_type, inst_name,
 		kw_this, kw_var, kw_section, kw_label, kw_func, kw_struct,
-		kw_call, kw_ncall,
 		max = 0xFF
 	};
 	enum class parse_rule_type {

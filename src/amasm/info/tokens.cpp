@@ -1,8 +1,5 @@
 #include "tokens.hpp"
 
-//std
-#include <stdexcept>
-
 //alone
 #include "error_codes.hpp"
 #include "general.hpp"
