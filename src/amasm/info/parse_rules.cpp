@@ -5,6 +5,7 @@
 
 //alone
 #include "general.hpp"
+#include "error_codes.hpp"
 
 //alone::amasm
 #include "consts.hpp"
@@ -39,7 +40,7 @@ namespace alone::amasm {
 			break;
 		}
 		default:
-			throw std::runtime_error("data_types.cpp: Wrong l");
+			throw AMASM_PARSE_RULES_WRONG_LITERAL;
 		}
 	}
 	parse_rule_t::parse_rule_t(size_t n) :

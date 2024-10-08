@@ -32,6 +32,6 @@ namespace alone::amasm {
 		                             size_t start_idx);
 
 	private:
-
+		static bool _match_simple_rule(const parse_rule_ptr& rule, const token_t& token);
 	};
 }

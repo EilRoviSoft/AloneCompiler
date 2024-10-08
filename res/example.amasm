@@ -2,3 +2,10 @@ struct vector2 {
 	var %x, float64, [%this]
 	var %y, float64, [%this + 8]
 }
+
+func @add(float64, float64): float64 {
+	add64f [%spx - 8], [%spx - 16]
+	sub64u %spx, 16
+	push64 %asx
+	ret
+}

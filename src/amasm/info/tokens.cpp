@@ -5,6 +5,7 @@
 
 //alone
 #include "general.hpp"
+#include "error_codes.hpp"
 
 //alone::amasm
 #include "consts.hpp"
@@ -32,7 +33,7 @@ namespace alone::amasm {
 			type = token_type::number;
 			break;
 		default:
-			throw std::runtime_error("tokens.cpp: Wrong input");
+			throw AMASM_TOKENS_WRONG_INPUT;
 		}
 	}
 }

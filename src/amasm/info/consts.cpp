@@ -21,21 +21,17 @@ namespace alone::amasm {
 	}
 
 	void init_consts() {
-		singular_tokens = {
-			'(', ')', '[', ']', '{', '}',
-			'.', ',', ':', ';',
-			'@', '$', '%', '\"',
-			'+', '-', '*', '/'
-		};
+		singular_tokens = { '(', ')', '[', ']', '{', '}', '.', ',', ':', ';', '@', '$', '%', '\"', '+', '-', '*', '/' };
 		defined_tokens = {
-			{ "this",    token_type::kw_this },
-			{ "var",     token_type::kw_var },
+			{ "this", token_type::kw_this },
+			{ "var", token_type::kw_var },
 			{ "section", token_type::kw_section },
-			{ "label",   token_type::kw_label },
-			{ "func",    token_type::kw_func },
-			{ "struct",  token_type::kw_struct },
+			{ "label", token_type::kw_label },
+			{ "func", token_type::kw_func },
+			{ "struct", token_type::kw_struct },
 		};
 		data_types = {
+			make_data_type("void", 0),
 			make_data_type("uint8", 1),
 			make_data_type("uint16", 2),
 			make_data_type("uint32", 4),
@@ -48,9 +44,11 @@ namespace alone::amasm {
 			make_data_type("float64", 8)
 		};
 
-		for (const auto& it : data_types | std::views::filter([](const auto& it) {
-			return !defined_tokens.contains(it.first);
-		}) | std::views::keys) {
+		for (const auto& it : data_types | std::views::filter(
+				[](const auto& it) {
+					return !defined_tokens.contains(it.first);
+				}
+			) | std::views::keys) {
 			defined_tokens.emplace(it, token_type::data_type);
 		}
 
@@ -91,28 +89,34 @@ namespace alone::amasm {
 		rules.emplace("kw_func", make_rule(token_type::kw_func));
 		rules.emplace("kw_struct", make_rule(token_type::kw_struct));
 
+		rules.emplace("kw_call", make_rule(token_type::kw_call));
+		rules.emplace("kw_ncall", make_rule(token_type::kw_ncall));
+
 		//complex rules
 
-		//make_rule(Lexer::tokenize_rule_sequence(""))
+		rules.emplace(
+			"address_with_displacement",
+			make_rule(Lexer::tokenize_rule_sequence("[%identifier |2 +- number]"))
+		);
+		rules.emplace(
+			"pole_definition",
+			make_rule(Lexer::tokenize_rule_sequence("kw_var %identifier, data_type, [%kw_this ?2 + number]"))
+		);
 
-		rules.emplace("address_with_displacement", make_rule(Lexer::tokenize_rule_sequence(
-			"[%identifier |2 +- number]")));
-		/*rules.emplace("var_definition", make_rule(Lexer::tokenize_rule_sequence(
-			"kw_var %identifier")));*/
-		/*rules.emplace("pole_offset", make_rule(Lexer::tokenize_rule_sequence(
-			"[%this + number]")));*/
-		rules.emplace("pole_definition", make_rule(Lexer::tokenize_rule_sequence(
-			"kw_var %identifier, data_type, [%kw_this ?2 + number]")));
+		rules.emplace(
+			"function_definition",
+			make_rule(Lexer::tokenize_rule_sequence("kw_func @identifier(skip_args) ?2 : data_type { skip_body }"))
+		);
 
-		rules.emplace("function_definition", make_rule(Lexer::tokenize_rule_sequence(
-			"kw_func @identifier(skip_args) { skip_body }")));
-
-		rules.emplace("struct_definition", make_rule(Lexer::tokenize_rule_sequence(
-			"kw_struct identifier { skip_body }")));
+		rules.emplace(
+			"struct_definition",
+			make_rule(Lexer::tokenize_rule_sequence("kw_struct identifier { skip_body }"))
+		);
 
 		//instruction rules
 
-		rules.emplace("inst0", make_rule(Lexer::tokenize_rule_sequence(
-			"identifier")));
+		rules.emplace("call", make_rule(Lexer::tokenize_rule_sequence("kw_call @identifier(skip_args)")));
+		rules.emplace("ncall", make_rule(Lexer::tokenize_rule_sequence("kw_ncall @identifier(skip_args)")));
+		rules.emplace("inst0", make_rule(Lexer::tokenize_rule_sequence("identifier")));
 	}
 }

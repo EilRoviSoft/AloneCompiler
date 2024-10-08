@@ -5,6 +5,7 @@
 
 //alone
 #include "general.hpp"
+#include "error_codes.hpp"
 
 namespace alone::amasm {
 	token_array_t Lexer::tokenize_code(const std::string& code) {
@@ -40,7 +41,7 @@ namespace alone::amasm {
 					result.emplace_back(rules.at(temp));
 					break;
 				case literal_type::none:
-					throw std::runtime_error("lexer.cpp: Wrong literal type.");
+					throw AMASM_LEXER_WRONG_LITERAL_TYPE;
 				default:
 					result.emplace_back(make_rule(temp));
 					break;
