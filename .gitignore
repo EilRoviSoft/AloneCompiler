@@ -1,3 +1,4 @@
 .git/
-.idea/
-cmake-build-debug/
+.github/
+.vs/
+out/

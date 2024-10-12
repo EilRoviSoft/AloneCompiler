@@ -26,7 +26,7 @@ namespace alone::amasm {
 		explicit data_type_t(std::string n, size_t s);
 		explicit data_type_t(std::string n, std::vector<pole_t> v);
 
-		void add_pole(const std::string& n, const data_type_ptr& t, size_t o = 0);
+		void add_pole(const std::string& n, const data_type_ptr& t);
 	};
 
 	struct variable_t {

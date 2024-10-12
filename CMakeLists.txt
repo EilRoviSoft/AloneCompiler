@@ -1,5 +1,15 @@
+﻿# CMakeList.txt : CMake project for AloneCompiler, include source and define
+# project specific logic here.
+#
 cmake_minimum_required(VERSION 3.28)
-project(AloneCompiler)
+
+# Enable Hot Reload for MSVC compilers if supported.
+if (POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
+
+project ("AloneCompiler")
 
 set(CMAKE_CXX_STANDARD 26)
 
@@ -8,7 +18,9 @@ include_directories(src/amasm)
 include_directories(src/vm)
 include_directories(src/vm/isa)
 
+# Add source to this project's executable.
 add_executable(AloneCompiler
+        src/error_codes.hpp
         src/general.hpp
         src/main.cpp
         src/amasm/lexer.hpp
@@ -26,6 +38,7 @@ add_executable(AloneCompiler
         src/amasm/info/consts.cpp
         src/amasm/info/consts.hpp
         src/amasm/info/include.hpp
+        src/amasm/info/extras.hpp
         src/vm/isa/general.hpp
         src/vm/isa/linker.hpp
         src/vm/isa/system.hpp
@@ -33,12 +46,16 @@ add_executable(AloneCompiler
         src/vm/util.hpp
         src/vm/virtual_machine.hpp
         src/vm/virtual_machine.cpp
-        src/error_codes.hpp)
+        src/amasm/info/extras.cpp)
 
 add_compile_definitions(DEBUG_STATUS)
+
+# TODO: Add tests and install targets if needed.
 
 target_include_directories(AloneCompiler PRIVATE
         src
         src/amasm
         src/vm
         src/vm/isa)
+
+set_property(TARGET AloneCompiler PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res")

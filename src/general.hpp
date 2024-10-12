@@ -13,6 +13,12 @@
 namespace alone {
 	//enums
 
+	enum class argument_type : size_t {
+		empty = 0,
+		direct,
+		immediate,
+		indirect_with_displacement,
+	};
 	enum class literal_type {
 		none = 0,
 		word,
@@ -21,6 +27,7 @@ namespace alone {
 
 	//alias types
 
+	using inst_code_t = uint32_t;
 	using byte_array_t = std::vector<std::byte>;
 	//using string_array_t = std::vector<std::string>;
 

@@ -20,12 +20,13 @@ namespace alone::amasm {
 			for (const pole_t& it : poles)
 				size += it.type->size;
 			for (size_t i = 0; i != poles.size() - 1; ++i)
-				poles.back().offset + poles.back().type->size;
+				poles[i + 1].offset = poles[i].offset + poles[i].type->size;
 		} else
 			throw AMASM_DATA_TYPES_WRONG_CONSTRUCTOR_USAGE;
 	}
 
-	void data_type_t::add_pole(const std::string& n, const data_type_ptr& t, size_t o) {
-		poles.emplace_back(n, t, poles.empty() ? o : poles.back().offset + poles.back().type->size);
+	void data_type_t::add_pole(const std::string& n, const data_type_ptr& t/*, size_t o*/) {
+		poles.emplace_back(n, t, poles.empty() ? 0 : poles.back().offset + poles.back().type->size);
+		size += t->size;
 	}
 }

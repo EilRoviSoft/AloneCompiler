@@ -5,10 +5,12 @@
 #include <cstdint>
 #include <functional>
 
+//alone
+#include "general.hpp"
+
 namespace alone::vm {
 	using address_t = uint64_t;
 	using machine_word_t = uint64_t;
-	using inst_code_t = uint32_t;
 	using inst_func_t = std::function<size_t(const struct context_t&)>;
 	using flags_t = std::bitset<64>;
 
@@ -35,12 +37,6 @@ namespace alone::vm {
 		dframe, //pointers
 		eframe, //external memory
 		sframe, //static memory
-	};
-	enum class argument_type : size_t {
-		empty = 0,
-		memory,
-		immediate,
-		indirect_with_displacement,
 	};
 
 	constexpr size_t machine_word_size = sizeof(uint64_t);

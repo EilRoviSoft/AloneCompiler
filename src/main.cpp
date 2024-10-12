@@ -14,65 +14,34 @@
 
 using namespace alone;
 
-std::vector<std::pair<bool, std::function<int()>>> tests;
+std::vector<std::tuple<bool, std::function<int()>>> tests;
 
 void init_tasks() {
-	tests = {
-		std::make_pair(
-			false,
-			[]() {
-				std::string guide = "address_with_displacement";
-				std::fstream file("res/match_test.amasm");
-				if (!file.is_open())
-					return -1;
-				auto text = amasm::Scanner::scan(file);
-				file.close();
+	tests.emplace_back(true, []() {
+		for (const std::string& it : amasm::data_types | std::views::keys)
+			std::cout << it << '\n';
 
-				return (int) !amasm::Parser::match_rules(guide, amasm::Lexer::tokenize_code(text), 0);
-			}
-		),
-		std::make_pair(
-			true,
-			[]() {
-				std::fstream file("res/example.amasm");
-				if (!file.is_open())
-					return -1;
-				auto text = amasm::Scanner::scan(file);
-				file.close();
+		return 0;
+	});
+	tests.emplace_back(true, []() {
+		std::ofstream output("test.txt");
+		output << "hello world\n";
+		output.close();
 
-				auto tokens = amasm::Lexer::tokenize_code(text);
-				auto code = amasm::Parser::parse(tokens);
+		return 0;
+	});
+	tests.emplace_back(true, []() {
+		std::fstream file("example.amasm");
+		if (!file.is_open())
+			return -1;
+		auto text = amasm::Scanner::scan(file);
+		file.close();
 
-				return 0;
-			}
-		),
-		std::make_pair(
-			true,
-			[]() {
-				for (const std::string& it : amasm::data_types | std::views::keys)
-					std::cout << it << '\n';
+		auto tokens = amasm::Lexer::tokenize_code(text);
+		auto code = amasm::Parser::parse(tokens);
 
-				return 0;
-			}
-		),
-		std::make_pair(
-			false,
-			[]() {
-				vm::VirtualMachine vm;
-
-				std::fstream input_file("res/example.amasm");
-				if (!input_file.is_open())
-					return -1;
-				auto scanned = amasm::Scanner::scan(input_file);
-				input_file.close();
-
-				auto tokenized = amasm::Lexer::tokenize_code(scanned);
-				//auto parsed = amasm::Parser::parse(tokenized);
-
-				return 0;
-			}
-		)
-	};
+		return 0;
+	});
 }
 
 int main() {

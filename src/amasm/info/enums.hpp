@@ -15,19 +15,4 @@ namespace alone::amasm {
 		kw_this, kw_var, kw_section, kw_label, kw_func, kw_struct,
 		max = 0xFF
 	};
-	enum class parse_rule_type {
-		none = 0,
-		singular_token,
-		literal,
-		number,
-		sequence,
-		flag
-	};
-	enum class parse_flag_type {
-		none = 0,
-		optional,
-		variant,
-		skip_body,
-		skip_args
-	};
 }
