@@ -12,7 +12,6 @@
 
 namespace alone::amasm {
 	extern std::unordered_set<char> singular_tokens;
-	extern std::unordered_map<std::string, inst_info_t> instructions;
 	extern std::unordered_map<std::string, token_type> defined_tokens;
 	extern std::unordered_map<std::string, data_type_ptr> data_types;
 	extern std::unordered_map<std::string, std::vector<token_type>> rules;

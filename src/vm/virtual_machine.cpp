@@ -4,60 +4,17 @@
 #include <ranges>
 #include <stdexcept>
 
-//alone::vm::util
-#include "vm/util.hpp"
+//alone
+#include "util.hpp"
 
 namespace alone::vm {
-	//context_t
-
-	void context_t::init_spans(VirtualMachine& vm) {
-		regs = std::span(vm._p0.begin(), registers_size);
-		program = std::span(vm._p0.begin() + registers_size, program_size);
-		stack = std::span(vm._p0.begin() + registers_size + program_size, mframe_size - registers_size - program_size);
-		heap = std::span(vm._p1.begin(), dframe_size);
-	}
-
-	//call it every time, when you run new program
-	void context_t::init_registers() const {
-		ipx() = registers_size;
-		spx() = registers_size + program_size;
-		flags()[static_cast<unsigned long long>(flags_set::rf)] = true;
-	}
-
-	machine_word_t& context_t::asx() const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::asx]);
-	}
-	machine_word_t& context_t::rsx() const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::rsx]);
-	}
-	machine_word_t& context_t::lox() const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::lox]);
-	}
-	machine_word_t& context_t::rox() const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::rox]);
-	}
-	machine_word_t& context_t::ipx() const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::ipx]);
-	}
-	machine_word_t& context_t::spx() const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::spx]);
-	}
-	machine_word_t& context_t::bpx() const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::bpx]);
-	}
-	flags_t& context_t::flags() const {
-		return reinterpret_cast<flags_t&>(regs[(machine_word_t) regs_set::flags]);
-	}
-	machine_word_t& context_t::grx(uint64_t id) const {
-		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::grx + id * sizeof(machine_word_t)]);
-	}
-
 	//VirtualMachine
 
 	VirtualMachine::VirtualMachine() :
 		ctx(),
 		_p0(),
-		_p1() {}
+		_p1() {
+	}
 
 	void VirtualMachine::init_isa() {}
 
@@ -71,17 +28,9 @@ namespace alone::vm {
 
 		while (ctx.flags()[(size_t) flags_set::rf] && ctx.ipx() < registers_size + ctx.program_size) {
 			inst_code_t opcode = *get<inst_code_t>(ctx.ipx());
-			size_t offset = _inst_set[opcode](ctx);
+			size_t offset = instructions_by_code.at(opcode)->func(ctx);
 			ctx.ipx() += offset;
 		}
-	}
-
-	void VirtualMachine::add_instruction(inst_code_t id, const inst_func_t& instruction) {
-		_inst_set.emplace(id, instruction);
-	}
-
-	void VirtualMachine::remove_instruction(inst_code_t id) {
-		_inst_set.erase(id);
 	}
 
 	template<class T> T* VirtualMachine::get(address_t address) {

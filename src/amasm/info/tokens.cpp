@@ -9,10 +9,12 @@
 
 namespace alone::amasm {
 	token_t::token_t() :
-		type(token_type::none) {}
+		type(token_type::none) {
+	}
 	token_t::token_t(char c) :
 		type((token_type) c),
-		literal(1, c) {}
+		literal(1, c) {
+	}
 	token_t::token_t(std::string s) :
 		literal(std::move(s)) {
 		switch (check_type(literal)) {

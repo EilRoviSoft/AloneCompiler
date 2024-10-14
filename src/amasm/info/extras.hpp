@@ -8,10 +8,6 @@
 #include "general.hpp"
 
 namespace alone::amasm {
-	struct inst_info_t {
-		size_t max_args_count, bit_depth;
-	};
-
 	struct argument_t {
 		//direct -> name, immediate -> value, indirect_with_displacement -> name + value
 		argument_type type;

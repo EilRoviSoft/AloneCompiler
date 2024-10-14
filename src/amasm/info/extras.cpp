@@ -1,7 +1,6 @@
 #include "extras.hpp"
 
 //std
-#include <vector>
 #include <ranges>
 
 //alone

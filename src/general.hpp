@@ -1,132 +1,59 @@
 #pragma once
 
 //std
+#include <array>
+#include <bitset>
 #include <functional>
 #include <ranges>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
-//alone
-#include "error_codes.hpp"
-
 namespace alone {
-	//enums
+	//data_types
+
+	using inst_code_t = uint32_t;
+	using byte_array_t = std::vector<std::byte>;
+	using address_t = uint64_t;
+	using machine_word_t = uint64_t;
+	using flags_t = std::bitset<64>;
 
 	enum class argument_type : size_t {
 		empty = 0,
 		direct,
 		immediate,
-		indirect_with_displacement,
+		indirect_with_displacement
 	};
-	enum class literal_type {
+	enum class literal_type : uint8_t {
 		none = 0,
 		word,
 		binary, decimal, hexadecimal, floating
 	};
-
-	//alias types
-
-	using inst_code_t = uint32_t;
-	using byte_array_t = std::vector<std::byte>;
-	//using string_array_t = std::vector<std::string>;
-
-	//objects
-
-	inline auto string_hasher = std::hash<std::string>();
-
-	//functions
-
-	constexpr size_t gen_mask(size_t pos) {
-		return 1ull << pos;
-	}
-	constexpr size_t gen_mask(std::initializer_list<size_t> positions) {
-		size_t result = 0;
-		for (auto it : positions)
-			result += 1ull << it;
-		return result;
-	}
-	constexpr size_t gen_mask(size_t a, size_t b) {
-		size_t result = 0;
-		for (size_t i = a; i <= b; ++i)
-			result += 1ull << i;
-		return result;
-	}
-
-	constexpr bool is_alpha(char c) {
-		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
-	}
-	constexpr bool is_binary(char c) {
-		return c == '0' || c == '1';
-	}
-	constexpr bool is_numeric(char c) {
-		return c >= '0' && c <= '9';
-	}
-	constexpr bool is_hexadecimal(char c) {
-		return is_numeric(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
-	}
-	constexpr bool is_alpha_numeric(char c) {
-		return is_alpha(c) || is_numeric(c);
-	}
-	constexpr bool is_whitespace(char c) {
-		return c == ' ' || c == '\n' || c == '\t';
-	}
-
-	inline literal_type check_type(const std::string& l) {
-		literal_type result;
-
-		if (is_alpha(l.front())) {
-			for (auto c : l | std::views::drop(1)) {
-				if (!is_alpha_numeric(c))
-					throw GENERAL_WRONG_WORD_VALUE;
-			}
-			result = literal_type::word;
-		} else if (is_numeric(l.front())) {
-			if (l.contains('.')) {
-				size_t i;
-				for (i = 1; l[i] != '.'; ++i) {
-					if (!is_numeric(l[i]))
-						throw GENERAL_WRONG_FLOATING_VALUE;
-				}
-				for (++i; i != l.size(); ++i) {
-					if (!is_numeric(l[i]))
-						throw GENERAL_WRONG_FLOATING_VALUE_AFTER_DOT;
-				}
-				result = literal_type::floating;
-			} else if (l.starts_with("0b")) {
-				for (auto c : l | std::views::drop(2)) {
-					if (c != '0' && c != '1')
-						throw GENERAL_WRONG_BINARY_VALUE;
-				}
-				result = literal_type::binary;
-			} else if (l.starts_with("0x")) {
-				for (auto c : l | std::views::drop(2)) {
-					if (!is_hexadecimal(c))
-						throw GENERAL_WRONG_HEX_VALUE;
-				}
-				result = literal_type::hexadecimal;
-			} else {
-				for (auto c : l) {
-					if (!is_numeric(c))
-						throw GENERAL_WRONG_DECIMAL_VALUE;
-				}
-				result = literal_type::decimal;
-			}
-		} else
-			result = literal_type::none;
-
-		return result;
-	}
-
-	inline std::string gen_str(char a, char b) {
-		std::string result;
-		result.resize(b - a + 1);
-		for (char i = a; i <= b; ++i)
-			result[i - a] = i;
-		return result;
-	}
-
-	//structs
+	enum class regs_set : size_t {
+		asx   = 0 * sizeof(machine_word_t), //Address System register
+		rsx   = 1 * sizeof(machine_word_t), //Result System register
+		lox   = 2 * sizeof(machine_word_t), //Left Operand register
+		rox   = 3 * sizeof(machine_word_t), //Right Operand register
+		ipx   = 4 * sizeof(machine_word_t), //Instruction Pointer
+		bpx   = 5 * sizeof(machine_word_t), //Stack Pointer
+		spx   = 6 * sizeof(machine_word_t), //Base Pointer
+		flags = 7 * sizeof(machine_word_t), //Flags register
+		grx   = 8 * sizeof(machine_word_t), //General Registers start
+	};
+	enum class flags_set : size_t {
+		rf = 0, //is program running flag
+		zf = 1, //zero flag
+		sf = 2, //sign flag
+		cf = 3, //carry flag
+		of = 4, //overflow flag
+	};
+	enum class memory_type : size_t {
+		mframe, //registers + application + stack
+		dframe, //pointers
+		eframe, //external memory
+		sframe, //static memory
+	};
 
 	template<typename... Ts> struct overloaded : Ts... {
 		using Ts::operator()...;
@@ -137,11 +64,34 @@ namespace alone {
 		T* ptr;
 	};
 
-	template<typename T> struct limit_t {
-		T n, max;
+	//objects
 
-		bool is_lim() {
-			return n == max;
-		}
-	};
+	inline auto string_hasher = std::hash<std::string>();
+	constexpr size_t machine_word_size = sizeof(uint64_t);
+	constexpr size_t inst_code_size = sizeof(inst_code_t);
+	constexpr size_t registers_size = 256;
+	constexpr size_t system_registers_size = registers_size - static_cast<int>(regs_set::grx);
+	constexpr size_t general_registers_size = registers_size - system_registers_size;
+	constexpr size_t mframe_size = 1 << 16;
+	constexpr size_t dframe_size = 16;
+
+	//functions
+
+	constexpr size_t gen_mask(size_t pos);
+	constexpr size_t gen_mask(std::initializer_list<size_t> positions);
+	constexpr size_t gen_mask(size_t a, size_t b);
+
+	constexpr bool is_alpha(char c);
+	constexpr bool is_binary(char c);
+	constexpr bool is_numeric(char c);
+	constexpr bool is_hexadecimal(char c);
+	constexpr bool is_alpha_numeric(char c);
+	constexpr bool is_whitespace(char c);
+
+	literal_type check_type(const std::string& l);
+
+	std::string gen_str(char a, char b);
+
+	std::tuple<address_t, memory_type> decompose_address(address_t address);
+	std::tuple<inst_code_t, std::array<argument_type, 4>> decompose_instruction(inst_code_t instruction);
 }

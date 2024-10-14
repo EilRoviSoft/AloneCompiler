@@ -7,11 +7,14 @@ namespace alone::amasm {
 	pole_t::pole_t(std::string n, data_type_ptr t, size_t o) :
 		name(std::move(n)),
 		type(std::move(t)),
-		offset(o) {}
+		offset(o) {
+		
+	}
 
 	data_type_t::data_type_t(std::string n, size_t s) :
 		name(std::move(n)),
-		size(s) {}
+		size(s) {
+	}
 	data_type_t::data_type_t(std::string n, std::vector<pole_t> v) :
 		name(std::move(n)),
 		poles(std::move(v)) {
