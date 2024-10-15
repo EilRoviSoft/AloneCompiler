@@ -23,9 +23,9 @@ namespace alone {
 	extern std::unordered_map<std::string, inst_ptr> instructions_by_name;
 	extern std::unordered_map<inst_code_t, inst_ptr> instructions_by_code;
 
-	void init_instruction(std::string name, 
-						  inst_code_t code, 
-						  size_t max_args_count, 
-						  size_t bit_depth, 
+	void init_instruction(std::string name,
+						  inst_code_t code,
+						  size_t max_args_count,
+						  size_t bit_depth,
 						  inst_func_t func);
 }

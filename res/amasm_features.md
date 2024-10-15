@@ -1,20 +1,18 @@
 # Table of contents
 
-[//]: # (@formatter:off)
 <!-- TOC -->
-* [Table of contents](#table-of-contents)
-* [Code sections](#code-sections)
-* [Memory types](#memory-types)
-* [Variables, constants and registers](#variables-constants-and-registers)
-* [Comments](#comments)
-* [Addressing modes](#addressing-modes)
-  * [Direct operands](#direct-operands)
-  * [Simple operands](#simple-operands)
-* [Labels and branches](#labels-and-branches)
-* [Functions](#functions)
-* [Struct](#struct)
+- [Table of contents](#table-of-contents)
+- [Code sections](#code-sections)
+- [Memory types](#memory-types)
+- [Variables, constants and registers](#variables-constants-and-registers)
+- [Comments](#comments)
+- [Addressing modes](#addressing-modes)
+  - [Direct operands](#direct-operands)
+  - [Simple operands](#simple-operands)
+- [Labels and branches](#labels-and-branches)
+- [Functions](#functions)
+- [Struct](#struct)
 <!-- TOC -->
-[//]: # (@formatter:on)
 
 ---
 
