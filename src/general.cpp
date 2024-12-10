@@ -4,22 +4,6 @@
 #include "error_codes.hpp"
 
 namespace alone {
-	constexpr size_t gen_mask(size_t pos) {
-		return 1ull << pos;
-	}
-	constexpr size_t gen_mask(std::initializer_list<size_t> positions) {
-		size_t result = 0;
-		for (auto it : positions)
-			result += 1ull << it;
-		return result;
-	}
-	constexpr size_t gen_mask(size_t a, size_t b) {
-		size_t result = 0;
-		for (size_t i = a; i <= b; ++i)
-			result += 1ull << i;
-		return result;
-	}
-
 	constexpr bool is_alpha(char c) {
 		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
 	}
@@ -94,12 +78,16 @@ namespace alone {
 	}
 
 	std::tuple<address_t, memory_type> decompose_address(address_t address) {
-		return { (address & ~gen_mask(0, 1)) >> 2, memory_type(address & gen_mask(0, 1)) };
+		return { (address & 0xC000000000000000) >> 2, memory_type(address & 0b11) };
 	}
 	std::tuple<inst_code_t, std::array<argument_type, 4>> decompose_instruction(inst_code_t instruction) {
-		std::array<argument_type, 4> args = {};
-		for (size_t i : std::views::iota(0, 4))
-			args[i] = argument_type((instruction & gen_mask(i * 2, 1 + i * 2)) >> i * 2);
-		return { (instruction & ~gen_mask(0, 7)) >> 8, args };
+		const size_t args_metadata = (instruction & 0xFF000000) >> 24;
+		std::array args = {
+			argument_type(args_metadata & 0b00000011),
+			argument_type(args_metadata & 0b00001100),
+			argument_type(args_metadata & 0b00110000),
+			argument_type(args_metadata & 0b11000000)
+		};
+		return { instruction & 0x00FFFFFF, args };
 	}
 }

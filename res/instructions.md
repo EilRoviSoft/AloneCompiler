@@ -30,17 +30,17 @@ If you want to use standard `jmp`, use `add64u` or `add64u` instead
 
 | Name    | Size | ID   | Semantics                    | Notes                                                   |
 | ------- | ---- | ---- | ---------------------------- | ------------------------------------------------------- |
-| jif_eql | 12   | 0x80 | `jif_eql address`            | Jumps to address if `ZF`                                |
+| jif_eql | 12   | 0x80 | `jif_eql address`            | Jumps to `address` if `ZF`                              |
 | jif_eql | 20   | 0x81 | `jif_eql address0, address1` | Jumps to `address0` if `ZF` else to `address1`          |
-| jif_neq | 12   | 0x82 | `jif_neq address`            | Jumps to address if not `ZF`                            |
+| jif_neq | 12   | 0x82 | `jif_neq address`            | Jumps to `address` if not `ZF`                          |
 | jif_neq | 20   | 0x83 | `jif_neq address0, address1` | Jumps to `address0` if not `ZF` else to `address1`      |
-| jif_grt | 12   | 0x84 | `jif_grt address`            | Jumps to address if `SF`                                |
+| jif_grt | 12   | 0x84 | `jif_grt address`            | Jumps to `address` if `SF`                              |
 | jif_grt | 20   | 0x85 | `jif_grt address0, address1` | Jumps to `address0` if `SF` else to `address1`          |
-| jif_goq | 12   | 0x86 | `jif_goq address`            | Jumps to address if `SF` or `ZF`                        |
+| jif_goq | 12   | 0x86 | `jif_goq address`            | Jumps to `address` if `SF` or `ZF`                      |
 | jif_goq | 20   | 0x87 | `jif_goq address0, address1` | Jumps to `address0` if `SF` or `ZF` else to `address1`  |
-| jif_lwr | 12   | 0x88 | `jif_lwr address`            | Jumps to address if !`SF`                               |
+| jif_lwr | 12   | 0x88 | `jif_lwr address`            | Jumps to `address` if !`SF`                             |
 | jif_lwr | 20   | 0x89 | `jif_lwr address0, address1` | Jumps to `address0` if !`SF` else to `address1`         |
-| jif_loq | 12   | 0x8A | `jif_loq address`            | Jumps to address if !`SF` or `ZF`                       |
+| jif_loq | 12   | 0x8A | `jif_loq address`            | Jumps to `address` if !`SF` or `ZF`                     |
 | jif_loq | 20   | 0x8B | `jif_loq address0, address1` | Jumps to `address0` if !`SF` or `ZF` else to `address1` |
 
 ---
@@ -56,17 +56,18 @@ Offset ranges
 | 32   | `0x120 - 0x12F` |
 | 64   | `0x130 - 0x13F` |
 
-| Name | Size             | Offset + ID     | Semantics        | Equals to       | Notes                        |
-| ---- | ---------------- | --------------- | ---------------- | --------------- | ---------------------------- |
-| mov  | 12 + `args.size` | `Offset + 0x00` | `mov a0, a1`     | `a0 = a1`       |                              |
-| push | 4 + `arg.size`   | `Offset + 0x01` | `push a0`        |                 | pushes `a0` on stack         |
-| pop  | 4                | `Offset + 0x02` | `pop`            |                 | pops last n bytes from stack |
-| not  | 4 + `args.size`  | `Offset + 0x03` | `not a0, a1`     | `a0 = ~a1`      |                              |
-| and  | 4 + `args.size`  | `Offset + 0x04` | `and a0, a1, a2` | `a0 = a1 & a2`  |                              |
-| or   | 4 + `args.size`  | `Offset + 0x05` | `or a0, a1, a2`  | `a0 = a1 \| a2` |                              |
-| xor  | 4 + `args.size`  | `Offset + 0x06` | `xor a0, a1, a2` | `a0 = a1 ^ a2`  |                              |
-| shl  | 4 + `args.size`  | `Offset + 0x07` | `shl a0, a1, a2` | `a0 = a1 << a2` |                              |
-| shr  | 4 + `args.size`  | `Offset + 0x08` | `shr a0, a1, a2` | `a0 = a1 >> a2` |                              |
+| Name | Size             | Offset + ID     | Semantics        | Equals to                                    |
+| ---- | ---------------- | --------------- | ---------------- | -------------------------------------------- |
+| mov  | 12 + `args.size` | `Offset + 0x00` | `mov a0, a1`     | `a0 = a1`                                    |
+| push | 4 + `arg.size`   | `Offset + 0x01` | `push a0`        | `%spx += pop.size;`                          |
+| pop  | 4                | `Offset + 0x02` | `pop`            | `%asx = [%spx - pop.size]; %spx -= pop.size` |
+| pop  | 4 + `arg.size`   | `Offset + 0x03` | `pop a0`         | `a0 = [%spx - pop.size]; %spx -= pop.size`   |
+| not  | 4 + `args.size`  | `Offset + 0x04` | `not a0, a1`     | `a0 = ~a1`                                   |
+| and  | 4 + `args.size`  | `Offset + 0x05` | `and a0, a1, a2` | `a0 = a1 & a2`                               |
+| or   | 4 + `args.size`  | `Offset + 0x06` | `or a0, a1, a2`  | `a0 = a1 \| a2`                              |
+| xor  | 4 + `args.size`  | `Offset + 0x07` | `xor a0, a1, a2` | `a0 = a1 ^ a2`                               |
+| shl  | 4 + `args.size`  | `Offset + 0x08` | `shl a0, a1, a2` | `a0 = a1 << a2`                              |
+| shr  | 4 + `args.size`  | `Offset + 0x09` | `shr a0, a1, a2` | `a0 = a1 >> a2`                              |
 
 ---
 
@@ -85,16 +86,16 @@ Offset ranges
 | float32        | `0x1C0 - 0x1CF` |
 | float64        | `0x1D0 - 0x1DF` |
 
-| Name | Size            | Offset + ID     | Semantics        | Equals to      | Notes                        |
-| ---- | --------------- | --------------- | ---------------- | -------------- | ---------------------------- |
-| add  | 4 + `args.size` | `Offset + 0x00` | `add a0, a1, a2` | `a0 = a1 + a2` |                              |
-| sub  | 4 + `args.size` | `Offset + 0x01` | `sub a0, a1, a2` | `a0 = a1 - a2` |                              |
-| mul  | 4 + `args.size` | `Offset + 0x02` | `mul a0, a1, a2` | `a0 = a1 * a2` |                              |
-| div  | 4 + `args.size` | `Offset + 0x03` | `div a0, a1, a2` | `a0 = a1 / a2` |                              |
-| mod  | 4 + `args.size` | `Offset + 0x04` | `mod a0, a1, a2` | `a0 = a1 % a2` |                              |
-| inc  | 4 + `arg.size`  | `Offset + 0x05` | `inc a0`         | `++a0`         |                              |
-| dec  | 4 + `arg.size`  | `Offset + 0x06` | `dec a0`         | `--a0`         |                              |
-| neg  | 4 + `args.size` | `Offset + 0x07` | `neg a0, a1`     | `a0 = -a1`     | only exists for signed types |
-| cmp  | 4 + `args.size` | `Offset + 0x08` | `cmp a0, a1`     | `a0 <=> a1`    | writes result to flags       |
+| Name | Size            | Offset + ID     | Semantics        | Equals to      | Notes                                |
+| ---- | --------------- | --------------- | ---------------- | -------------- | ------------------------------------ |
+| add  | 4 + `args.size` | `Offset + 0x00` | `add a0, a1, a2` | `a0 = a1 + a2` |                                      |
+| sub  | 4 + `args.size` | `Offset + 0x01` | `sub a0, a1, a2` | `a0 = a1 - a2` |                                      |
+| mul  | 4 + `args.size` | `Offset + 0x02` | `mul a0, a1, a2` | `a0 = a1 * a2` |                                      |
+| div  | 4 + `args.size` | `Offset + 0x03` | `div a0, a1, a2` | `a0 = a1 / a2` |                                      |
+| mod  | 4 + `args.size` | `Offset + 0x04` | `mod a0, a1, a2` | `a0 = a1 % a2` |                                      |
+| inc  | 4 + `arg.size`  | `Offset + 0x05` | `inc a0`         | `++a0`         |                                      |
+| dec  | 4 + `arg.size`  | `Offset + 0x06` | `dec a0`         | `--a0`         |                                      |
+| neg  | 4 + `args.size` | `Offset + 0x07` | `neg a0, a1`     | `a0 = -a1`     | only exists for signed types         |
+| cmp  | 4 + `args.size` | `Offset + 0x08` | `cmp a0, a1`     | `a0 <=> a1`    | writes result to flags `ZF` and `SF` |
 
 ---

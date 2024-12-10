@@ -10,9 +10,9 @@ namespace alone::amasm {
 		dot        = '.', comma  = ',', colon    = ':', semicolon = ';',
 		at         = '@', dollar = '$', percent  = '%', quote     = '\"',
 		plus       = '+', minus  = '-', star     = '*', slash     = '/',
-		identifier = 0x80, number,
-		data_type, inst_name,
-		kw_this, kw_var, kw_section, kw_label, kw_func, kw_struct,
+		identifier = 0x80, number = 129,
+		data_type = 130, inst_name = 131,
+		kw_this = 132, kw_var = 133, kw_section = 134, kw_label = 135, kw_func = 136, kw_struct = 137,
 		max = 0xFF
 	};
 }

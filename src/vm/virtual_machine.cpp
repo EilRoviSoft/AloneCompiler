@@ -1,11 +1,11 @@
 #include "virtual_machine.hpp"
 
-//std
-#include <ranges>
-#include <stdexcept>
-
 //alone
+#include "instructions.hpp"
 #include "util.hpp"
+
+//isa
+#include "isa/arithmetic.hpp"
 
 namespace alone::vm {
 	//VirtualMachine
@@ -16,7 +16,22 @@ namespace alone::vm {
 		_p1() {
 	}
 
-	void VirtualMachine::init_isa() {}
+	void VirtualMachine::init_instruction(std::string name, inst_code_t code, size_t max_args_count, size_t bit_depth, inst_func_t pred) {
+		auto ptr = std::make_shared<inst_t>(std::move(name), code, max_args_count, bit_depth, std::move(pred));
+		instructions_by_name.emplace(ptr->name, ptr);
+		instructions_by_code.emplace(ptr->code, ptr);
+	}
+
+	void VirtualMachine::init_instruction(inst_t&& inst) {
+		auto ptr = std::make_shared<inst_t>(std::move(inst));
+		instructions_by_name.emplace(ptr->name, ptr);
+		instructions_by_code.emplace(ptr->code, ptr);
+	}
+
+	void VirtualMachine::init_isa() {
+		for (auto& it : isa::generate_arithmetic_isa())
+			init_instruction(std::move(it));
+	}
 
 	void VirtualMachine::exec(const byte_array_t& program) {
 		ctx.program_size = program.size();
@@ -27,41 +42,9 @@ namespace alone::vm {
 		ctx.init_registers();
 
 		while (ctx.flags()[(size_t) flags_set::rf] && ctx.ipx() < registers_size + ctx.program_size) {
-			inst_code_t opcode = *get<inst_code_t>(ctx.ipx());
-			size_t offset = instructions_by_code.at(opcode)->func(ctx);
+			auto [opcode, args_metadata] = decompose_instruction(*ctx.get<inst_code_t>(ctx.ipx()));
+			size_t offset = instructions_by_code.at(opcode)->pred(ctx, args_metadata);
 			ctx.ipx() += offset;
 		}
-	}
-
-	template<class T> T* VirtualMachine::get(address_t address) {
-		T* result;
-
-		auto [actual_address, mem_type] = decompose_address(address);
-		if (mem_type == memory_type::mframe) {
-			result = reinterpret_cast<T*>(&_p0[actual_address]);
-		} else if (mem_type == memory_type::dframe) {
-			auto [size, ptr] = _p1[actual_address];
-			result = reinterpret_cast<T*>(ptr);
-		} else
-			throw std::runtime_error("virtual_machine.cpp: This memory type doesn'type exist.");
-
-		return result;
-	}
-	template<class T> array_t<T> VirtualMachine::get_array(address_t address) {
-		array_t<T> result;
-
-		auto [actual_address, mem_type] = decompose_address(address);
-		switch (mem_type) {
-		case memory_type::mframe:
-			result = { .size = sizeof(T), .ptr = reinterpret_cast<T*>(&_p0[actual_address]) };
-			break;
-		case memory_type::dframe:
-			result = _p1[actual_address];
-			break;
-		default:
-			throw std::runtime_error("virtual_machine.cpp: This memory type doesn'type exist.");
-		}
-
-		return result;
 	}
 }

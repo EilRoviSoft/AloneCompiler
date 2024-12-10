@@ -71,13 +71,13 @@ namespace alone::amasm::inline parser_inlined {
 		return { offset, delta };
 	}
 
-	void start_parse_struct(parse_context_t& ctx) {
-		if (!match_rule("struct_definition", ctx.tokens, ctx.i))
+	void start_parse_struct(const parse_context_t& parsing_data) {
+		if (!match_rule("struct_definition", parsing_data.tokens, parsing_data.i))
 			throw AMASM_PARSER_WRONG_STRUCT_DEFINITION;
 
-		data_type_ptr on_push = make_data_type(ctx.tokens[ctx.i + 1].literal, 0);
-		ctx.di = 3;
-		ctx.queue.emplace("struct_definition", std::move(on_push));
+		data_type_ptr on_push = make_data_type(parsing_data.tokens[parsing_data.i + 1].literal, 0);
+		parsing_data.di = 3;
+		parsing_data.queue.emplace("struct_definition", std::move(on_push));
 	}
 	void start_parse_function(parse_context_t& ctx) {
 		if (!match_rule("function_definition", ctx.tokens, ctx.i))
@@ -109,63 +109,63 @@ namespace alone::amasm::inline parser_inlined {
 		ctx.queue.emplace("function_definition", std::move(on_push));
 	}
 
-	void parse_variable(parse_context_t& ctx) {
-		if (ctx.queue.back().first == "struct_definition") {
-			if (!match_rule("pole_definition", ctx.tokens, ctx.i))
+	void parse_variable(const parse_context_t& parsing_data) {
+		if (parsing_data.queue.back().first == "struct_definition") {
+			if (!match_rule("pole_definition", parsing_data.tokens, parsing_data.i))
 				throw AMASM_PARSER_WRONG_POLE_DEFINITION;
 
-			auto& ntype = std::get<data_type_ptr>(ctx.queue.back().second);
-			bool has_own_offset = ctx.tokens[ctx.i + 5].type == token_type::comma;
+			auto& ntype = std::get<data_type_ptr>(parsing_data.queue.back().second);
+			bool has_own_offset = parsing_data.tokens[parsing_data.i + 5].type == token_type::comma;
 
-			ntype->add_pole(ctx.tokens[ctx.i + 2].literal, data_types.at(ctx.tokens[ctx.i + 4].literal));
-			ctx.di = has_own_offset ? 13 : 6;
+			ntype->add_pole(parsing_data.tokens[parsing_data.i + 2].literal, data_types.at(parsing_data.tokens[parsing_data.i + 4].literal));
+			parsing_data.di = has_own_offset ? 13 : 6;
 		} else {}
 	}
-	void parse_instruction(parse_context_t& ctx) {
-		if (ctx.queue.back().first != "function_definition")
+	void parse_instruction(const parse_context_t& parsing_data) {
+		if (parsing_data.queue.back().first != "function_definition")
 			throw AMASM_PARSER_WRONG_INST_DEFINITION_PLACE;
 
 		size_t j, dj, args_n;
-		auto& func = std::get<func_info_t>(ctx.queue.back().second);
-		const auto& inst_info = instructions_by_name.at(ctx.tokens.at(ctx.i).literal);
+		auto& pred = std::get<func_info_t>(parsing_data.queue.back().second);
+		const auto& inst_info = instructions_by_name.at(parsing_data.tokens.at(parsing_data.i).literal);
 		inst_call_t on_push;
 
-		on_push.name = ctx.tokens[ctx.i].literal;
-		for (j = ctx.i, dj = 0, args_n = 0; args_n != inst_info->max_args_count &&
-			 ctx.tokens[j].type != token_type::semicolon; j += dj, dj = 0, ++args_n) {
+		on_push.name = parsing_data.tokens[parsing_data.i].literal;
+		for (j = parsing_data.i, dj = 0, args_n = 0; args_n != inst_info->max_args_count &&
+			 parsing_data.tokens[j].type != token_type::semicolon; j += dj, dj = 0, ++args_n) {
 			argument_t arg;
 
-			if (ctx.tokens[j].type != token_type::inst_name && ctx.tokens[j].type != token_type::comma)
+			if (parsing_data.tokens[j].type != token_type::inst_name && parsing_data.tokens[j].type != token_type::comma)
 				throw AMASM_PARSER_WRONG_INST_ARGS_DEFINITION;
 
-			if (match_rule("direct", ctx.tokens, j + 1)) {
-				auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), ctx.tokens, j + 3);
+			if (match_rule("direct", parsing_data.tokens, j + 1)) {
+				auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), parsing_data.tokens, j + 3);
 				arg = {
-					var_offset ? argument_type::indirect_with_displacement : argument_type::direct,
-					ctx.tokens[j + 2].literal,
-					var_offset
+					.type = var_offset ? argument_type::indirect_with_displacement : argument_type::direct,
+					.name = parsing_data.tokens[j + 2].literal,
+					.value = var_offset
 				};
 				dj = delta + 3;
-			} else if (ctx.tokens[j + 1].type == token_type::number) {
+			} else if (parsing_data.tokens[j + 1].type == token_type::number) {
 				arg = {
 					argument_type::immediate,
 					"",
-					std::stoll(ctx.tokens[j + 1].literal)
+					std::stoll(parsing_data.tokens[j + 1].literal)
 				};
 				dj = 2;
-			} else if (match_rule("indirect", ctx.tokens, j + 1)) {
-				auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), ctx.tokens, j + 4);
+			} else if (match_rule("indirect", parsing_data.tokens, j + 1)) {
+				auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), parsing_data.tokens, j + 4);
 				arg = {
-					argument_type::indirect_with_displacement,
-					ctx.tokens[j + 3].literal,
-					var_offset
+					.type = argument_type::indirect_with_displacement,
+					.name = parsing_data.tokens[j + 3].literal,
+					.value = var_offset
 				};
 
-				if (ctx.tokens[j + delta + 4].type == token_type::plus) {
-					arg.value += std::stoll(ctx.tokens[j + delta + 5].literal);
+				if (parsing_data.tokens[j + delta + 4].type == token_type::plus) {
+					arg.value += std::stoll(parsing_data.tokens[j + delta + 5].literal);
 					delta += 2;
-				} else if (ctx.tokens[j + delta + 4].type == token_type::minus) {
-					arg.value -= std::stoll(ctx.tokens[j + delta + 5].literal);
+				} else if (parsing_data.tokens[j + delta + 4].type == token_type::minus) {
+					arg.value -= std::stoll(parsing_data.tokens[j + delta + 5].literal);
 					delta += 2;
 				}
 				dj = delta + 5;
@@ -175,17 +175,17 @@ namespace alone::amasm::inline parser_inlined {
 			on_push.args.push_back(arg);
 		}
 
-		func.scope.lines.emplace_back(std::move(on_push));
-		ctx.di = j - ctx.i + 1 + (inst_info->max_args_count == 0);
+		pred.scope.lines.emplace_back(std::move(on_push));
+		parsing_data.di = j - parsing_data.i + 1 + (inst_info->max_args_count == 0);
 	}
 
-	void finish_parse_rbrace(parse_context_t& ctx) {
-		if (ctx.queue.back().first == "struct_definition") {
-			auto ntype = std::get<data_type_ptr>(ctx.queue.back().second);
-			ctx.queue.pop();
+	void finish_parse_rbrace(const parse_context_t& parsing_data) {
+		if (parsing_data.queue.back().first == "struct_definition") {
+			auto ntype = std::get<data_type_ptr>(parsing_data.queue.back().second);
+			parsing_data.queue.pop();
 			data_types.emplace(ntype->name, ntype);
 		}
-		ctx.di = 1;
+		parsing_data.di = 1;
 	}
 
 	const std::unordered_map<token_type, std::function<void(parse_context_t&)>> parse_rules = {
@@ -196,16 +196,13 @@ namespace alone::amasm::inline parser_inlined {
 		{ token_type::rbrace, finish_parse_rbrace }
 	};
 
-	byte_array_t translate_to_bytcode(translate_context_t& ctx) {
-		const auto& func_info = std::get<func_info_t>(ctx.info);
-		std::string label_name;
+	byte_array_t translate_to_bytecode(const translate_context_t& translation_data) {
+		const auto& func_info = std::get<func_info_t>(translation_data.info);
+		std::string label_name = func_info.name + '(';
 
-		label_name = func_info.name + '(';
 		for (size_t i = 0; i != func_info.args.size() - 1; ++i)
 			label_name += func_info.args[i]->name + ", ";
 		label_name += func_info.args.back()->name + ')';
-
-
 
 		return {};
 	}
@@ -219,18 +216,28 @@ namespace alone::amasm {
 
 		for (size_t i = 0, di = 0, address = 0; i != tokens.size(); i += di, di = 0) {
 			if (auto it = parse_rules.find(tokens[i].type); it != parse_rules.end()) {
-				parse_context_t ctx = { tokens, labels, queue, i, di };
+				parse_context_t ctx = {
+					.tokens = tokens,
+					.labels = labels,
+					.queue = queue,
+					.i = i,
+					.di = di
+				};
 				it->second(ctx);
 			} else
 				throw AMASM_PARSER_TOKEN_DOESNT_EXIST;
 
 			if (!queue.empty()) {
 				if (queue.front().first == "function_definition") {
-				translate_context_t ctx = { labels, queue.front().second, address };
-				auto temp = translate_to_bytcode(ctx);
-				result.append_range(std::move(temp));
-				queue.pop();
-			}
+					translate_context_t ctx = {
+						.labels = labels,
+						.info = queue.front().second,
+						.i = address
+					};
+					auto temp = translate_to_bytecode(ctx);
+					result.append_range(std::move(temp));
+					queue.pop();
+				}
 			}
 		}
 

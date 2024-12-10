@@ -1,11 +1,11 @@
 struct vector2 {
-	var %x, float64;
-	var %y, float64;
+	var %x, int32;
+	var %y, int32;
 }
 
 func @add(float64, float64): float64 {
-	add64f [%spx - 8], [%spx - 16];
-	sub64u %spx, 16;
-	push64 %asx;
+	add [%spx - 8], [%spx - 16];
+	sub %spx, 16;
+	push %asx;
 	ret;
 }

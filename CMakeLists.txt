@@ -23,7 +23,7 @@ add_executable(AloneCompiler
         "src/error_codes.hpp"
         "src/general.hpp"
         "src/general.cpp"
-        "src/instructions.cpp"
+        
         "src/instructions.hpp"
         "src/main.cpp"
         "src/vm_context.cpp"
@@ -45,11 +45,11 @@ add_executable(AloneCompiler
         "src/amasm/scanner.cpp"
         "src/amasm/scanner.hpp"
         "src/amasm/util.hpp"
-        "src/vm/isa/general.hpp"
+        "src/vm/isa/arithmetic.hpp"
         "src/vm/isa/linker.hpp"
         "src/vm/isa/system.hpp"
         "src/vm/virtual_machine.cpp"
-        "src/vm/virtual_machine.hpp")
+        "src/vm/virtual_machine.hpp" "src/instructions.cpp" "src/vm/isa/arithmetic.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 

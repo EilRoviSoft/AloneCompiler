@@ -8,7 +8,6 @@
 - [Comments](#comments)
 - [Addressing modes](#addressing-modes)
   - [Direct operands](#direct-operands)
-  - [Simple operands](#simple-operands)
 - [Labels and branches](#labels-and-branches)
 - [Functions](#functions)
 - [Struct](#struct)
@@ -88,18 +87,6 @@ mov32 %lox, %rox
 ```
 
 This can be read as "moves contents of %rox register to %lox register"
-
-## Simple operands
-
-Doesn't require any operands other than instruction'sizes name
-
-```asm
-mov32 %lox, 2;
-mov32 %rox, 3;
-add32u;         # stores value '5' in %rsx 
-```
-
----
 
 # Labels and branches
 

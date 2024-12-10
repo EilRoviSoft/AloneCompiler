@@ -31,15 +31,15 @@ namespace alone {
 		binary, decimal, hexadecimal, floating
 	};
 	enum class regs_set : size_t {
-		asx   = 0 * sizeof(machine_word_t), //Address System register
-		rsx   = 1 * sizeof(machine_word_t), //Result System register
-		lox   = 2 * sizeof(machine_word_t), //Left Operand register
-		rox   = 3 * sizeof(machine_word_t), //Right Operand register
-		ipx   = 4 * sizeof(machine_word_t), //Instruction Pointer
-		bpx   = 5 * sizeof(machine_word_t), //Stack Pointer
-		spx   = 6 * sizeof(machine_word_t), //Base Pointer
+		asx = 0 * sizeof(machine_word_t), //Address System register
+		rsx = 1 * sizeof(machine_word_t), //Result System register
+		lox = 2 * sizeof(machine_word_t), //Left Operand register
+		rox = 3 * sizeof(machine_word_t), //Right Operand register
+		ipx = 4 * sizeof(machine_word_t), //Instruction Pointer
+		bpx = 5 * sizeof(machine_word_t), //Stack Pointer
+		spx = 6 * sizeof(machine_word_t), //Base Pointer
 		flags = 7 * sizeof(machine_word_t), //Flags register
-		grx   = 8 * sizeof(machine_word_t), //General Registers start
+		grx = 8 * sizeof(machine_word_t), //General Registers start
 	};
 	enum class flags_set : size_t {
 		rf = 0, //is program running flag
@@ -70,16 +70,31 @@ namespace alone {
 	constexpr size_t machine_word_size = sizeof(uint64_t);
 	constexpr size_t inst_code_size = sizeof(inst_code_t);
 	constexpr size_t registers_size = 256;
-	constexpr size_t system_registers_size = registers_size - static_cast<int>(regs_set::grx);
+	constexpr size_t system_registers_size = registers_size - (uint64_t) regs_set::grx;
 	constexpr size_t general_registers_size = registers_size - system_registers_size;
 	constexpr size_t mframe_size = 1 << 16;
 	constexpr size_t dframe_size = 16;
 
 	//functions
 
-	constexpr size_t gen_mask(size_t pos);
-	constexpr size_t gen_mask(std::initializer_list<size_t> positions);
-	constexpr size_t gen_mask(size_t a, size_t b);
+	/*template<typename T>
+	constexpr T gen_mask(T pos) {
+		return T(1) << pos;
+	}
+	template<typename T>
+	constexpr T gen_mask(std::initializer_list<T> positions) {
+		T result = 0;
+		for (auto it : positions)
+			result += T(1) << it;
+		return result;
+	}
+	template<typename T>
+	constexpr T gen_mask(T a, T b) {
+		T result = 0;
+		for (T i = a; i <= b; ++i)
+			result += T(1) << i;
+		return result;
+	}*/
 
 	constexpr bool is_alpha(char c);
 	constexpr bool is_binary(char c);

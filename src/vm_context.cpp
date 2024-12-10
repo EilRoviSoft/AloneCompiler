@@ -5,10 +5,11 @@
 
 namespace alone {
 	void context_t::init_spans(vm::VirtualMachine& vm) {
+		mframe = std::span(vm._p0.begin(), mframe_size);
 		regs = std::span(vm._p0.begin(), registers_size);
 		program = std::span(vm._p0.begin() + registers_size, program_size);
 		stack = std::span(vm._p0.begin() + registers_size + program_size, mframe_size - registers_size - program_size);
-		heap = std::span(vm._p1.begin(), dframe_size);
+		dframe = std::span(vm._p1.begin(), dframe_size);
 	}
 
 	//call it every time, when you run new program

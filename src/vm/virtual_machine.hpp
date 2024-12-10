@@ -3,7 +3,6 @@
 //std
 #include <array>
 #include <cstddef>
-#include <unordered_map>
 
 //alone
 #include "general.hpp"
@@ -18,13 +17,12 @@ namespace alone::vm {
 
 		VirtualMachine();
 
-		void init_isa();
-		void exec(const byte_array_t& program);
+		void init_instruction(std::string name, inst_code_t code, size_t max_args_count, size_t bit_depth, inst_func_t pred);
+		void init_instruction(inst_t&& inst);
 
-		template<class T>
-		T* get(address_t address);
-		template<class T>
-		array_t<T> get_array(address_t address);
+		void init_isa();
+
+		void exec(const byte_array_t& program);
 
 	private:
 		std::array<std::byte, mframe_size> _p0;
