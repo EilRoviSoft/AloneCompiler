@@ -21,7 +21,6 @@ namespace alone::vm {
 		instructions_by_name.emplace(ptr->name, ptr);
 		instructions_by_code.emplace(ptr->code, ptr);
 	}
-
 	void VirtualMachine::init_instruction(inst_t&& inst) {
 		auto ptr = std::make_shared<inst_t>(std::move(inst));
 		instructions_by_name.emplace(ptr->name, ptr);

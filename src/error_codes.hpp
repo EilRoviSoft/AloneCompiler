@@ -27,3 +27,5 @@
 #define AMASM_PARSER_WRONG_INST_DEFINITION std::runtime_error("parser.cpp wrong instruction definition")
 #define AMASM_PARSER_WRONG_INST_ARGS_DEFINITION std::runtime_error("parser.cpp: wrong instruction's arguments definition")
 #define AMASM_PARSER_WRONG_INST_DEFINITION_PLACE std::runtime_error("parser.cpp instruction was defined in wrong place")
+
+#define ISA_WRONG_ARGS_METADATA std::runtime_error("isa folder: type doesn't exist for this argument")

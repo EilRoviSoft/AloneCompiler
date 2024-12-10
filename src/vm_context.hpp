@@ -28,10 +28,10 @@ namespace alone {
 		machine_word_t& spx() const;
 		machine_word_t& bpx() const;
 		flags_t& flags() const;
-		machine_word_t& grx(uint64_t id) const;
+		machine_word_t& grx(const uint64_t& id) const;
 
 		template<class T = machine_word_t>
-		T* get(address_t address) const {
+		T* get(const address_t& address) const {
 			T* result;
 
 			auto [actual_address, mem_type] = decompose_address(address);
@@ -45,14 +45,23 @@ namespace alone {
 
 			return result;
 		}
+		template<class T = machine_word_t>
+		T* get_with_displacement(const address_t& address) const {
+			const auto& start = *get(address);
+			const auto& offset = *get(address + machine_word_size);
+			return get<T>(start + offset);
+		}
 		template<class T>
-		array_t<T> get_array(address_t address) const {
+		array_t<T> get_array(const address_t& address) const {
 			array_t<T> result;
 
 			auto [actual_address, mem_type] = decompose_address(address);
 			switch (mem_type) {
 			case memory_type::mframe:
-				result = { .size = sizeof(T), .ptr = reinterpret_cast<T*>(&mframe[actual_address]) };
+				result = {
+					.size = sizeof(T),
+					.ptr = reinterpret_cast<T*>(&mframe[actual_address])
+				};
 				break;
 			case memory_type::dframe:
 				result = dframe[actual_address];

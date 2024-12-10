@@ -89,13 +89,19 @@ Offset ranges
 | Name | Size            | Offset + ID     | Semantics        | Equals to      | Notes                                |
 | ---- | --------------- | --------------- | ---------------- | -------------- | ------------------------------------ |
 | add  | 4 + `args.size` | `Offset + 0x00` | `add a0, a1, a2` | `a0 = a1 + a2` |                                      |
+| add  | 4 + `args.size` | `Offset + 0x00` | `add a0, a1`     | `a0 += a1`     |                                      |
 | sub  | 4 + `args.size` | `Offset + 0x01` | `sub a0, a1, a2` | `a0 = a1 - a2` |                                      |
+| sub  | 4 + `args.size` | `Offset + 0x01` | `sub a0, a1`     | `a0 -= a1`     |                                      |
 | mul  | 4 + `args.size` | `Offset + 0x02` | `mul a0, a1, a2` | `a0 = a1 * a2` |                                      |
+| mul  | 4 + `args.size` | `Offset + 0x02` | `mul a0, a1`     | `a0 *= a1`     |                                      |
 | div  | 4 + `args.size` | `Offset + 0x03` | `div a0, a1, a2` | `a0 = a1 / a2` |                                      |
+| div  | 4 + `args.size` | `Offset + 0x03` | `div a0, a1`     | `a0 /= a1`     |                                      |
 | mod  | 4 + `args.size` | `Offset + 0x04` | `mod a0, a1, a2` | `a0 = a1 % a2` |                                      |
-| inc  | 4 + `arg.size`  | `Offset + 0x05` | `inc a0`         | `++a0`         |                                      |
-| dec  | 4 + `arg.size`  | `Offset + 0x06` | `dec a0`         | `--a0`         |                                      |
-| neg  | 4 + `args.size` | `Offset + 0x07` | `neg a0, a1`     | `a0 = -a1`     | only exists for signed types         |
-| cmp  | 4 + `args.size` | `Offset + 0x08` | `cmp a0, a1`     | `a0 <=> a1`    | writes result to flags `ZF` and `SF` |
+| mod  | 4 + `args.size` | `Offset + 0x04` | `mod a0, a1`     | `a0 %= a1`     |                                      |
+| inc  | 4 + `arg.size`  | `Offset + 0x05` | `inc a0`         | `a0++`         |                                      |
+| dec  | 4 + `arg.size`  | `Offset + 0x06` | `dec a0`         | `a0--`         |                                      |
+| cmp  | 4 + `args.size` | `Offset + 0x07` | `cmp a0, a1`     | `a0 <=> a1`    | writes result to flags `ZF` and `SF` |
+| neg  | 4 + `arg.size`  | `Offset + 0x08` | `neg a0`         | `a0 = -a0`     | only exists for signed types         |
+| neg  | 4 + `args.size` | `Offset + 0x08` | `neg a0, a1`     | `a0 = -a1`     | only exists for signed types         |
 
 ---

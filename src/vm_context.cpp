@@ -43,7 +43,7 @@ namespace alone {
 	flags_t& context_t::flags() const {
 		return reinterpret_cast<flags_t&>(regs[(machine_word_t) regs_set::flags]);
 	}
-	machine_word_t& context_t::grx(uint64_t id) const {
+	machine_word_t& context_t::grx(const uint64_t& id) const {
 		return reinterpret_cast<machine_word_t&>(regs[(machine_word_t) regs_set::grx + id * sizeof(machine_word_t)]);
 	}
 }
