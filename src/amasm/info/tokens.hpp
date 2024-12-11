@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-//alone::amasm
+//alone::amasm::info
 #include "enums.hpp"
 
 namespace alone::amasm {

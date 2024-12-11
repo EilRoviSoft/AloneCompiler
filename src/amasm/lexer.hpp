@@ -1,7 +1,7 @@
 #pragma once
 
-//alone::amasm
-#include "info/include.hpp"
+//alone::amasm::info
+#include "amasm/info/include.hpp"
 
 namespace alone::amasm {
 	class Lexer {

@@ -8,7 +8,6 @@
 
 //alone
 #include "error_codes.hpp"
-#include "info/extras.hpp"
 #include "instructions.hpp"
 
 namespace alone::amasm::inline parser_inlined {
@@ -28,7 +27,7 @@ namespace alone::amasm::inline parser_inlined {
 	};
 
 	using parse_variant_t = std::variant<data_type_ptr, func_info_t>;
-	using parse_queue_t = std::queue<std::pair<std::string, parse_variant_t>>;
+	using parse_queue_t = std::queue<std::tuple<std::string, bool, parse_variant_t>>;
 
 	struct parse_context_t {
 		const token_array_t& tokens;
@@ -45,7 +44,7 @@ namespace alone::amasm::inline parser_inlined {
 
 	const std::unordered_set<std::string> surrounded_by_braces = { "struct_definition", "function_definition" };
 
-	bool match_rule(const std::string& rule_name, const token_array_t& tokens, size_t start_idx) {
+	bool match_rule(const std::string& rule_name, const token_array_t& tokens, const size_t& start_idx) {
 		const auto& pattern = rules.at(rule_name);
 		bool result = true;
 
@@ -54,7 +53,7 @@ namespace alone::amasm::inline parser_inlined {
 
 		return result;
 	}
-	std::tuple<ptrdiff_t, size_t> calc_offset(const data_type_ptr& type, const token_array_t& tokens, size_t start_idx) {
+	std::tuple<ptrdiff_t, size_t> calc_offset(const data_type_ptr& type, const token_array_t& tokens, const size_t& start_idx) {
 		data_type_ptr current_type = type;
 		ptrdiff_t offset = 0;
 		size_t delta = 0;
@@ -77,9 +76,9 @@ namespace alone::amasm::inline parser_inlined {
 
 		data_type_ptr on_push = make_data_type(parsing_data.tokens[parsing_data.i + 1].literal, 0);
 		parsing_data.di = 3;
-		parsing_data.queue.emplace("struct_definition", std::move(on_push));
+		parsing_data.queue.emplace("struct_definition", false, std::move(on_push));
 	}
-	void start_parse_function(parse_context_t& ctx) {
+	void start_parse_function(const parse_context_t& ctx) {
 		if (!match_rule("function_definition", ctx.tokens, ctx.i))
 			throw AMASM_PARSER_WRONG_FUNC_DEFINITION;
 
@@ -106,15 +105,16 @@ namespace alone::amasm::inline parser_inlined {
 			on_push.return_type = data_types.at("void");
 			ctx.di = j - ctx.i + 2;
 		}
-		ctx.queue.emplace("function_definition", std::move(on_push));
+		ctx.queue.emplace("function_definition", false, std::move(on_push));
 	}
 
 	void parse_variable(const parse_context_t& parsing_data) {
-		if (parsing_data.queue.back().first == "struct_definition") {
+		const auto& [name, is_finished, data] = parsing_data.queue.front();
+		if (name == "struct_definition") {
 			if (!match_rule("pole_definition", parsing_data.tokens, parsing_data.i))
 				throw AMASM_PARSER_WRONG_POLE_DEFINITION;
 
-			auto& ntype = std::get<data_type_ptr>(parsing_data.queue.back().second);
+			auto& ntype = std::get<data_type_ptr>(data);
 			bool has_own_offset = parsing_data.tokens[parsing_data.i + 5].type == token_type::comma;
 
 			ntype->add_pole(parsing_data.tokens[parsing_data.i + 2].literal, data_types.at(parsing_data.tokens[parsing_data.i + 4].literal));
@@ -122,12 +122,13 @@ namespace alone::amasm::inline parser_inlined {
 		} else {}
 	}
 	void parse_instruction(const parse_context_t& parsing_data) {
-		if (parsing_data.queue.back().first != "function_definition")
+		auto& [name, is_finished, data] = parsing_data.queue.front();
+		if (name != "function_definition" || is_finished)
 			throw AMASM_PARSER_WRONG_INST_DEFINITION_PLACE;
 
 		size_t j, dj, args_n;
-		auto& pred = std::get<func_info_t>(parsing_data.queue.back().second);
-		const auto& inst_info = instructions_by_name.at(parsing_data.tokens.at(parsing_data.i).literal);
+		auto& func_data = std::get<func_info_t>(data);
+		const auto& inst_info = lib::instructions_by_name.at(parsing_data.tokens.at(parsing_data.i).literal);
 		inst_call_t on_push;
 
 		on_push.name = parsing_data.tokens[parsing_data.i].literal;
@@ -141,22 +142,22 @@ namespace alone::amasm::inline parser_inlined {
 			if (match_rule("direct", parsing_data.tokens, j + 1)) {
 				auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), parsing_data.tokens, j + 3);
 				arg = {
-					.type = var_offset ? argument_type::indirect_with_displacement : argument_type::direct,
+					.type = var_offset ? lib::argument_type::indirect_with_displacement : lib::argument_type::direct,
 					.name = parsing_data.tokens[j + 2].literal,
 					.value = var_offset
 				};
 				dj = delta + 3;
 			} else if (parsing_data.tokens[j + 1].type == token_type::number) {
 				arg = {
-					argument_type::immediate,
-					"",
-					std::stoll(parsing_data.tokens[j + 1].literal)
+					.type = lib::argument_type::immediate,
+					.name = "",
+					.value = std::stoll(parsing_data.tokens[j + 1].literal)
 				};
 				dj = 2;
 			} else if (match_rule("indirect", parsing_data.tokens, j + 1)) {
 				auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), parsing_data.tokens, j + 4);
 				arg = {
-					.type = argument_type::indirect_with_displacement,
+					.type = lib::argument_type::indirect_with_displacement,
 					.name = parsing_data.tokens[j + 3].literal,
 					.value = var_offset
 				};
@@ -175,20 +176,25 @@ namespace alone::amasm::inline parser_inlined {
 			on_push.args.push_back(arg);
 		}
 
-		pred.scope.lines.emplace_back(std::move(on_push));
+		func_data.scope.lines.emplace_back(std::move(on_push));
 		parsing_data.di = j - parsing_data.i + 1 + (inst_info->max_args_count == 0);
 	}
 
 	void finish_parse_rbrace(const parse_context_t& parsing_data) {
-		if (parsing_data.queue.back().first == "struct_definition") {
-			auto ntype = std::get<data_type_ptr>(parsing_data.queue.back().second);
+		auto& [name, is_finished, data] = parsing_data.queue.front();
+		if (is_finished)
+			throw AMASM_PARSER_FINISHED_TOO_EARLY;
+
+		if (name == "struct_definition") {
+			auto ntype = std::get<data_type_ptr>(data);
 			parsing_data.queue.pop();
 			data_types.emplace(ntype->name, ntype);
 		}
+		is_finished = true;
 		parsing_data.di = 1;
 	}
 
-	const std::unordered_map<token_type, std::function<void(parse_context_t&)>> parse_rules = {
+	std::unordered_map<token_type, std::function<void(parse_context_t&)>> parse_rules = {
 		{ token_type::kw_struct, start_parse_struct },
 		{ token_type::kw_func, start_parse_function },
 		{ token_type::kw_var, parse_variable },
@@ -196,7 +202,7 @@ namespace alone::amasm::inline parser_inlined {
 		{ token_type::rbrace, finish_parse_rbrace }
 	};
 
-	byte_array_t translate_to_bytecode(const translate_context_t& translation_data) {
+	lib::byte_array_t translate_to_bytecode(const translate_context_t& translation_data) {
 		const auto& func_info = std::get<func_info_t>(translation_data.info);
 		std::string label_name = func_info.name + '(';
 
@@ -209,8 +215,8 @@ namespace alone::amasm::inline parser_inlined {
 }
 
 namespace alone::amasm {
-	byte_array_t Parser::parse(const token_array_t& tokens) {
-		byte_array_t result;
+	lib::byte_array_t Parser::parse(const token_array_t& tokens) {
+		lib::byte_array_t result;
 		parse_queue_t queue;
 		std::unordered_map<std::string, size_t> labels;
 
@@ -228,10 +234,11 @@ namespace alone::amasm {
 				throw AMASM_PARSER_TOKEN_DOESNT_EXIST;
 
 			if (!queue.empty()) {
-				if (queue.front().first == "function_definition") {
+				const auto& [name, is_finished, data] = queue.front();
+				if (is_finished && name == "function_definition") {
 					translate_context_t ctx = {
 						.labels = labels,
-						.info = queue.front().second,
+						.info = data,
 						.i = address
 					};
 					auto temp = translate_to_bytecode(ctx);

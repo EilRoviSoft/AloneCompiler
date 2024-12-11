@@ -6,9 +6,14 @@
 #include <vector>
 
 //alone
+#include "instructions.hpp"
+
+//alone::amasm
 #include "amasm/lexer.hpp"
 #include "amasm/parser.hpp"
 #include "amasm/scanner.hpp"
+
+//alone::vm
 #include "vm/virtual_machine.hpp"
 
 using namespace alone;
@@ -37,25 +42,23 @@ void init_tasks() {
 		file.close();
 
 		auto tokens = amasm::Lexer::tokenize_code(text);
-		//auto code = amasm::Parser::parse(tokens);
+		auto code = amasm::Parser::parse(tokens);
 
 		return 0;
 	});
 	tests.emplace_back(true, [] {
-		vm::VirtualMachine virtual_machine;
-		virtual_machine.init_isa();
+		auto sorted = std::ranges::to<std::vector>(lib::instructions_by_name | std::views::values);
 
-		auto sorted = std::ranges::to<std::vector>(instructions_by_name | std::views::values);
-		std::ranges::sort(sorted, [](const inst_ptr& lhs, const inst_ptr& rhs) { return lhs->code < rhs->code; });
-
+		std::ranges::sort(sorted, [](const lib::inst_ptr& lhs, const lib::inst_ptr& rhs) { return lhs->code < rhs->code; });
 		for (const auto& val : sorted)
-			std::cout << val->name << '\t' << val->code << '\n';
+			std::cout << val->name << '\t' << val->code << '\t' << val->max_args_count << '\t' << val->bit_depth << '\n';
 
 		return 0;
 	});
 }
 
 int main() {
+	lib::init_isa();
 	amasm::init_consts();
 	init_tasks();
 

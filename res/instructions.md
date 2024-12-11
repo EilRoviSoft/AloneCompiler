@@ -56,18 +56,24 @@ Offset ranges
 | 32   | `0x120 - 0x12F` |
 | 64   | `0x130 - 0x13F` |
 
-| Name | Size             | Offset + ID     | Semantics        | Equals to                                    |
-| ---- | ---------------- | --------------- | ---------------- | -------------------------------------------- |
-| mov  | 12 + `args.size` | `Offset + 0x00` | `mov a0, a1`     | `a0 = a1`                                    |
-| push | 4 + `arg.size`   | `Offset + 0x01` | `push a0`        | `%spx += pop.size;`                          |
-| pop  | 4                | `Offset + 0x02` | `pop`            | `%asx = [%spx - pop.size]; %spx -= pop.size` |
-| pop  | 4 + `arg.size`   | `Offset + 0x03` | `pop a0`         | `a0 = [%spx - pop.size]; %spx -= pop.size`   |
-| not  | 4 + `args.size`  | `Offset + 0x04` | `not a0, a1`     | `a0 = ~a1`                                   |
-| and  | 4 + `args.size`  | `Offset + 0x05` | `and a0, a1, a2` | `a0 = a1 & a2`                               |
-| or   | 4 + `args.size`  | `Offset + 0x06` | `or a0, a1, a2`  | `a0 = a1 \| a2`                              |
-| xor  | 4 + `args.size`  | `Offset + 0x07` | `xor a0, a1, a2` | `a0 = a1 ^ a2`                               |
-| shl  | 4 + `args.size`  | `Offset + 0x08` | `shl a0, a1, a2` | `a0 = a1 << a2`                              |
-| shr  | 4 + `args.size`  | `Offset + 0x09` | `shr a0, a1, a2` | `a0 = a1 >> a2`                              |
+| Name | Size           | Offset + ID     | Semantics        | Equals to                                    |
+| ---- | -------------- | --------------- | ---------------- | -------------------------------------------- |
+| mov  | 12 + `a1.size` | `Offset + 0x00` | `mov a0, a1`     | `a0 = a1`                                    |
+| push | 4 + `a0.size`  | `Offset + 0x01` | `push a0`        | `%spx += pop.size;`                          |
+| pop  | 4              | `Offset + 0x02` | `pop`            | `%asx = [%spx - pop.size]; %spx -= pop.size` |
+| pop  | 12             | `Offset + 0x02` | `pop a0`         | `a0 = [%spx - pop.size]; %spx -= pop.size`   |
+| not  | 20             | `Offset + 0x03` | `not a0, a1`     | `a0 = ~a1`                                   |
+| not  | 12             | `Offset + 0x03` | `not a0`         | `a0 = ~a0`                                   |
+| and  | 20 + `a2.size` | `Offset + 0x04` | `and a0, a1, a2` | `a0 = a1 & a2`                               |
+| and  | 12 + `a1.size` | `Offset + 0x04` | `and a0, a1`     | `a0 &= a1`                                   |
+| or   | 20 + `a2.size` | `Offset + 0x05` | `or a0, a1, a2`  | `a0 = a1 \| a2`                              |
+| or   | 12 + `a1.size` | `Offset + 0x05` | `or a0, a1`      | `a0 \|= a1`                                  |
+| xor  | 20 + `a2.size` | `Offset + 0x06` | `xor a0, a1, a2` | `a0 = a1 ^ a2`                               |
+| xor  | 12 + `a1.size` | `Offset + 0x06` | `xor a0, a1`     | `a0 ^= a1`                                   |
+| shl  | 20 + `a2.size` | `Offset + 0x07` | `shl a0, a1, a2` | `a0 = a1 << a2`                              |
+| shl  | 12 + `a1.size` | `Offset + 0x07` | `shl a0, a1`     | `a0 <<= a1`                                  |
+| shr  | 20 + `a2.size` | `Offset + 0x08` | `shr a0, a1, a2` | `a0 = a1 >> a2`                              |
+| shr  | 12 + `a1.size` | `Offset + 0x08` | `shr a0, a1`     | `a0 >>= a1`                                  |
 
 ---
 
@@ -86,22 +92,22 @@ Offset ranges
 | float32        | `0x1C0 - 0x1CF` |
 | float64        | `0x1D0 - 0x1DF` |
 
-| Name | Size            | Offset + ID     | Semantics        | Equals to      | Notes                                |
-| ---- | --------------- | --------------- | ---------------- | -------------- | ------------------------------------ |
-| add  | 4 + `args.size` | `Offset + 0x00` | `add a0, a1, a2` | `a0 = a1 + a2` |                                      |
-| add  | 4 + `args.size` | `Offset + 0x00` | `add a0, a1`     | `a0 += a1`     |                                      |
-| sub  | 4 + `args.size` | `Offset + 0x01` | `sub a0, a1, a2` | `a0 = a1 - a2` |                                      |
-| sub  | 4 + `args.size` | `Offset + 0x01` | `sub a0, a1`     | `a0 -= a1`     |                                      |
-| mul  | 4 + `args.size` | `Offset + 0x02` | `mul a0, a1, a2` | `a0 = a1 * a2` |                                      |
-| mul  | 4 + `args.size` | `Offset + 0x02` | `mul a0, a1`     | `a0 *= a1`     |                                      |
-| div  | 4 + `args.size` | `Offset + 0x03` | `div a0, a1, a2` | `a0 = a1 / a2` |                                      |
-| div  | 4 + `args.size` | `Offset + 0x03` | `div a0, a1`     | `a0 /= a1`     |                                      |
-| mod  | 4 + `args.size` | `Offset + 0x04` | `mod a0, a1, a2` | `a0 = a1 % a2` |                                      |
-| mod  | 4 + `args.size` | `Offset + 0x04` | `mod a0, a1`     | `a0 %= a1`     |                                      |
-| inc  | 4 + `arg.size`  | `Offset + 0x05` | `inc a0`         | `a0++`         |                                      |
-| dec  | 4 + `arg.size`  | `Offset + 0x06` | `dec a0`         | `a0--`         |                                      |
-| cmp  | 4 + `args.size` | `Offset + 0x07` | `cmp a0, a1`     | `a0 <=> a1`    | writes result to flags `ZF` and `SF` |
-| neg  | 4 + `arg.size`  | `Offset + 0x08` | `neg a0`         | `a0 = -a0`     | only exists for signed types         |
-| neg  | 4 + `args.size` | `Offset + 0x08` | `neg a0, a1`     | `a0 = -a1`     | only exists for signed types         |
+| Name | Size           | Offset + ID     | Semantics        | Equals to      | Notes                                |
+| ---- | -------------- | --------------- | ---------------- | -------------- | ------------------------------------ |
+| add  | 20 + `a2.size` | `Offset + 0x00` | `add a0, a1, a2` | `a0 = a1 + a2` |                                      |
+| add  | 12 + `a1.size` | `Offset + 0x00` | `add a0, a1`     | `a0 += a1`     |                                      |
+| sub  | 20 + `a2.size` | `Offset + 0x01` | `sub a0, a1, a2` | `a0 = a1 - a2` |                                      |
+| sub  | 12 + `a1.size` | `Offset + 0x01` | `sub a0, a1`     | `a0 -= a1`     |                                      |
+| mul  | 20 + `a2.size` | `Offset + 0x02` | `mul a0, a1, a2` | `a0 = a1 * a2` |                                      |
+| mul  | 12 + `a1.size` | `Offset + 0x02` | `mul a0, a1`     | `a0 *= a1`     |                                      |
+| div  | 20 + `a2.size` | `Offset + 0x03` | `div a0, a1, a2` | `a0 = a1 / a2` |                                      |
+| div  | 12 + `a1.size` | `Offset + 0x03` | `div a0, a1`     | `a0 /= a1`     |                                      |
+| mod  | 20 + `a2.size` | `Offset + 0x04` | `mod a0, a1, a2` | `a0 = a1 % a2` |                                      |
+| mod  | 12 + `a1.size` | `Offset + 0x04` | `mod a0, a1`     | `a0 %= a1`     |                                      |
+| inc  | 12             | `Offset + 0x05` | `inc a0`         | `a0++`         |                                      |
+| dec  | 12             | `Offset + 0x06` | `dec a0`         | `a0--`         |                                      |
+| cmp  | 20             | `Offset + 0x07` | `cmp a0, a1`     | `a0 <=> a1`    | writes result to flags `ZF` and `SF` |
+| neg  | 20             | `Offset + 0x08` | `neg a0, a1`     | `a0 = -a1`     | only exists for signed types         |
+| neg  | 12             | `Offset + 0x08` | `neg a0`         | `a0 = -a0`     | only exists for signed types         |
 
 ---

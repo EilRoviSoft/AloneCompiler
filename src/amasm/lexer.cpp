@@ -9,7 +9,7 @@ namespace alone::amasm {
 		std::string temp;
 
 		for (auto c : code) {
-			if (is_alpha_numeric(c)) {
+			if (lib::is_alpha_numeric(c)) {
 				temp += c;
 			} else if (!temp.empty()) {
 				result.emplace_back(temp);

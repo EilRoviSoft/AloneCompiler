@@ -6,8 +6,8 @@
 //alone
 #include "general.hpp"
 
-//alone::amasm
-#include "info/include.hpp"
+//alone::amasm::info
+#include "amasm/info/include.hpp"
 
 namespace alone::amasm {
 	inline std::vector<token_t> convert(const std::vector<std::string>& raw) {

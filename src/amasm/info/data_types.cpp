@@ -4,14 +4,14 @@
 #include "error_codes.hpp"
 
 namespace alone::amasm {
-	pole_t::pole_t(std::string n, data_type_ptr t, size_t o) :
+	pole_t::pole_t(std::string n, data_type_ptr t, const size_t& o) :
 		name(std::move(n)),
 		type(std::move(t)),
 		offset(o) {
 		
 	}
 
-	data_type_t::data_type_t(std::string n, size_t s) :
+	data_type_t::data_type_t(std::string n, const size_t& s) :
 		name(std::move(n)),
 		size(s) {
 	}

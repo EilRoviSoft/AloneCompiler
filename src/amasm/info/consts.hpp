@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-//alone::amasm
+//alone::amasm::info
 #include "data_types.hpp"
 #include "enums.hpp"
 #include "extras.hpp"

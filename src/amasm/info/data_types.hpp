@@ -15,7 +15,7 @@ namespace alone::amasm {
 		data_type_ptr type;
 		size_t offset;
 
-		pole_t(std::string n, data_type_ptr t, size_t o = 0);
+		pole_t(std::string n, data_type_ptr t, const size_t& o = 0);
 	};
 
 	struct data_type_t {
@@ -23,7 +23,7 @@ namespace alone::amasm {
 		size_t size;
 		std::vector<pole_t> poles;
 
-		explicit data_type_t(std::string n, size_t s);
+		explicit data_type_t(std::string n, const size_t& s);
 		explicit data_type_t(std::string n, std::vector<pole_t> v);
 
 		void add_pole(const std::string& n, const data_type_ptr& t);

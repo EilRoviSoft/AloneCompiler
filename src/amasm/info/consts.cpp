@@ -3,6 +3,9 @@
 //std
 #include <ranges>
 
+//alone
+#include "instructions.hpp"
+
 //alone::amasm
 #include "lexer.hpp"
 
@@ -66,8 +69,8 @@ namespace alone::amasm {
 
 		for (const auto& it : data_types | std::views::keys)
 			defined_tokens.emplace(it, token_type::data_type);
-		/*for (const auto& it : instructions_info | std::views::keys)
-			defined_tokens.emplace(it, token_type::inst_name);*/
+		for (const auto& it : lib::instructions_by_name | std::views::keys)
+			defined_tokens.emplace(it, token_type::inst_name);
 
 		init_rules();
 	}

@@ -20,45 +20,47 @@ include_directories(src/vm/isa)
 
 # Add source to this project's executable.
 add_executable(AloneCompiler
-        "src/error_codes.hpp"
-        "src/general.hpp"
-        "src/general.cpp"
-        
-        "src/instructions.hpp"
-        "src/main.cpp"
-        "src/vm_context.cpp"
-        "src/vm_context.hpp"
-        "src/amasm/info/consts.cpp"
-        "src/amasm/info/consts.hpp"
-        "src/amasm/info/data_types.cpp"
-        "src/amasm/info/data_types.hpp"
-        "src/amasm/info/enums.hpp"
-        "src/amasm/info/extras.cpp"
-        "src/amasm/info/extras.hpp"
-        "src/amasm/info/include.hpp"
-        "src/amasm/info/tokens.cpp"
-        "src/amasm/info/tokens.hpp"
-        "src/amasm/lexer.cpp"
-        "src/amasm/lexer.hpp"
-        "src/amasm/parser.cpp"
-        "src/amasm/parser.hpp"
-        "src/amasm/scanner.cpp"
-        "src/amasm/scanner.hpp"
-        "src/amasm/util.hpp"
-        "src/vm/isa/arithmetic.hpp"
-        "src/vm/isa/linker.hpp"
-        "src/vm/isa/system.hpp"
-        "src/vm/virtual_machine.cpp"
-        "src/vm/virtual_machine.hpp" "src/instructions.cpp" "src/vm/isa/arithmetic.cpp")
+		"src/error_codes.hpp"
+		"src/general.cpp"
+		"src/general.hpp"
+		"src/instructions.cpp"
+		"src/instructions.hpp"
+		"src/main.cpp"
+		"src/util.hpp"
+		"src/vm_context.cpp"
+		"src/vm_context.hpp"
+		"src/amasm/info/consts.cpp"
+		"src/amasm/info/consts.hpp"
+		"src/amasm/info/data_types.cpp"
+		"src/amasm/info/data_types.hpp"
+		"src/amasm/info/enums.hpp"
+		"src/amasm/info/extras.cpp"
+		"src/amasm/info/extras.hpp"
+		"src/amasm/info/include.hpp"
+		"src/amasm/info/tokens.cpp"
+		"src/amasm/info/tokens.hpp"
+		"src/amasm/lexer.cpp"
+		"src/amasm/lexer.hpp"
+		"src/amasm/parser.cpp"
+		"src/amasm/parser.hpp"
+		"src/amasm/scanner.cpp"
+		"src/amasm/scanner.hpp"
+		"src/amasm/util.hpp"
+		"src/isa/type_related.cpp"
+		"src/isa/type_related.hpp"
+		"src/isa/linker.hpp"
+		"src/isa/system.hpp"
+		"src/vm/virtual_machine.cpp"
+		"src/vm/virtual_machine.hpp")
 
 add_compile_definitions(DEBUG_STATUS)
 
 # TODO: Add tests and install targets if needed.
 
 target_include_directories(AloneCompiler PRIVATE
-        src
-        src/amasm
-        src/vm
-        src/vm/isa)
+		src
+		src/amasm
+		src/vm
+		src/vm/isa)
 
 set_property(TARGET AloneCompiler PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res")

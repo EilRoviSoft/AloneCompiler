@@ -1,22 +1,24 @@
-#include "arithmetic.hpp"
+#include "type_related.hpp"
 
 //std
 #include <string>
 
 //alone
 #include "util.hpp"
-#include "virtual_machine.hpp"
 
-#define ARITHMETIC_BODY(PREFIX, OFFSET, TYPE) std::string(##PREFIX) + std::to_string(sizeof(##TYPE) * 8) + Postfix, Offset + ##OFFSET, 2, sizeof(T)
+//alone::isa
+#include "isa/universal.hpp"
+
+#define ARITHMETIC_BODY(PREFIX, OFFSET, TYPE) std::string(##PREFIX) + std::to_string(sizeof(##TYPE) * 8) + Postfix, Offset + ##OFFSET, 3, sizeof(T) * 8
 #define MAKE_INST_B23(PREFIX, OFFSET, OP, TYPE) ARITHMETIC_BODY(PREFIX, OFFSET, TYPE), std::bind(inst_b23<##TYPE>, std::placeholders::_1, std::placeholders::_2, ##OP<##TYPE>)
 #define MAKE_INST_U12(PREFIX, OFFSET, OP, TYPE) ARITHMETIC_BODY(PREFIX, OFFSET, TYPE), std::bind(inst_u12<##TYPE>, std::placeholders::_1, std::placeholders::_2, ##OP<##TYPE>)
 #define MAKE_INST_CMP(PREFIX, OFFSET, TYPE) ARITHMETIC_BODY(PREFIX, OFFSET, TYPE), std::bind(inst_cmp<##TYPE>, std::placeholders::_1, std::placeholders::_2)
 
 //TODO: floating numbers isa
-namespace alone::vm::isa {
+namespace alone::isa {
 	template<typename T, char Postfix, size_t Offset>
-	std::list<inst_t> generate_universal_arithmetic_isa() {
-		std::list<inst_t> result;
+	std::list<lib::inst_t> generate_universal_arithmetic_isa() {
+		std::list<lib::inst_t> result;
 
 		result.emplace_back(MAKE_INST_B23("add", 0x00, util::add, T));
 		result.emplace_back(MAKE_INST_B23("sub", 0x01, util::sub, T));
@@ -30,8 +32,8 @@ namespace alone::vm::isa {
 		return result;
 	}
 	template<typename T, char Postfix, size_t Offset>
-	std::list<inst_t> generate_signed_arithmetic_isa() {
-		std::list<inst_t> result;
+	std::list<lib::inst_t> generate_signed_arithmetic_isa() {
+		std::list<lib::inst_t> result;
 
 		result.append_range(generate_universal_arithmetic_isa<T, Postfix, Offset>());
 		result.emplace_back(MAKE_INST_U12("neg", 0x08, util::neg, T));
@@ -39,8 +41,8 @@ namespace alone::vm::isa {
 		return result;
 	}
 
-	std::list<inst_t> generate_arithmetic_isa() {
-		std::list<inst_t> result;
+	std::list<lib::inst_t> generate_type_related_isa() {
+		std::list<lib::inst_t> result;
 
 		result.append_range(generate_universal_arithmetic_isa<uint8_t, 'u', 0x140>());
 		result.append_range(generate_universal_arithmetic_isa<uint16_t, 'u', 0x150>());

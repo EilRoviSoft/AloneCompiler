@@ -4,7 +4,7 @@
 #include "error_codes.hpp"
 #include "general.hpp"
 
-//alone::amasm
+//alone::amasm::info
 #include "consts.hpp"
 
 namespace alone::amasm {
@@ -17,20 +17,14 @@ namespace alone::amasm {
 	}
 	token_t::token_t(std::string s) :
 		literal(std::move(s)) {
-		switch (check_type(literal)) {
-		case literal_type::word: {
+		auto literal_type = lib::check_type(literal);
+		if (literal_type == lib::literal_type::word) {
 			auto temp = defined_tokens.find(literal);
 			type = temp == defined_tokens.end() ? token_type::identifier : temp->second;
-			break;
-		}
-		case literal_type::binary:
-		case literal_type::decimal:
-		case literal_type::hexadecimal:
-		case literal_type::floating:
+		} else if (literal_type == lib::literal_type::binary || literal_type == lib::literal_type::decimal || 
+				   literal_type == lib::literal_type::hexadecimal || literal_type == lib::literal_type::floating) {
 			type = token_type::number;
-			break;
-		default:
+		} else
 			throw AMASM_TOKENS_WRONG_INPUT;
-		}
 	}
 }

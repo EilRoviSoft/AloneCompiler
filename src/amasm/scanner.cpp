@@ -5,11 +5,11 @@
 #include <vector>
 
 namespace alone::amasm {
-	std::string Scanner::scan(std::fstream& input) {
+	std::string Scanner::scan(std::fstream& file) {
 		std::string temp, buffer;
 
-		while (!input.eof()) {
-			std::getline(input, buffer, '\n');
+		while (!file.eof()) {
+			std::getline(file, buffer, '\n');
 			temp += buffer + '\n';
 		}
 
@@ -37,8 +37,8 @@ namespace alone::amasm {
 		}
 
 		result.reserve(ranges.size());
-		for (auto range : ranges)
-			result += input.substr(range.first, range.second - range.first) + '\n';
+		for (auto [begin, end] : ranges)
+			result += input.substr(begin, end - begin) + '\n';
 
 		result.shrink_to_fit();
 		return result;

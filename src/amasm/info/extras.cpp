@@ -3,7 +3,7 @@
 //std
 #include <ranges>
 
-//alone
+//alone::amasm::info
 #include "consts.hpp"
 
 namespace alone::amasm {
