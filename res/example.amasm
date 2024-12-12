@@ -3,9 +3,9 @@ struct vector2 {
 	var %y, int32;
 }
 
-func @add(int32, int32): int32 {
-	add32i [%spx - 8], [%spx - 16];
-	sub64u %spx, 16;
-	push64 %asx;
-	ret;
+func @add6432(int64, int32): int64 { # arguments pushes right-to-left
+    mov32 %lox, [%spx - 12];
+    mov64 %rox, [%spx - 8];
+    add64i %asx, %lox, %rox;
+    ret;
 }

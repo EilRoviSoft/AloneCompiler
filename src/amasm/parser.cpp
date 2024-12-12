@@ -4,9 +4,12 @@
 #include <memory>
 #include <queue>
 #include <stdexcept>
+#include <unordered_map>
+#include <unordered_set>
 #include <variant>
 
 //alone
+#include "amasm/info/consts.hpp"
 #include "error_codes.hpp"
 #include "instructions.hpp"
 
@@ -17,7 +20,7 @@ namespace alone::amasm::inline parser_inlined {
     };
     struct scope_info_t {
         std::vector<inst_call_t> lines;
-        std::vector<variable_t> vars;
+        std::unordered_map<std::string, variable_t> vars;
     };
     struct func_info_t {
         std::string name;
@@ -44,11 +47,21 @@ namespace alone::amasm::inline parser_inlined {
 
     const std::unordered_set<std::string> surrounded_by_braces = { "struct_definition", "function_definition" };
 
+    const variable_t& get_variable(const std::string& k, const std::unordered_map<std::string, variable_t>& scope) {
+        if (auto it = predefined_vars.find(k); it != predefined_vars.end())
+            return it->second;
+
+        if (auto it = scope.find(k); it != predefined_vars.end())
+            return it->second;
+
+        throw AMASM_PARSER_VARIABLE_DOESNT_EXIST;
+    }
+
     bool match_rule(const std::string& rule_name, const token_array_t& tokens, const size_t& start_idx) {
         const auto& pattern = rules.at(rule_name);
         bool result = true;
 
-        for (size_t i = 0, diff = 0; result && i != pattern.size(); ++i)
+        for (size_t i = 0, diff = 0; result && i < pattern.size(); i++)
             result = pattern[i + diff] == tokens[start_idx + i].type;
 
         return result;
@@ -90,7 +103,7 @@ namespace alone::amasm::inline parser_inlined {
 
         on_push.name = ctx.tokens[ctx.i + 2].literal;
         //arguments dispatching
-        for (j = ctx.i + 4; ctx.tokens[j].type != token_type::rparen; ++j) {
+        for (j = ctx.i + 4; ctx.tokens[j].type != token_type::rparen; j++) {
             if ((j - ctx.i) % 2) {
                 if (ctx.tokens[j].type != token_type::comma)
                     throw AMASM_PARSER_WRONG_FUNC_DEFINITION;
@@ -137,8 +150,8 @@ namespace alone::amasm::inline parser_inlined {
         inst_call_t on_push;
 
         on_push.name = parsing_data.tokens[parsing_data.i].literal;
-        for (j = parsing_data.i, dj = 0, args_n = 0; args_n != inst_info->max_args_count &&
-             parsing_data.tokens[j].type != token_type::semicolon; j += dj, dj = 0, ++args_n) {
+        for (j = parsing_data.i, dj = 0, args_n = 0; args_n < inst_info->max_args_count &&
+             parsing_data.tokens[j].type != token_type::semicolon; j += dj, dj = 0, args_n++) {
             argument_t arg;
 
             if (parsing_data.tokens[j].type != token_type::inst_name && parsing_data.tokens[j].type !=
@@ -176,6 +189,9 @@ namespace alone::amasm::inline parser_inlined {
                     delta += 2;
                 }
                 dj = delta + 5;
+            } else if (args_n >= inst_info->min_args_count) {
+                j += 1;
+                break;
             } else
                 throw AMASM_PARSER_WRONG_INST_DEFINITION;
 
@@ -208,15 +224,46 @@ namespace alone::amasm::inline parser_inlined {
         { token_type::rbrace, finish_parse_rbrace }
     };
 
+    //TODO: fcall labels
     lib::byte_array_t translate_to_bytecode(const translate_context_t& translation_data) {
+        lib::byte_array_t result;
         const auto& func_info = std::get<func_info_t>(translation_data.info);
         std::string label_name = func_info.name + '(';
+        size_t args_size = 0;
 
-        for (size_t i = 0; i != func_info.args.size() - 1; ++i)
+        for (size_t i = 0; i < func_info.args.size() - 1; i++)
             label_name += func_info.args[i]->name + ", ";
         label_name += func_info.args.back()->name + ')';
 
-        return {};
+        for (const auto& arg : func_info.args)
+            args_size += arg->size;
+
+        result.append_range(lib::as_bytes(args_size));
+        result.append_range(lib::as_bytes(func_info.return_type->size));
+
+        for (const auto& inst : func_info.scope.lines) {
+            result.append_range(lib::as_bytes(lib::instructions_by_name.at(inst.name)->code));
+
+            //if empty then stops
+            for (const auto& arg : inst.args) {
+                switch (arg.type) {
+                case lib::argument_type::direct:
+                    result.append_range(lib::as_bytes(get_variable(arg.name, func_info.scope.vars).address));
+                    break;
+                case lib::argument_type::immediate:
+                    result.append_range(lib::as_bytes(arg.value));
+                    break;
+                case lib::argument_type::indirect_with_displacement:
+                    result.append_range(lib::as_bytes(
+                        get_variable(arg.name, func_info.scope.vars).address + arg.value));
+                    break;
+                default:
+                    throw std::runtime_error(AMASM_PARSER_WRONG_INST_ARGS_DEFINITION);
+                }
+            }
+        }
+
+        return result;
     }
 }
 

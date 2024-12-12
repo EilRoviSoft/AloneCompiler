@@ -13,14 +13,15 @@
 
 # System
 
-| Name  | Size | ID     | Semantics                     | Notes                                                                  |
-| ----- | ---- | ------ | ----------------------------- | ---------------------------------------------------------------------- |
-| halt  | 4    | `0x00` | `halt`                        | Stops program                                                          |
-| ncall | 12   | `0x01` | `ncall @native_func_id(args)` | Calls native function                                                  |
-| fcall | 12   | `0x02` | `fcall @func_id(args)`        | Calls in-code defined function, works similar to `enter`               |
-| ret   | 4    | `0x03` | `ret`                         | Leaves function, works similar to to `leave`                           |
-| enter | 12   | `0x04` | `enter`                       | Moves `%bpx` to new address and saves previous position on heap        |
-| leave | 4    | `0x05` | `leave`                       | Moves `%bpx` to previous position and clears all memory between places |
+| Name  | Size          | ID     | Semantics                     | Notes                                                                     |
+| ----- | ------------- | ------ | ----------------------------- | ------------------------------------------------------------------------- |
+| halt  | 4             | `0x00` | `halt`                        | Stops program                                                             |
+| ncall | 12            | `0x01` | `ncall @native_func_id(args)` | Calls native function                                                     |
+| fcall | 12            | `0x02` | `fcall @func_id(args)`        | `[%spx] = %bpx; %spx += 8; %bpx = %ipx; %ipx = [%ipx + 4]`                |
+| ret   | 4 + `a0.size` | `0x03` | `ret a0`                      | `%asx/%grx = a0; %ipx = %bpx; %spx -= %func_args.size + 8; %bpx = [%spx]` |
+| ret   | 4             | `0x03` | `ret a0`                      | `%ipx = %bpx; %bpx -= %func_args.size + 8; %bpx = [%spx]`                 |
+| enter | 12            | `0x04` | `enter`                       |                                                                           |
+| leave | 4             | `0x05` | `leave`                       |                                                                           |
 
 ---
 

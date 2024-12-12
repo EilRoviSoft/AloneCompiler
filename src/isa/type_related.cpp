@@ -21,6 +21,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "add" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x0,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_add<T>)
@@ -28,6 +29,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "sub" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x1,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_sub<T>)
@@ -35,6 +37,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "mul" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x2,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_mul<T>)
@@ -42,6 +45,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "div" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x3,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_div<T>)
@@ -49,6 +53,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "mod" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x4,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_mod<T>)
@@ -56,6 +61,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "inc" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x5,
+                1,
                 2,
                 sizeof(T) * 8,
                 std::bind(inst_u12<T>, ph::_1, ph::_2, util::call_inc<T>)
@@ -63,6 +69,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "dec" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x6,
+                1,
                 2,
                 sizeof(T) * 8,
                 std::bind(inst_u12<T>, ph::_1, ph::_2, util::call_dec<T>)
@@ -70,6 +77,7 @@ namespace alone::isa {
             lib::make_instruction(
                 "cmp" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x7,
+                2,
                 2,
                 sizeof(T) * 8,
                 std::bind(inst_cmp<T>, ph::_1, ph::_2)
@@ -86,7 +94,8 @@ namespace alone::isa {
         result.push_back(lib::make_instruction(
             std::string("neg") + std::to_string(sizeof(T) * 8) + Postfix,
             Offset + 0x8,
-            3,
+            1,
+            2,
             sizeof(T) * 8,
             std::bind(inst_u12<T>, ph::_1, ph::_2, util::call_neg<T>)
         ));

@@ -14,6 +14,7 @@ namespace alone::amasm {
     std::unordered_map<std::string, token_type> defined_tokens;
     std::unordered_map<std::string, data_type_ptr> data_types;
     std::unordered_map<std::string, std::vector<token_type>> rules;
+    std::unordered_map<std::string, variable_t> predefined_vars;
 
     void add_data_type(const data_type_ptr& ptr) {
         if (data_types.contains(ptr->name))
@@ -60,12 +61,29 @@ namespace alone::amasm {
             { "indirect", std::vector { lbracket, percent, identifier } }
         };
     }
+    void init_vars() {
+        using namespace lib;
+        using enum regs_set;
+        predefined_vars = {
+            make_variable("asx", "uint64", (address_t) asx),
+            make_variable("rsx", "uint64", (address_t) rsx),
+            make_variable("lox", "uint64", (address_t) lox),
+            make_variable("rox", "uint64", (address_t) rox),
+            make_variable("ipx", "uint64", (address_t) ipx),
+            make_variable("spx", "uint64", (address_t) spx),
+            make_variable("bpx", "uint64", (address_t) bpx),
+            make_variable("spx", "uint64", (address_t) spx),
+            make_variable("flags", "uint64", (address_t) flags),
+            make_variable("grx", "uint64", (address_t) grx),
+        };
+    }
 
     //TODO: dispatch instructions
     void init_consts() {
         init_singular_tokens();
         init_defined_tokens();
         init_data_types();
+        init_vars();
 
         for (const auto& it : data_types | std::views::keys)
             defined_tokens.emplace(it, token_type::data_type);

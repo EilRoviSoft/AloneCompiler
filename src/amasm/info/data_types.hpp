@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "general.hpp"
+
 namespace alone::amasm {
     struct data_type_t;
     using data_type_ptr = std::shared_ptr<data_type_t>;
@@ -32,7 +34,11 @@ namespace alone::amasm {
     struct variable_t {
         std::string name;
         data_type_ptr type;
+        lib::address_t address;
     };
+    std::pair<std::string, variable_t> make_variable(const std::string& name,
+                                                     const std::string& type,
+                                                     const lib::address_t& address);
 
     template<typename T>
         requires std::constructible_from<data_type_t, std::string, T>

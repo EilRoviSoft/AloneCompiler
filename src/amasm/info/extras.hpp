@@ -9,7 +9,7 @@
 
 namespace alone::amasm {
     struct argument_t {
-        //direct -> name, immediate -> value, indirect_with_displacement -> name + value
+        //direct -> name, immediate -> value, indirect_with_displacement -> [name + value]
         lib::argument_type type;
         std::string name;
         ptrdiff_t value;

@@ -15,14 +15,16 @@ namespace alone::lib {
     struct inst_t {
         std::string name;
         inst_code_t code;
+        size_t min_args_count;
         size_t max_args_count;
         size_t bit_depth;
         inst_func_t pred;
     };
     inst_t make_instruction(std::string name,
-                            inst_code_t code,
-                            size_t max_args_count,
-                            size_t bit_depth,
+                            const inst_code_t& code,
+                            const size_t& min_args_count,
+                            const size_t& max_args_count,
+                            const size_t& bit_depth,
                             inst_func_t pred);
 
     using inst_ptr = std::shared_ptr<inst_t>;
@@ -32,6 +34,7 @@ namespace alone::lib {
 
     void init_instruction(std::string name,
                           inst_code_t code,
+                          size_t min_args_count,
                           size_t max_args_count,
                           size_t bit_depth,
                           inst_func_t pred);

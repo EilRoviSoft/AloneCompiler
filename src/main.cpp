@@ -46,10 +46,7 @@ namespace testing_system {
 
         std::ranges::sort(sorted, less);
         for (const auto& val : sorted)
-            std::cout << val->name << '\t'
-                    << val->code << '\t'
-                    << val->max_args_count << '\t'
-                    << val->bit_depth << '\n';
+            std::cout << val->name << '\t' << val->code << '\n';
         std::cout << "isa size: " << sorted.size() << '\n';
 
         return 0;
@@ -60,9 +57,11 @@ void init_tasks() {
     tests = {
         { false, testing_system::test_data_types },
         { false, testing_system::test_code_parsing },
-        { true, testing_system::test_isa_collection }
+        { false, testing_system::test_isa_collection }
     };
 }
+
+//TODO: separate virtual_machine from parser
 
 int main() {
     lib::init_isa();

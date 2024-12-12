@@ -124,70 +124,78 @@ namespace alone::isa {
 
         result.append_range(std::initializer_list {
             lib::make_instruction(
-                std::string("mov") + std::to_string(sizeof(T) * 8),
+                "mov" + std::to_string(sizeof(T) * 8),
                 Offset + 0x0,
+                2,
                 2,
                 sizeof(T) * 8,
                 std::bind(inst_mov<T>, ph::_1, ph::_2)
             ),
             lib::make_instruction(
-                std::string("push") + std::to_string(sizeof(T) * 8),
+                "push" + std::to_string(sizeof(T) * 8),
                 Offset + 0x1,
+                0,
                 1,
                 sizeof(T) * 8,
                 std::bind(inst_push<T>, ph::_1, ph::_2)
             ),
             lib::make_instruction(
-                std::string("pop") + std::to_string(sizeof(T) * 8),
+                "pop" + std::to_string(sizeof(T) * 8),
                 Offset + 0x2,
+                0,
                 1,
                 sizeof(T) * 8,
                 std::bind(inst_pop<T>, ph::_1, ph::_2)
             ),
             lib::make_instruction(
-                std::string("not") + std::to_string(sizeof(T) * 8),
+                "not" + std::to_string(sizeof(T) * 8),
                 Offset + 0x3,
+                1,
                 2,
                 sizeof(T) * 8,
                 std::bind(inst_u12<T>, ph::_1, ph::_2, util::call_not<T>)
             ),
             lib::make_instruction(
-                std::string("and") + std::to_string(sizeof(T) * 8),
+                "and" + std::to_string(sizeof(T) * 8),
                 Offset + 0x4,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_and<T>)
             ),
             lib::make_instruction(
-                std::string("or") + std::to_string(sizeof(T) * 8),
+                "or" + std::to_string(sizeof(T) * 8),
                 Offset + 0x5,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_or<T>)
             ),
             lib::make_instruction(
-                std::string("xor") + std::to_string(sizeof(T) * 8),
+                "xor" + std::to_string(sizeof(T) * 8),
                 Offset + 0x6,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_xor<T>)
             ),
             lib::make_instruction(
-                std::string("shl") + std::to_string(sizeof(T) * 8),
+                "shl" + std::to_string(sizeof(T) * 8),
                 Offset + 0x7,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_shl<T>)
             ),
             lib::make_instruction(
-                std::string("shr") + std::to_string(sizeof(T) * 8),
+                "shr" + std::to_string(sizeof(T) * 8),
                 Offset + 0x8,
+                2,
                 3,
                 sizeof(T) * 8,
                 std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_shr<T>)
             )
         });
-        //result.emplace_back(SIZE_RELATED(""))
 
         return result;
     }

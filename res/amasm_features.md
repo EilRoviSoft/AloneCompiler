@@ -99,11 +99,10 @@ label main__l0a:  # this branch is generated for loop purposes
 # Functions
 
 ```asm
-func @add6432(int64, int32): int64 { # uses pascal-call
+func @add6432(int64, int32): int64 { # arguments pushes right-to-left
+    mov %lox, [%spx - 12];
     mov %rox, [%spx - 4];
-    add64i [%spx - 12], %rox;
-    sub64u %spx, 12;
-    push64 %asx;
+    add64i %asx, %lox, %rox;
     ret;
 }
 ```

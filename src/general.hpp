@@ -97,4 +97,15 @@ namespace alone::lib {
 
     std::tuple<address_t, memory_type> decompose_address(address_t address);
     std::tuple<inst_code_t, args_data_t> decompose_instruction(inst_code_t instruction);
+
+    template<typename T>
+    byte_array_t as_bytes(const T& val) {
+        byte_array_t result(sizeof(T));
+        auto temp = reinterpret_cast<const std::byte*>(&val);
+
+        for (size_t i = 0; i != sizeof(T); i++)
+            result[i] = temp[i];
+
+        return result;
+    }
 }
