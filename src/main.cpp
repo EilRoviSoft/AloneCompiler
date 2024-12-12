@@ -69,12 +69,12 @@ int main() {
     amasm::init_consts();
     init_tasks();
 
-    auto f = [](const std::pair<bool, std::function<int()>>& item) {
+    auto check_condition = [](const std::pair<bool, std::function<int()>>& item) {
         return item.first;
     };
 
     int result = 0, i = 0;
-    for (const auto& it : tests | std::views::filter(f) | std::views::values) {
+    for (const auto& it : tests | std::views::filter(check_condition) | std::views::values) {
         result = it();
         std::cout << "test: " << i << " | " << (result ? "fail" : "success") << '\n';
         ++i;

@@ -3,7 +3,7 @@
 //std
 #include <string>
 
-//alone
+//alone::util
 #include "util.hpp"
 
 //alone::isa
@@ -18,56 +18,56 @@ namespace alone::isa {
         std::list<lib::inst_t> result;
 
         result.append_range(std::initializer_list {
-            lib::inst_t(
+            lib::make_instruction(
                 "add" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x0,
                 3,
                 sizeof(T) * 8,
-                std::bind(inst_b23<T>, ph::_1, ph::_2, util::add<T>)
+                std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_add<T>)
             ),
-            lib::inst_t(
+            lib::make_instruction(
                 "sub" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x1,
                 3,
                 sizeof(T) * 8,
-                std::bind(inst_b23<T>, ph::_1, ph::_2, util::sub<T>)
+                std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_sub<T>)
             ),
-            lib::inst_t(
+            lib::make_instruction(
                 "mul" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x2,
                 3,
                 sizeof(T) * 8,
-                std::bind(inst_b23<T>, ph::_1, ph::_2, util::mul<T>)
+                std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_mul<T>)
             ),
-            lib::inst_t(
+            lib::make_instruction(
                 "div" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x3,
                 3,
                 sizeof(T) * 8,
-                std::bind(inst_b23<T>, ph::_1, ph::_2, util::div<T>)
+                std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_div<T>)
             ),
-            lib::inst_t(
+            lib::make_instruction(
                 "mod" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x4,
                 3,
                 sizeof(T) * 8,
-                std::bind(inst_b23<T>, ph::_1, ph::_2, util::mod<T>)
+                std::bind(inst_b23<T>, ph::_1, ph::_2, util::call_mod<T>)
             ),
-            lib::inst_t(
+            lib::make_instruction(
                 "inc" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x5,
                 2,
                 sizeof(T) * 8,
-                std::bind(inst_u12<T>, ph::_1, ph::_2, util::inc<T>)
+                std::bind(inst_u12<T>, ph::_1, ph::_2, util::call_inc<T>)
             ),
-            lib::inst_t(
+            lib::make_instruction(
                 "dec" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x6,
                 2,
                 sizeof(T) * 8,
-                std::bind(inst_u12<T>, ph::_1, ph::_2, util::dec<T>)
+                std::bind(inst_u12<T>, ph::_1, ph::_2, util::call_dec<T>)
             ),
-            lib::inst_t(
+            lib::make_instruction(
                 "cmp" + std::to_string(sizeof(T) * 8) + Postfix,
                 Offset + 0x7,
                 2,
@@ -83,12 +83,12 @@ namespace alone::isa {
         std::list<lib::inst_t> result;
 
         result.append_range(generate_universal_type_related_isa<T, Postfix, Offset>());
-        result.push_back(lib::inst_t(
+        result.push_back(lib::make_instruction(
             std::string("neg") + std::to_string(sizeof(T) * 8) + Postfix,
             Offset + 0x8,
             3,
             sizeof(T) * 8,
-            std::bind(inst_u12<T>, ph::_1, ph::_2, util::neg<T>)
+            std::bind(inst_u12<T>, ph::_1, ph::_2, util::call_neg<T>)
         ));
 
         return result;

@@ -8,16 +8,18 @@ namespace alone::lib {
     std::unordered_map<std::string, inst_ptr> instructions_by_name;
     std::unordered_map<inst_code_t, inst_ptr> instructions_by_code;
 
-    inst_t::inst_t(std::string name,
-                   const inst_code_t& code,
-                   const size_t& max_args_count,
-                   const size_t& bit_depth,
-                   inst_func_t pred) :
-        name(std::move(name)),
-        code(code),
-        max_args_count(max_args_count),
-        bit_depth(bit_depth),
-        pred(std::move(pred)) {
+    inst_t make_instruction(std::string name,
+                            inst_code_t code,
+                            size_t max_args_count,
+                            size_t bit_depth,
+                            inst_func_t pred) {
+        return inst_t {
+            .name = std::move(name),
+            .code = code,
+            .max_args_count = max_args_count,
+            .bit_depth = bit_depth,
+            .pred = std::move(pred)
+        };
     }
 
     void init_instruction(std::string name,
