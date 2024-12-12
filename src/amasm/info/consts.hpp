@@ -11,12 +11,12 @@
 #include "extras.hpp"
 
 namespace alone::amasm {
-	extern std::unordered_set<char> singular_tokens;
-	extern std::unordered_map<std::string, token_type> defined_tokens;
-	extern std::unordered_map<std::string, data_type_ptr> data_types;
-	extern std::unordered_map<std::string, std::vector<token_type>> rules;
+    extern std::unordered_set<char> singular_tokens;
+    extern std::unordered_map<std::string, token_type> defined_tokens;
+    extern std::unordered_map<std::string, data_type_ptr> data_types;
+    extern std::unordered_map<std::string, std::vector<token_type>> rules;
 
-	void add_data_type(const data_type_ptr& ptr);
+    void add_data_type(const data_type_ptr& ptr);
 
-	void init_consts();
+    void init_consts();
 }

@@ -46,6 +46,8 @@ add_executable(AloneCompiler
 		"src/amasm/scanner.cpp"
 		"src/amasm/scanner.hpp"
 		"src/amasm/util.hpp"
+		"src/isa/size_related.cpp"
+		"src/isa/size_related.hpp"
 		"src/isa/type_related.cpp"
 		"src/isa/type_related.hpp"
 		"src/isa/linker.hpp"

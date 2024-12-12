@@ -9,17 +9,18 @@
 #include "vm_context.hpp"
 
 namespace alone::vm {
-	class VirtualMachine {
-		friend context_t;
-	public:
-		context_t ctx;
+    class VirtualMachine {
+        friend context_t;
 
-		VirtualMachine();
+    public:
+        context_t ctx;
 
-		void exec(const lib::byte_array_t& program);
+        VirtualMachine();
 
-	private:
-		std::array<std::byte, lib::mframe_size> _p0;
-		std::array<lib::array_t<std::byte>, lib::dframe_size> _p1;
-	};
+        void exec(const lib::byte_array_t& program);
+
+    private:
+        std::array<std::byte, lib::mframe_size> _p0;
+        std::array<lib::array_t<std::byte>, lib::dframe_size> _p1;
+    };
 }

@@ -59,9 +59,10 @@ Offset ranges
 | Name | Size           | Offset + ID     | Semantics        | Equals to                                    |
 | ---- | -------------- | --------------- | ---------------- | -------------------------------------------- |
 | mov  | 12 + `a1.size` | `Offset + 0x00` | `mov a0, a1`     | `a0 = a1`                                    |
-| push | 4 + `a0.size`  | `Offset + 0x01` | `push a0`        | `%spx += pop.size;`                          |
-| pop  | 4              | `Offset + 0x02` | `pop`            | `%asx = [%spx - pop.size]; %spx -= pop.size` |
+| push | 4 + `a0.size`  | `Offset + 0x01` | `push a0`        | `[%spx] = a0; %spx += pop.size;`             |
+| push | 4              | `Offset + 0x01` | `push`           | `%spx += pop.size;`                          |
 | pop  | 12             | `Offset + 0x02` | `pop a0`         | `a0 = [%spx - pop.size]; %spx -= pop.size`   |
+| pop  | 4              | `Offset + 0x02` | `pop`            | `%asx = [%spx - pop.size]; %spx -= pop.size` |
 | not  | 20             | `Offset + 0x03` | `not a0, a1`     | `a0 = ~a1`                                   |
 | not  | 12             | `Offset + 0x03` | `not a0`         | `a0 = ~a0`                                   |
 | and  | 20 + `a2.size` | `Offset + 0x04` | `and a0, a1, a2` | `a0 = a1 & a2`                               |

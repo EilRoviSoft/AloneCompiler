@@ -8,7 +8,8 @@ namespace alone {
 		mframe = std::span(vm._p0.begin(), lib::mframe_size);
 		regs = std::span(vm._p0.begin(), lib::registers_size);
 		program = std::span(vm._p0.begin() + lib::registers_size, program_size);
-		stack = std::span(vm._p0.begin() + lib::registers_size + program_size, lib::mframe_size - lib::registers_size - program_size);
+		stack = std::span(vm._p0.begin() + lib::registers_size + program_size,
+		                  lib::mframe_size - lib::registers_size - program_size);
 		dframe = std::span(vm._p1.begin(), lib::dframe_size);
 	}
 
@@ -45,6 +46,7 @@ namespace alone {
 		return reinterpret_cast<lib::flags_t&>(regs[(lib::machine_word_t) lib::regs_set::flags]);
 	}
 	lib::machine_word_t& context_t::grx(const uint64_t& id) const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::grx + id * sizeof(lib::machine_word_t)]);
+		return reinterpret_cast<lib::machine_word_t&>(regs[
+			(lib::machine_word_t) lib::regs_set::grx + id * sizeof(lib::machine_word_t)]);
 	}
 }

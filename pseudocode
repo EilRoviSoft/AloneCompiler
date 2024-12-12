@@ -1,0 +1,39 @@
+def draw_batch(circle_param_t[] params, bool[]& threads_status):
+    canvas result;
+    foreach p in params:
+        canvas.draw_circle(p);
+    wait_for([threads_status]{
+        bool result = true;
+        foreach v in threads_status:
+            result *= v;
+        return result;
+    }); //waits when whole array would be filled with 'true' values
+    return canvas.as_image();
+
+def main():
+    int params_count = 10000;
+    int threads_count = read_int(); //params_count % threads_count = 0
+
+    circle_param_t[params_count] params;
+    foreach p in params
+        p = random();
+    thread[threads_count] threads;
+    
+    int batch_size = params_count / threads_count;
+    circle_param_t[threads_count][batch_size] batches;
+    for i in range(threads_count):
+        for j in range(batch_size):
+            batches[i][j] = params[i * batch_size + j];
+    
+    bool[threads_count] threads_status;
+    foreach v in threads_status:
+        v = false;
+
+    image[threads_count] result;
+    for i in range(threads_count):
+        threads[i].bind(draw_batch, batches[i], threads_status); //.bind(TPredicate, TArgs... of TPredicate)
+        result[i] = threads[i].join(); // starts thread
+    
+    canvas display_canvas;
+    for i in range(i):
+        display_canvas.draw_iamge(result[threads_count - i - 1]);
