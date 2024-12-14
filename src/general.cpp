@@ -77,16 +77,19 @@ namespace alone::lib {
         return result;
     }
 
-    std::tuple<address_t, memory_type> decompose_address(address_t address) {
-        return { (address & 0xC000000000000000) >> 2, memory_type(address & 0b11) };
+    std::tuple<address_t, memory_type> decompose_address(const address_t& address) {
+        return {
+            (address & 0x3fffffffffffffff),
+            memory_type((address & 0xC000000000000000) >> (sizeof(address_t) * 8 - 2))
+        };
     }
-    std::tuple<inst_code_t, std::array<argument_type, 4>> decompose_instruction(inst_code_t instruction) {
+    std::tuple<inst_code_t, args_data_t> decompose_instruction(const inst_code_t& instruction) {
         const size_t args_metadata = (instruction & 0xFF000000) >> 24;
         std::array args = {
-            argument_type(args_metadata & 0b00000011),
-            argument_type(args_metadata & 0b00001100),
-            argument_type(args_metadata & 0b00110000),
-            argument_type(args_metadata & 0b11000000)
+            argument_type((args_metadata & 0b00000011) >> 0),
+            argument_type((args_metadata & 0b00001100) >> 2),
+            argument_type((args_metadata & 0b00110000) >> 4),
+            argument_type((args_metadata & 0b11000000) >> 6)
         };
         return { instruction & 0x00FFFFFF, args };
     }

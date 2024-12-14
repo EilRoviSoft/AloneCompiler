@@ -51,9 +51,10 @@ add_executable(AloneCompiler
 		"src/isa/type_related.cpp"
 		"src/isa/type_related.hpp"
 		"src/isa/linker.hpp"
+		"src/isa/system.cpp"
 		"src/isa/system.hpp"
 		"src/vm/virtual_machine.cpp"
-		"src/vm/virtual_machine.hpp" "src/isa/system.cpp")
+		"src/vm/virtual_machine.hpp")
 
 add_compile_definitions(DEBUG_STATUS)
 

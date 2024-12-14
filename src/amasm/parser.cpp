@@ -241,26 +241,34 @@ namespace alone::amasm::inline parser_inlined {
         result.append_range(lib::as_bytes(args_size));
         result.append_range(lib::as_bytes(func_info.return_type->size));
 
-        for (const auto& inst : func_info.scope.lines) {
-            result.append_range(lib::as_bytes(lib::instructions_by_name.at(inst.name)->code));
+        for (const auto& [inst_name, args] : func_info.scope.lines) {
+            lib::byte_array_t args_as_bytes;
+            lib::inst_code_t mask = 0;
 
-            //if empty then stops
-            for (const auto& arg : inst.args) {
-                switch (arg.type) {
+            for (size_t j = 0; j < args.size(); j++) {
+                const auto& [type, arg_name, value] = args[j];
+                mask |= (size_t) type << (j * 2);
+                switch (type) {
                 case lib::argument_type::direct:
-                    result.append_range(lib::as_bytes(get_variable(arg.name, func_info.scope.vars).address));
+                    args_as_bytes.append_range(lib::as_bytes(
+                        get_variable(arg_name, func_info.scope.vars).address));
                     break;
                 case lib::argument_type::immediate:
-                    result.append_range(lib::as_bytes(arg.value));
+                    args_as_bytes.append_range(lib::as_bytes(value));
                     break;
                 case lib::argument_type::indirect_with_displacement:
-                    result.append_range(lib::as_bytes(
-                        get_variable(arg.name, func_info.scope.vars).address + arg.value));
+                    args_as_bytes.append_range(lib::as_bytes(
+                        get_variable(arg_name, func_info.scope.vars).address));
+                    args_as_bytes.append_range(lib::as_bytes(value));
                     break;
                 default:
                     throw std::runtime_error(AMASM_PARSER_WRONG_INST_ARGS_DEFINITION);
                 }
             }
+
+            const auto inst_code = lib::instructions_by_name.at(inst_name)->code | (mask << 24);
+            result.append_range(lib::as_bytes(inst_code));
+            result.append_range(std::move(args_as_bytes));
         }
 
         return result;

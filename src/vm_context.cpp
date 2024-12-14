@@ -15,7 +15,7 @@ namespace alone {
 
 	//call it every time, when you run new program
 	void context_t::init_registers() const {
-		ipx() = lib::registers_size;
+		ipx() = lib::registers_size + 16;
 		spx() = lib::registers_size + program_size;
 		flags()[(size_t) lib::flags_set::rf] = true;
 	}

@@ -21,21 +21,33 @@ using namespace alone;
 std::vector<std::tuple<bool, std::function<int()>>> tests;
 
 namespace testing_system {
-    int test_data_types() {
-        for (const std::string& it : amasm::data_types | std::views::keys)
-            std::cout << it << '\n';
-        return 0;
-    }
-    int test_code_parsing() {
-        std::fstream file("example.amasm");
+    lib::byte_array_t generate_bytecode(const std::string& filename) {
+        std::fstream file(filename, std::fstream::in);
         if (!file.is_open())
-            return -1;
-        auto text = amasm::Scanner::scan(file);
+            return {};
+        const auto text = amasm::Scanner::scan(file);
         file.close();
 
-        auto tokens = amasm::Lexer::tokenize_code(text);
-        auto code = amasm::Parser::parse(tokens);
+        const auto tokens = amasm::Lexer::tokenize_code(text);
 
+        return amasm::Parser::parse(tokens);
+    }
+
+    int test_data_types() {
+        std::fstream file("datatypes.txt", std::ofstream::out | std::ofstream::trunc);
+        if (!file.is_open())
+            return -1;
+        for (const auto& it : amasm::data_types | std::views::values) {
+            file << it->name << "\n\tsize: " << it->size << "\n";
+
+            if (!it->poles.empty()) {
+                file << "\tpoles: " << it->poles.size() << "\n";
+                for (const auto& pole : it->poles)
+                    file << "\t\t" << pole.offset << '\t' << pole.name << '\n';
+            }
+            file << std::endl;
+        }
+        file.close();
         return 0;
     }
     int test_isa_collection() {
@@ -45,9 +57,36 @@ namespace testing_system {
         };
 
         std::ranges::sort(sorted, less);
-        for (const auto& val : sorted)
-            std::cout << val->name << '\t' << val->code << '\n';
-        std::cout << "isa size: " << sorted.size() << '\n';
+
+        std::fstream file("isa.txt", std::ofstream::out | std::ofstream::trunc);
+        if (!file.is_open())
+            return -1;
+        for (const auto& val : sorted) {
+            file << val->name << (val->name.size() <= 3 ? " \t" : "\t")
+                    << val->code << '\t'
+                    << val->min_args_count << ' '
+                    << val->max_args_count << ' '
+                    << val->bit_depth << '\n';
+        }
+        file << "isa size: " << sorted.size() << '\n';
+        file.close();
+
+        return 0;
+    }
+    int test_code_parsing() {
+        return generate_bytecode("example.amasm").empty() ? -1 : 0;
+    }
+    int test_code() {
+        const auto code = generate_bytecode("example.amasm");
+
+        std::fstream file("output.txt", std::ofstream::out | std::ofstream::trunc);
+        if (!file.is_open())
+            return -1;
+        file.write(reinterpret_cast<const char*>(code.data()), code.size());
+        file.close();
+
+        vm::VirtualMachine vm;
+        vm.exec(code);
 
         return 0;
     }
@@ -56,8 +95,9 @@ namespace testing_system {
 void init_tasks() {
     tests = {
         { false, testing_system::test_data_types },
+        { false, testing_system::test_isa_collection },
         { false, testing_system::test_code_parsing },
-        { false, testing_system::test_isa_collection }
+        { true, testing_system::test_code }
     };
 }
 

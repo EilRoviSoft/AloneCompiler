@@ -49,7 +49,10 @@ namespace alone {
         }
         template<class T = lib::machine_word_t>
         T* get_with_displacement(const lib::address_t& address) const {
-            return get<T>(*get(address) + *get(address + lib::machine_word_size));
+            const auto nested_address = *get(address);
+            const auto value = *get(nested_address);
+            const auto offset = *get<ptrdiff_t>(address + lib::machine_word_size);
+            return get<T>(value + offset);
         }
         template<class T>
         lib::array_t<T> get_array(const lib::address_t& address) const {

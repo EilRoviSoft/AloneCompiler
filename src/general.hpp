@@ -95,8 +95,8 @@ namespace alone::lib {
 
     std::string gen_str(char a, char b);
 
-    std::tuple<address_t, memory_type> decompose_address(address_t address);
-    std::tuple<inst_code_t, args_data_t> decompose_instruction(inst_code_t instruction);
+    std::tuple<address_t, memory_type> decompose_address(const address_t& address);
+    std::tuple<inst_code_t, args_data_t> decompose_instruction(const inst_code_t& instruction);
 
     template<typename T>
     byte_array_t as_bytes(const T& val) {
