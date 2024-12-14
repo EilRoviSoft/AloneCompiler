@@ -48,8 +48,8 @@ namespace alone::lib {
         rox   = 3 * machine_word_size, //Right Operand register
         ipx   = 4 * machine_word_size, //Instruction Pointer
         bpx   = 5 * machine_word_size, //Stack Pointer
-        spx   = 6 * machine_word_size, //Base Pointer
-        cpx   = 7 * machine_word_size, //Context pointer
+        cpx   = 6 * machine_word_size, //Context pointer
+        spx   = 7 * machine_word_size, //Base Pointer
         flags = 8 * machine_word_size, //Flags register
         grx   = 9 * machine_word_size, //General Registers start
     };

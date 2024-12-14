@@ -72,6 +72,7 @@ namespace alone::amasm {
             make_variable("ipx", "uint64", (address_t) ipx),
             make_variable("spx", "uint64", (address_t) spx),
             make_variable("bpx", "uint64", (address_t) bpx),
+            make_variable("cpx", "uint64", (address_t) cpx),
             make_variable("spx", "uint64", (address_t) spx),
             make_variable("flags", "uint64", (address_t) flags),
             make_variable("grx", "uint64", (address_t) grx),
