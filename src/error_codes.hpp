@@ -29,5 +29,6 @@
 #define AMASM_PARSER_WRONG_INST_DEFINITION_PLACE std::runtime_error("parser.cpp: instruction was defined in wrong place")
 #define AMASM_PARSER_FINISHED_TOO_EARLY std::runtime_error("parser.cpp: parsing finished too early")
 #define AMASM_PARSER_VARIABLE_DOESNT_EXIST std::runtime_error("parser.cpp: variable doesn't exist")
+#define AMASM_PARSER_LABEL_DOESNT_EXIST std::runtime_error("parser.cpp: label doesn't exist")
 
 #define ISA_WRONG_ARGS_METADATA std::runtime_error("isa folder: type doesn't exist for this argument")

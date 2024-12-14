@@ -6,7 +6,7 @@
 namespace alone {
 	void context_t::init_spans(vm::VirtualMachine& vm) {
 		mframe = std::span(vm._p0.begin(), lib::mframe_size);
-		regs = std::span(vm._p0.begin(), lib::registers_size);
+		regs = std::span(reinterpret_cast<lib::machine_word_t*>(vm._p0.data()), lib::registers_size / 8);
 		program = std::span(vm._p0.begin() + lib::registers_size, program_size);
 		stack = std::span(vm._p0.begin() + lib::registers_size + program_size,
 		                  lib::mframe_size - lib::registers_size - program_size);
@@ -15,38 +15,40 @@ namespace alone {
 
 	//call it every time, when you run new program
 	void context_t::init_registers() const {
-		ipx() = lib::registers_size + 16;
 		spx() = lib::registers_size + program_size;
 		flags()[(size_t) lib::flags_set::rf] = true;
 	}
 
 	lib::machine_word_t& context_t::asx() const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::asx]);
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::asx]);
 	}
 	lib::machine_word_t& context_t::rsx() const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::rsx]);
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::rsx]);
 	}
 	lib::machine_word_t& context_t::lox() const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::lox]);
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::lox]);
 	}
 	lib::machine_word_t& context_t::rox() const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::rox]);
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::rox]);
 	}
 	lib::machine_word_t& context_t::ipx() const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::ipx]);
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::ipx]);
 	}
 	lib::machine_word_t& context_t::spx() const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::spx]);
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::spx]);
+	}
+	lib::machine_word_t& context_t::cpx() const {
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::cpx]);
 	}
 	lib::machine_word_t& context_t::bpx() const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[(lib::machine_word_t) lib::regs_set::bpx]);
+		return reinterpret_cast<lib::machine_word_t&>(mframe[(lib::machine_word_t) lib::regs_set::bpx]);
 	}
 
 	lib::flags_t& context_t::flags() const {
-		return reinterpret_cast<lib::flags_t&>(regs[(lib::machine_word_t) lib::regs_set::flags]);
+		return reinterpret_cast<lib::flags_t&>(mframe[(lib::machine_word_t) lib::regs_set::flags]);
 	}
 	lib::machine_word_t& context_t::grx(const uint64_t& id) const {
-		return reinterpret_cast<lib::machine_word_t&>(regs[
+		return reinterpret_cast<lib::machine_word_t&>(mframe[
 			(lib::machine_word_t) lib::regs_set::grx + id * sizeof(lib::machine_word_t)]);
 	}
 }

@@ -8,38 +8,38 @@ namespace ph = std::placeholders;
 
 namespace alone::isa {
     size_t halt(const context_t& ctx, const lib::args_data_t& metadata) {
-        ctx.flags()[(size_t) lib::flags_set::cf] = false;
+        ctx.flags()[(size_t) lib::flags_set::rf] = false;
         return lib::inst_code_size;
     }
 
     size_t fcall(const context_t& ctx, const lib::args_data_t& metadata) {
-        size_t offset = lib::inst_code_size;
-
-        *ctx.get(ctx.spx()) = ctx.bpx(); //pushes value
-        ctx.spx() += lib::machine_word_size;
-        ctx.bpx() = ctx.ipx();
-        ctx.ipx() = *ctx.get(ctx.ipx() + offset);
-        offset += lib::machine_word_size;
-
-        return offset;
+        *ctx.get(ctx.spx()) = ctx.bpx();                          //push64 %bpx
+        *ctx.get(ctx.spx() + lib::machine_word_size) = ctx.cpx(); //push64 %cpx
+        ctx.spx() += lib::machine_word_size * 2;                  //add64 %spx, reg_size * 2
+        
+        ctx.bpx() = ctx.ipx() + lib::inst_code_size + lib::machine_word_size;
+        ctx.ipx() = *ctx.get(ctx.ipx() + lib::inst_code_size);
+        ctx.cpx() = ctx.ipx();
+        return 0;
     }
     size_t ret(const context_t& ctx, const lib::args_data_t& metadata) {
-        size_t offset = lib::inst_code_size;
-        bool is_extended = true;
-        const auto &args_size = *ctx.get(ctx.bpx() - 16),
-                   &ret_size = *ctx.get(ctx.bpx() - 8);
-        auto a0 = std::span(ctx.mframe.begin() + ctx.ipx(), ctx.mframe.begin() + ctx.ipx() + ret_size);
-        auto result_register = ret_size < 8 ? lib::regs_set::asx : lib::regs_set::grx;
+        const auto& args_size = *ctx.get(ctx.cpx() - 16);
+        const auto& ret_size = *ctx.get(ctx.cpx() - 8);
+        const auto actual_result_size = metadata[0] != lib::argument_type::empty ? ret_size : 0;
+        const auto a0 = std::span(ctx.mframe.begin() + ctx.ipx() + lib::inst_code_size,
+                                  ctx.mframe.begin() + ctx.ipx() + lib::inst_code_size + actual_result_size);
+        auto result_register = ret_size <= 8 ? lib::regs_set::asx : lib::regs_set::grx;
 
-        for (size_t i = 0; i != ret_size; i++)
+        for (size_t i = 0; i < actual_result_size; i++)
             *ctx.get<std::byte>((size_t) result_register + i) = a0.data()[i];
-        offset += ret_size;
 
+        ctx.spx() -= args_size + lib::machine_word_size * 2;
         ctx.ipx() = ctx.bpx();
-        ctx.spx() -= args_size + 8;
-        ctx.bpx() = *ctx.get(ctx.spx());
 
-        return offset;
+        ctx.bpx() = *ctx.get(ctx.spx() + args_size);
+        ctx.cpx() = *ctx.get(ctx.spx() + args_size + lib::machine_word_size);
+
+        return 0;
     }
 
     //TODO: ncall, enter, leave

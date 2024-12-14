@@ -9,6 +9,8 @@
 #include <variant>
 
 //alone
+#include <util.hpp>
+
 #include "amasm/info/consts.hpp"
 #include "error_codes.hpp"
 #include "instructions.hpp"
@@ -27,6 +29,11 @@ namespace alone::amasm::inline parser_inlined {
         data_type_ptr return_type;
         std::vector<data_type_ptr> args;
         scope_info_t scope;
+    };
+    struct incomplete_func_t {
+        std::string name;
+        lib::Bytecode bytecode;
+        std::list<std::tuple<size_t, std::string>> hints;
     };
 
     using parse_variant_t = std::variant<data_type_ptr, func_info_t>;
@@ -112,6 +119,7 @@ namespace alone::amasm::inline parser_inlined {
             } else
                 throw AMASM_PARSER_WRONG_FUNC_DEFINITION;
         }
+        on_push.args.shrink_to_fit();
 
         //return type dispatching
         if (ctx.tokens[j + 1].type == token_type::colon) {
@@ -139,17 +147,14 @@ namespace alone::amasm::inline parser_inlined {
         } else {
         }
     }
-    void parse_instruction(const parse_context_t& parsing_data) {
-        auto& [name, is_finished, data] = parsing_data.queue.front();
-        if (name != "function_definition" || is_finished)
-            throw AMASM_PARSER_WRONG_INST_DEFINITION_PLACE;
 
-        size_t j, dj, args_n;
-        auto& func_data = std::get<func_info_t>(data);
-        const auto& inst_info = lib::instructions_by_name.at(parsing_data.tokens.at(parsing_data.i).literal);
-        inst_call_t on_push;
+    inst_call_t parse_generic_instruction(const parse_context_t& parsing_data,
+                                          size_t& j,
+                                          const lib::inst_ptr& inst_info) {
+        inst_call_t result;
+        size_t dj, args_n;
 
-        on_push.name = parsing_data.tokens[parsing_data.i].literal;
+        result.name = parsing_data.tokens[parsing_data.i].literal;
         for (j = parsing_data.i, dj = 0, args_n = 0; args_n < inst_info->max_args_count &&
              parsing_data.tokens[j].type != token_type::semicolon; j += dj, dj = 0, args_n++) {
             argument_t arg;
@@ -159,7 +164,7 @@ namespace alone::amasm::inline parser_inlined {
                 throw AMASM_PARSER_WRONG_INST_ARGS_DEFINITION;
 
             if (match_rule("direct", parsing_data.tokens, j + 1)) {
-                auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), parsing_data.tokens, j + 3);
+                auto [var_offset, delta] = calc_offset(get_data_type(result.name), parsing_data.tokens, j + 3);
                 arg = {
                     .type = var_offset ? lib::argument_type::indirect_with_displacement : lib::argument_type::direct,
                     .name = parsing_data.tokens[j + 2].literal,
@@ -174,7 +179,7 @@ namespace alone::amasm::inline parser_inlined {
                 };
                 dj = 2;
             } else if (match_rule("indirect", parsing_data.tokens, j + 1)) {
-                auto [var_offset, delta] = calc_offset(get_data_type(on_push.name), parsing_data.tokens, j + 4);
+                auto [var_offset, delta] = calc_offset(get_data_type(result.name), parsing_data.tokens, j + 4);
                 arg = {
                     .type = lib::argument_type::indirect_with_displacement,
                     .name = parsing_data.tokens[j + 3].literal,
@@ -195,10 +200,43 @@ namespace alone::amasm::inline parser_inlined {
             } else
                 throw AMASM_PARSER_WRONG_INST_DEFINITION;
 
-            on_push.args.push_back(arg);
+            result.args.push_back(arg);
         }
+        result.args.shrink_to_fit();
 
-        func_data.scope.lines.emplace_back(std::move(on_push));
+        return result;
+    }
+    inst_call_t parse_fcall_instruction(const parse_context_t& parsing_data,
+                                        size_t& j,
+                                        const lib::inst_ptr& inst_info) {
+        inst_call_t result = {
+            .name = "fcall",
+            .args = {}
+        };
+
+        argument_t on_push = {
+            .type = lib::argument_type::immediate,
+            .name = "",
+            .value = 0
+        };
+        for (j = parsing_data.i + 1; parsing_data.tokens[j].type != token_type::semicolon; j++)
+            on_push.name += parsing_data.tokens[j].literal;
+        result.args.emplace_back(std::move(on_push));
+
+        return result;
+    }
+    void parse_instruction(const parse_context_t& parsing_data) {
+        auto& [name, is_finished, data] = parsing_data.queue.front();
+        if (name != "function_definition" || is_finished)
+            throw AMASM_PARSER_WRONG_INST_DEFINITION_PLACE;
+
+        size_t j;
+        auto& func_data = std::get<func_info_t>(data);
+        const auto& inst_info = lib::instructions_by_name.at(parsing_data.tokens.at(parsing_data.i).literal);
+
+        func_data.scope.lines.emplace_back(parsing_data.tokens[parsing_data.i].literal == "fcall"
+                                           ? parse_fcall_instruction(parsing_data, j, inst_info)
+                                           : parse_generic_instruction(parsing_data, j, inst_info));
         parsing_data.di = j - parsing_data.i + 1 + (inst_info->max_args_count == 0);
     }
 
@@ -224,51 +262,61 @@ namespace alone::amasm::inline parser_inlined {
         { token_type::rbrace, finish_parse_rbrace }
     };
 
-    //TODO: fcall labels
-    lib::byte_array_t translate_to_bytecode(const translate_context_t& translation_data) {
-        lib::byte_array_t result;
-        const auto& func_info = std::get<func_info_t>(translation_data.info);
-        std::string label_name = func_info.name + '(';
-        size_t args_size = 0;
+    inline std::string generate_func_full_name(const std::string& func_name, const std::vector<data_type_ptr>& args) {
+        std::string result = '@' + func_name + '(';
+        if (!args.empty()) {
+            for (size_t i = 0; i < args.size() - 1; i++)
+                result += args[i]->name + ",";
+            result += args.back()->name;
+        }
+        result += ')';
+        return result;
+    }
 
-        for (size_t i = 0; i < func_info.args.size() - 1; i++)
-            label_name += func_info.args[i]->name + ", ";
-        label_name += func_info.args.back()->name + ')';
+    incomplete_func_t preprocess_func(const translate_context_t& translation_data) {
+        incomplete_func_t result;
+        const auto& func_info = std::get<func_info_t>(translation_data.info);
+        size_t args_size = 0;
 
         for (const auto& arg : func_info.args)
             args_size += arg->size;
 
-        result.append_range(lib::as_bytes(args_size));
-        result.append_range(lib::as_bytes(func_info.return_type->size));
+        result.name = generate_func_full_name(func_info.name, func_info.args);
+        result.bytecode.append(args_size);
+        result.bytecode.append(func_info.return_type->size);
 
-        for (const auto& [inst_name, args] : func_info.scope.lines) {
-            lib::byte_array_t args_as_bytes;
+        for (const auto& inst : func_info.scope.lines) {
             lib::inst_code_t mask = 0;
+            size_t start = result.bytecode.size(), arg_idx = 0;
+            const auto& inst_info = lib::instructions_by_name.at(inst.name);
 
-            for (size_t j = 0; j < args.size(); j++) {
-                const auto& [type, arg_name, value] = args[j];
-                mask |= (size_t) type << (j * 2);
-                switch (type) {
+            result.bytecode.append(inst_info->code);
+            if (inst.name == "fcall") {
+                result.hints.emplace_back(result.bytecode.size(), inst.args.front().name);
+                result.bytecode.append(0, lib::machine_word_size);
+                continue;
+            }
+
+            for (const auto& arg : inst.args) {
+                mask |= (size_t) arg.type << arg_idx * 2;
+                arg_idx++;
+
+                switch (arg.type) {
                 case lib::argument_type::direct:
-                    args_as_bytes.append_range(lib::as_bytes(
-                        get_variable(arg_name, func_info.scope.vars).address));
+                    result.bytecode.append(get_variable(arg.name, func_info.scope.vars).address);
                     break;
                 case lib::argument_type::immediate:
-                    args_as_bytes.append_range(lib::as_bytes(value));
+                    result.bytecode.append(arg.value, inst_info->bit_depth / 8);
                     break;
                 case lib::argument_type::indirect_with_displacement:
-                    args_as_bytes.append_range(lib::as_bytes(
-                        get_variable(arg_name, func_info.scope.vars).address));
-                    args_as_bytes.append_range(lib::as_bytes(value));
+                    result.bytecode.append(get_variable(arg.name, func_info.scope.vars).address);
+                    result.bytecode.append(arg.value);
                     break;
                 default:
                     throw std::runtime_error(AMASM_PARSER_WRONG_INST_ARGS_DEFINITION);
                 }
             }
-
-            const auto inst_code = lib::instructions_by_name.at(inst_name)->code | (mask << 24);
-            result.append_range(lib::as_bytes(inst_code));
-            result.append_range(std::move(args_as_bytes));
+            result.bytecode.apply_mask(mask << 24, util::call_or<std::byte>, start);
         }
 
         return result;
@@ -276,17 +324,19 @@ namespace alone::amasm::inline parser_inlined {
 }
 
 namespace alone::amasm {
-    lib::byte_array_t Parser::parse(const token_array_t& tokens) {
-        lib::byte_array_t result;
-        parse_queue_t queue;
+    lib::Bytecode Parser::parse(const token_array_t& tokens) {
+        lib::Bytecode result;
+        std::list<incomplete_func_t> incomplete_info;
+        parse_queue_t parse_queue;
         std::unordered_map<std::string, size_t> labels;
+        size_t summed_size = 8;
 
         for (size_t i = 0, di = 0, address = 0; i != tokens.size(); i += di, di = 0) {
             if (auto it = parse_rules.find(tokens[i].type); it != parse_rules.end()) {
                 parse_context_t ctx = {
                     .tokens = tokens,
                     .labels = labels,
-                    .queue = queue,
+                    .queue = parse_queue,
                     .i = i,
                     .di = di
                 };
@@ -294,18 +344,42 @@ namespace alone::amasm {
             } else
                 throw AMASM_PARSER_TOKEN_DOESNT_EXIST;
 
-            if (!queue.empty()) {
-                const auto& [name, is_finished, data] = queue.front();
+            if (!parse_queue.empty()) {
+                const auto& [name, is_finished, data] = parse_queue.front();
                 if (is_finished && name == "function_definition") {
                     translate_context_t ctx = {
                         .labels = labels,
                         .info = data,
                         .i = address
                     };
-                    auto temp = translate_to_bytecode(ctx);
-                    result.append_range(std::move(temp));
-                    queue.pop();
+                    auto temp = preprocess_func(ctx);
+                    for (auto& offset : temp.hints | std::views::elements<0>)
+                        offset += summed_size;
+                    summed_size += temp.bytecode.size();
+                    incomplete_info.push_back(std::move(temp));
+                    parse_queue.pop();
                 }
+            }
+        }
+
+        result.append(0, lib::machine_word_size);
+        for (const auto& it : incomplete_info) {
+            result.append_bytecode(it.bytecode);
+            labels.emplace(
+                it.name,
+                result.size()
+                - it.bytecode.size()
+                + lib::registers_size
+                + lib::machine_word_size * 2
+            );
+        }
+        result.set(labels.at("@main()"), 0);
+
+        for (auto& it : incomplete_info) {
+            for (const auto& [offset, label_name] : it.hints) {
+                if (!labels.contains(label_name))
+                    throw AMASM_PARSER_LABEL_DOESNT_EXIST;
+                result.set(labels.at(label_name), offset);
             }
         }
 

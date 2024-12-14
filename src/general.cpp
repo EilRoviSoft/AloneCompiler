@@ -1,25 +1,27 @@
 #include "general.hpp"
 
+#include <algorithm>
+
 //alone
 #include "error_codes.hpp"
 
 namespace alone::lib {
-    constexpr bool is_alpha(char c) {
+    constexpr bool is_alpha(const char& c) {
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
     }
-    constexpr bool is_binary(char c) {
+    constexpr bool is_binary(const char& c) {
         return c == '0' || c == '1';
     }
-    constexpr bool is_numeric(char c) {
+    constexpr bool is_numeric(const char& c) {
         return c >= '0' && c <= '9';
     }
-    constexpr bool is_hexadecimal(char c) {
+    constexpr bool is_hexadecimal(const char& c) {
         return is_numeric(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
     }
-    constexpr bool is_alpha_numeric(char c) {
+    constexpr bool is_alpha_numeric(const char& c) {
         return is_alpha(c) || is_numeric(c);
     }
-    constexpr bool is_whitespace(char c) {
+    constexpr bool is_whitespace(const char& c) {
         return c == ' ' || c == '\n' || c == '\t';
     }
 
@@ -69,7 +71,7 @@ namespace alone::lib {
         return result;
     }
 
-    inline std::string gen_str(char a, char b) {
+    inline std::string gen_str(const char& a, const char& b) {
         std::string result;
         result.resize(b - a + 1);
         for (char i = a; i <= b; ++i)

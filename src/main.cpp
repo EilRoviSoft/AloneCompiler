@@ -21,7 +21,7 @@ using namespace alone;
 std::vector<std::tuple<bool, std::function<int()>>> tests;
 
 namespace testing_system {
-    lib::byte_array_t generate_bytecode(const std::string& filename) {
+    lib::Bytecode generate_bytecode(const std::string& filename) {
         std::fstream file(filename, std::fstream::in);
         if (!file.is_open())
             return {};
@@ -73,16 +73,14 @@ namespace testing_system {
 
         return 0;
     }
-    int test_code_parsing() {
-        return generate_bytecode("example.amasm").empty() ? -1 : 0;
-    }
     int test_code() {
         const auto code = generate_bytecode("example.amasm");
 
         std::fstream file("output.txt", std::ofstream::out | std::ofstream::trunc);
         if (!file.is_open())
             return -1;
-        file.write(reinterpret_cast<const char*>(code.data()), code.size());
+        auto temp = code.as_vector();
+        file.write(reinterpret_cast<const char*>(temp.data()), temp.size());
         file.close();
 
         vm::VirtualMachine vm;
@@ -96,7 +94,6 @@ void init_tasks() {
     tests = {
         { false, testing_system::test_data_types },
         { false, testing_system::test_isa_collection },
-        { false, testing_system::test_code_parsing },
         { true, testing_system::test_code }
     };
 }

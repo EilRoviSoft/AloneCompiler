@@ -17,7 +17,7 @@ namespace alone::vm {
 
         VirtualMachine();
 
-        void exec(const lib::byte_array_t& program);
+        void exec(const lib::Bytecode& program);
 
     private:
         std::array<std::byte, lib::mframe_size> _p0;

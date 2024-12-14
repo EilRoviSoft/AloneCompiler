@@ -14,7 +14,8 @@ namespace alone::vm {
 namespace alone {
     struct context_t {
         size_t program_size;
-        std::span<std::byte> mframe, regs, program, stack;
+        std::span<std::byte> mframe, program, stack;
+        std::span<lib::machine_word_t> regs;
         std::span<lib::array_t<std::byte>> dframe;
 
         void init_spans(vm::VirtualMachine& vm);
@@ -26,6 +27,7 @@ namespace alone {
         lib::machine_word_t& rox() const;
         lib::machine_word_t& ipx() const;
         lib::machine_word_t& spx() const;
+        lib::machine_word_t& cpx() const;
         lib::machine_word_t& bpx() const;
         lib::flags_t& flags() const;
         lib::machine_word_t& grx(const uint64_t& id) const;

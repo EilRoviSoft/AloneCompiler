@@ -10,6 +10,6 @@ namespace alone::amasm {
     class Parser {
     public:
         //TODO: make tree-based parsing
-        static lib::byte_array_t parse(const token_array_t& tokens);
+        static lib::Bytecode parse(const token_array_t& tokens);
     };
 }
