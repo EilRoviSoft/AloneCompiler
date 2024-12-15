@@ -1,6 +1,6 @@
-﻿shared# CMakeList.txt : CMake project for AloneCompiler, include source and define
+﻿# CMakeList.txt : CMake project for AloneCompiler, include source and define
 # project specific logic here.
-#
+
 cmake_minimum_required(VERSION 3.28)
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -9,17 +9,35 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-project ("AloneCompiler")
+project("AloneCompiler")
 
 set(CMAKE_CXX_STANDARD 26)
 
 include_directories(src)
 include_directories(src/amasm)
+include_directories(src/amasm/library)
 include_directories(src/vm)
-include_directories(src/vm/isa)
+include_directories(src/shared)
 
 # Add source to this project's executable.
 add_executable(AloneCompiler
+		"src/amasm/context.hpp"
+		"src/amasm/context.cpp"
+		"src/amasm/scanner.hpp" 
+		"src/amasm/scanner.cpp"
+		"src/amasm/lexer.hpp" 
+		"src/amasm/lexer.cpp"
+		"src/amasm/library/tokens.hpp"
+		"src/amasm/library/tokens.cpp"
+
+		"src/shared/bytecode.hpp"
+		"src/shared/bytecode.cpp"
+		"src/shared/general_functions.hpp"
+		"src/shared/general_functions.cpp"
+		"src/shared/literals.hpp"
+		"src/shared/literals.cpp"
+		"src/shared/types.hpp"
+		
 		"src/main.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
@@ -29,7 +47,6 @@ add_compile_definitions(DEBUG_STATUS)
 target_include_directories(AloneCompiler PRIVATE
 		src
 		src/amasm
-		src/console
 		src/vm
 		src/shared)
 
