@@ -43,7 +43,7 @@ namespace alone::shared {
         //check whether it is binary number
         if (str.starts_with("0b")) {
             for (size_t i = 2; i < str.size(); i++)
-                if (str[i] != '0' && str[i] != '1') {
+                if (!is_binary(str[i])) {
                     THROW_EXCEPTION("wrong binary value");
                     return literal_type::none;
                 }

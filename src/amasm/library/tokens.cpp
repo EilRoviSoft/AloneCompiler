@@ -40,7 +40,7 @@ namespace alone::amasm {
             break;
 
         default:
-            throw std::runtime_error("wrong make_token input");
+            throw std::runtime_error("wrong make_token arguments");
         }
 
         return { result_type, std::move(str) };

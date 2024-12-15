@@ -25,17 +25,17 @@ add_executable(AloneCompiler
 		"src/amasm/context.cpp"
 		"src/amasm/scanner.hpp" 
 		"src/amasm/scanner.cpp"
-		"src/amasm/lexer.hpp" 
-		"src/amasm/lexer.cpp"
-		"src/amasm/library/tokens.hpp"
-		"src/amasm/library/tokens.cpp"
+		# "src/amasm/lexer.hpp" 
+		# "src/amasm/lexer.cpp"
+		# "src/amasm/library/tokens.hpp"
+		# "src/amasm/library/tokens.cpp"
 
 		"src/shared/bytecode.hpp"
 		"src/shared/bytecode.cpp"
 		"src/shared/general_functions.hpp"
 		"src/shared/general_functions.cpp"
-		"src/shared/literals.hpp"
-		"src/shared/literals.cpp"
+		# "src/shared/literals.hpp"
+		# "src/shared/literals.cpp"
 		"src/shared/types.hpp"
 		
 		"src/main.cpp")
