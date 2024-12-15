@@ -163,7 +163,7 @@ namespace alone::amasm::inline parser_inlined {
                 token_type::comma)
                 throw AMASM_PARSER_WRONG_INST_ARGS_DEFINITION;
 
-            if (match_rule("indirect", parsing_data.tokens, j + 1)) {
+            if (match_rule("direct", parsing_data.tokens, j + 1)) {
                 auto [var_offset, delta] = calc_offset(get_data_type(result.name), parsing_data.tokens, j + 3);
                 arg = {
                     .type = var_offset ? lib::argument_type::indirect_with_displacement : lib::argument_type::indirect,

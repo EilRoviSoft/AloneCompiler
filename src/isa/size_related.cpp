@@ -108,7 +108,7 @@ namespace alone::isa {
             offset += lib::machine_word_size * 2;
             break;
         case lib::argument_type::empty:
-            a0 = &ctx.asx();
+            a0 = reinterpret_cast<T*>(&ctx.asx());
             break;
         }
 
