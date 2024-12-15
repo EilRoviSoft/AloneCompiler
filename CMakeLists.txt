@@ -1,4 +1,4 @@
-﻿# CMakeList.txt : CMake project for AloneCompiler, include source and define
+﻿shared# CMakeList.txt : CMake project for AloneCompiler, include source and define
 # project specific logic here.
 #
 cmake_minimum_required(VERSION 3.28)
@@ -20,41 +20,7 @@ include_directories(src/vm/isa)
 
 # Add source to this project's executable.
 add_executable(AloneCompiler
-		"src/error_codes.hpp"
-		"src/general.cpp"
-		"src/general.hpp"
-		"src/instructions.cpp"
-		"src/instructions.hpp"
-		"src/main.cpp"
-		"src/util.hpp"
-		"src/vm_context.cpp"
-		"src/vm_context.hpp"
-		"src/amasm/info/consts.cpp"
-		"src/amasm/info/consts.hpp"
-		"src/amasm/info/data_types.cpp"
-		"src/amasm/info/data_types.hpp"
-		"src/amasm/info/enums.hpp"
-		"src/amasm/info/extras.cpp"
-		"src/amasm/info/extras.hpp"
-		"src/amasm/info/include.hpp"
-		"src/amasm/info/tokens.cpp"
-		"src/amasm/info/tokens.hpp"
-		"src/amasm/lexer.cpp"
-		"src/amasm/lexer.hpp"
-		"src/amasm/parser.cpp"
-		"src/amasm/parser.hpp"
-		"src/amasm/scanner.cpp"
-		"src/amasm/scanner.hpp"
-		"src/amasm/util.hpp"
-		"src/isa/size_related.cpp"
-		"src/isa/size_related.hpp"
-		"src/isa/type_related.cpp"
-		"src/isa/type_related.hpp"
-		"src/isa/linker.hpp"
-		"src/isa/system.cpp"
-		"src/isa/system.hpp"
-		"src/vm/virtual_machine.cpp"
-		"src/vm/virtual_machine.hpp")
+		"src/main.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 
@@ -63,7 +29,8 @@ add_compile_definitions(DEBUG_STATUS)
 target_include_directories(AloneCompiler PRIVATE
 		src
 		src/amasm
+		src/console
 		src/vm
-		src/vm/isa)
+		src/shared)
 
 set_property(TARGET AloneCompiler PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res")
