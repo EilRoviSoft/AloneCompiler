@@ -6,8 +6,8 @@ func @main() {
 }
 
 func @add6432(int64, int32): int64 { # arguments pushes left-to-right
-    mov64 %lox, [%spx - 12];
-    mov32 %rox, [%spx - 4];
-    add64i %asx, %lox, %rox;
+    mov64 %lox, [%spx - 28];
+    mov32 %rox, [%spx - 20];
+    add64i %rsx, %lox, %rox;
     ret;
 }

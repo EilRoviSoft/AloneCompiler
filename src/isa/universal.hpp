@@ -20,8 +20,8 @@ namespace alone::isa {
         T a1, a2;
 
         switch (metadata[0]) {
-        case lib::argument_type::direct:
-            a0 = ctx.get<T>(ctx.ipx() + offset);
+        case lib::argument_type::indirect:
+            a0 = ctx.get_indirect<T>(ctx.ipx() + offset);
             offset += lib::machine_word_size;
             break;
         case lib::argument_type::indirect_with_displacement:
@@ -33,8 +33,8 @@ namespace alone::isa {
         }
 
         switch (metadata[1]) {
-        case lib::argument_type::direct:
-            a1 = *ctx.get<T>(ctx.ipx() + offset);
+        case lib::argument_type::indirect:
+            a1 = *ctx.get_indirect<T>(ctx.ipx() + offset);
             offset += lib::machine_word_size;
             break;
         case lib::argument_type::immediate:
@@ -50,8 +50,8 @@ namespace alone::isa {
         }
 
         switch (metadata[2]) {
-        case lib::argument_type::direct:
-            a2 = *ctx.get<T>(ctx.ipx() + offset);
+        case lib::argument_type::indirect:
+            a2 = *ctx.get_indirect<T>(ctx.ipx() + offset);
             offset += lib::machine_word_size;
             break;
         case lib::argument_type::immediate:
@@ -80,8 +80,8 @@ namespace alone::isa {
         T a1;
 
         switch (metadata[0]) {
-        case lib::argument_type::direct:
-            a0 = ctx.get<T>(ctx.ipx() + offset);
+        case lib::argument_type::indirect:
+            a0 = ctx.get_indirect<T>(ctx.ipx() + offset);
             offset += lib::machine_word_size;
             break;
         case lib::argument_type::indirect_with_displacement:
@@ -93,8 +93,8 @@ namespace alone::isa {
         }
 
         switch (metadata[1]) {
-        case lib::argument_type::direct:
-            a1 = *ctx.get<T>(ctx.ipx() + offset);
+        case lib::argument_type::indirect:
+            a1 = *ctx.get_indirect<T>(ctx.ipx() + offset);
             offset += lib::machine_word_size;
             break;
         case lib::argument_type::immediate:
@@ -121,8 +121,8 @@ namespace alone::isa {
         T a0, a1;
 
         switch (metadata[0]) {
-        case lib::argument_type::direct:
-            a0 = *ctx.get<T>(ctx.ipx() + offset);
+        case lib::argument_type::indirect:
+            a0 = *ctx.get_indirect<T>(ctx.ipx() + offset);
             offset += lib::machine_word_size;
             break;
         case lib::argument_type::immediate:
@@ -138,8 +138,8 @@ namespace alone::isa {
         }
 
         switch (metadata[1]) {
-        case lib::argument_type::direct:
-            a1 = *ctx.get<T>(ctx.ipx() + offset);
+        case lib::argument_type::indirect:
+            a1 = *ctx.get_indirect<T>(ctx.ipx() + offset);
             offset += lib::machine_word_size;
             break;
         case lib::argument_type::immediate:

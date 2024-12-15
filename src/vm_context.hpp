@@ -49,6 +49,11 @@ namespace alone {
 
             return result;
         }
+        template<typename T>
+        T* get_indirect(const lib::address_t& address) const {
+            const auto nested_address = *get(address);
+            return get<T>(nested_address);
+        }
         template<class T = lib::machine_word_t>
         T* get_with_displacement(const lib::address_t& address) const {
             const auto nested_address = *get(address);

@@ -29,7 +29,7 @@ namespace alone::lib {
 
     enum class argument_type : uint8_t {
         empty = 0,
-        direct,
+        indirect,
         immediate,
         indirect_with_displacement
     };

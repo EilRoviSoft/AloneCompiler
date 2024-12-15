@@ -163,10 +163,10 @@ namespace alone::amasm::inline parser_inlined {
                 token_type::comma)
                 throw AMASM_PARSER_WRONG_INST_ARGS_DEFINITION;
 
-            if (match_rule("direct", parsing_data.tokens, j + 1)) {
+            if (match_rule("indirect", parsing_data.tokens, j + 1)) {
                 auto [var_offset, delta] = calc_offset(get_data_type(result.name), parsing_data.tokens, j + 3);
                 arg = {
-                    .type = var_offset ? lib::argument_type::indirect_with_displacement : lib::argument_type::direct,
+                    .type = var_offset ? lib::argument_type::indirect_with_displacement : lib::argument_type::indirect,
                     .name = parsing_data.tokens[j + 2].literal,
                     .value = var_offset
                 };
@@ -302,7 +302,7 @@ namespace alone::amasm::inline parser_inlined {
                 arg_idx++;
 
                 switch (arg.type) {
-                case lib::argument_type::direct:
+                case lib::argument_type::indirect:
                     result.bytecode.append(get_variable(arg.name, func_info.scope.vars).address);
                     break;
                 case lib::argument_type::immediate:
