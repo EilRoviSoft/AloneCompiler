@@ -5,7 +5,7 @@
 #include <string>
 
 //amasm
-#include "library/tokens.hpp"
+#include "tokens.hpp"
 
 namespace alone::amasm {
 	class AmasmContext {

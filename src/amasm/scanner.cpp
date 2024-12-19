@@ -5,7 +5,11 @@
 #include <vector>
 
 namespace alone::amasm {
-    std::string Scanner::scan(const AmasmContext& ctx, std::fstream& file) const {
+    Scanner::Scanner(const AmasmContext& amasm_context) :
+        _amasm_context(amasm_context) {
+    }
+
+    std::string Scanner::scan(std::fstream& file) const {
         std::string temp, buffer;
 
         while (!file.eof()) {
@@ -13,10 +17,10 @@ namespace alone::amasm {
             temp += buffer + '\n';
         }
 
-        return scan(ctx, temp);
+        return scan(temp);
     }
 
-    std::string Scanner::scan(const AmasmContext& ctx, const std::string& input) const {
+    std::string Scanner::scan(const std::string& input) const {
         std::string result;
         std::vector<std::pair<size_t, size_t>> ranges;
         size_t line_start_pos = 0;

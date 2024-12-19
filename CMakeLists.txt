@@ -15,28 +15,20 @@ set(CMAKE_CXX_STANDARD 26)
 
 include_directories(src)
 include_directories(src/amasm)
-include_directories(src/amasm/library)
 include_directories(src/vm)
 include_directories(src/shared)
 
 # Add source to this project's executable.
 add_executable(AloneCompiler
-		"src/amasm/context.hpp"
 		"src/amasm/context.cpp"
-		"src/amasm/scanner.hpp" 
 		"src/amasm/scanner.cpp"
-		# "src/amasm/lexer.hpp" 
-		# "src/amasm/lexer.cpp"
-		# "src/amasm/library/tokens.hpp"
-		# "src/amasm/library/tokens.cpp"
+		"src/amasm/lexer.cpp"
+		"src/amasm/parser.cpp"
+		"src/amasm/tokens.cpp"
 
-		"src/shared/bytecode.hpp"
 		"src/shared/bytecode.cpp"
-		"src/shared/general_functions.hpp"
-		"src/shared/general_functions.cpp"
-		# "src/shared/literals.hpp"
-		# "src/shared/literals.cpp"
-		"src/shared/types.hpp"
+		
+		"src/shared/literals.cpp"
 		
 		"src/main.cpp")
 
