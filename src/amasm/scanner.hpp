@@ -5,7 +5,7 @@
 #include <string>
 
 //alone::amasm::info
-#include "amasm/context.hpp"
+#include "amasm/info/context.hpp"
 
 namespace alone::amasm {
     class Scanner {

@@ -1,6 +1,14 @@
 #pragma once
 
+//std
+#include <string>
+
 namespace alone::shared {
+    inline size_t hash_string(const std::string& what) {
+        static std::hash<std::string> hasher;
+        return hasher(what);
+    }
+
     constexpr bool is_alpha(const char& c) {
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
     }

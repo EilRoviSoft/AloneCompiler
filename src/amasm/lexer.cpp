@@ -7,7 +7,7 @@
 #include "shared/general_functions.hpp"
 
 //amasm
-#include "amasm/context.hpp"
+#include "amasm/info/context.hpp"
 
 namespace alone::amasm {
     Lexer::Lexer(const AmasmContext& amasm_context) :

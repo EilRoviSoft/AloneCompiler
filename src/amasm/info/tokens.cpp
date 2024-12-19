@@ -7,7 +7,7 @@
 #include "shared/literals.hpp"
 
 //amasm
-#include "amasm/context.hpp"
+#include "amasm/info/context.hpp"
 
 namespace alone::amasm {
     token_t::token_t() :
@@ -27,9 +27,7 @@ namespace alone::amasm {
 
         switch (shared::check_literal_type(str)) {
         case shared::literal_type::word:
-            result_type = ctx.defined_tokens.contains(str)
-                          ? token_type::identifier
-                          : ctx.defined_tokens.at(str);
+            result_type = ctx.get_token_or(str, token_type::identifier);
             break;
 
         case shared::literal_type::binary:
