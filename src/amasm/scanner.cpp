@@ -5,8 +5,8 @@
 #include <vector>
 
 namespace alone::amasm {
-    Scanner::Scanner(const AmasmContext& amasm_context) :
-        _amasm_context(amasm_context) {
+    Scanner::Scanner(AmasmContext& ctx) :
+        _ctx(ctx) {
     }
 
     std::string Scanner::scan(std::fstream& file) const {

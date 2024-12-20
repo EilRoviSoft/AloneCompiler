@@ -23,24 +23,24 @@ namespace alone::amasm {
     }
 
     token_t make_token(const AmasmContext& ctx, std::string str) {
-        token_type result_type;
+        token_type type;
 
         switch (shared::check_literal_type(str)) {
         case shared::literal_type::word:
-            result_type = ctx.get_token_or(str, token_type::identifier);
+            type = ctx.get_token_or(str, token_type::identifier);
             break;
 
         case shared::literal_type::binary:
         case shared::literal_type::decimal:
         case shared::literal_type::hexadecimal:
         case shared::literal_type::floating:
-            result_type = token_type::number;
+            type = token_type::number;
             break;
 
         default:
             throw std::runtime_error("wrong make_token arguments");
         }
 
-        return { result_type, std::move(str) };
+        return { type, std::move(str) };
     }
 }

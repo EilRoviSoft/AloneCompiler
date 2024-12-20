@@ -18,6 +18,7 @@
 namespace alone::amasm {
     class AmasmContext;
 
+    // TODO: make queue and tokens local variables
     class Parser {
         struct parse_unit_t {
             std::string name;
@@ -32,32 +33,46 @@ namespace alone::amasm {
             std::string name;
             std::vector<argument_t> args;
         };
-        struct func_local_info_t {
+        struct func_info_t {
             std::string name;
             datatype_ptr return_type;
             std::vector<datatype_ptr> args;
             Variables scope;
         };
-        struct func_incomplete_signature_t {
+        /*struct func_incomplete_signature_t {
             std::string fullname;
             shared::Bytecode bytecode;
             std::list<edit_hint_t> hints;
-        };
+        };*/
 
-        using parse_variant_t = std::variant<datatype_ptr, func_local_info_t>;
+        using parse_variant_t = std::variant<datatype_ptr, func_info_t>;
         using parse_queue_t = std::queue<std::tuple<std::string, bool, parse_variant_t>>;
 
     public:
-        explicit Parser(const AmasmContext& amasm_ctx);
+        explicit Parser(AmasmContext& ctx);
 
-        shared::Bytecode parse(const token_array_t& tokens);
+        // TODO: return queue of functions' signatures
+        shared::Bytecode parse(token_array_t tokens);
 
     private:
-        const AmasmContext& _amasm_context;
+        AmasmContext& _ctx;
 
         token_array_t _tokens;
         std::unordered_map<std::string, size_t> _labels;
         parse_queue_t _queue;
-        size_t _index = 0, _delta = 0;
+
+        static auto make_parse_rule(const token_type& type, std::function<size_t(const size_t&)> pred) {
+            return std::make_pair(type, std::move(pred));
+        }
+
+        size_t _do_parse_logic(const size_t& i);
+
+        size_t _start_parse_struct(const size_t& i);
+        size_t _start_parse_func(const size_t& i);
+        size_t _parse_variable(const size_t& i);
+        size_t _parse_instruction(const size_t& i);
+        size_t _parse_generic_instruction(const size_t& i);
+        size_t _parse_fcall_instruction(const size_t& i);
+        size_t _finish_parse(const size_t& i);
     };
 }

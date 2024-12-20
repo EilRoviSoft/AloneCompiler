@@ -7,6 +7,7 @@ namespace alone::amasm {
     void AmasmContext::init() {
         _init_defined_tokens();
         _init_datatypes();
+        _init_surrounded_by_braces_signatures();
     }
 
     void AmasmContext::insert_datatype(const datatype_ptr& ptr) {
@@ -20,6 +21,9 @@ namespace alone::amasm {
     datatype_ptr AmasmContext::get_datatype(const std::string& key) const {
         const auto it = _datatypes.find(shared::hash_string(key));
         return it != _datatypes.end() ? it->second : nullptr;
+    }
+    const std::vector<token_type>& AmasmContext::get_rule(const std::string& key) const {
+        return _rules.at(key);
     }
 
     void AmasmContext::_init_defined_tokens() {
@@ -48,6 +52,21 @@ namespace alone::amasm {
             wrap(make_datatype("int64", 8)),
             wrap(make_datatype("float32", 4)),
             wrap(make_datatype("float64", 8)),
+        };
+    }
+    void AmasmContext::_init_rules() {
+        using enum token_type;
+        _rules = {
+            { "struct_define", { kw_struct, identifier, lbrace } },
+            { "pole_define", { kw_var, percent, identifier, comma, datatype } },
+            { "func_define", { kw_func, at, identifier, lparen } },
+            { "direct_arg", { percent, identifier } },
+            { "indirect_arg", { lbracket, percent, identifier } }
+        };
+    }
+    void AmasmContext::_init_surrounded_by_braces_signatures() {
+        _surrounded_by_braces_signatures = {
+            "struct_define", "func_define"
         };
     }
 }

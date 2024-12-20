@@ -11,12 +11,12 @@ namespace alone::amasm {
 
     class Lexer {
     public:
-        explicit Lexer(const AmasmContext& amasm_context);
+        explicit Lexer(AmasmContext& ctx);
 
         token_array_t tokenize_code(const std::string& code) const;
 
     private:
-        const AmasmContext& _amasm_context;
+        AmasmContext& _ctx;
 
         std::unordered_set<char> _singular_tokens;
     };

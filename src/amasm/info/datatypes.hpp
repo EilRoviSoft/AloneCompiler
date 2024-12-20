@@ -12,9 +12,9 @@ namespace alone::amasm {
     struct pole_t {
         std::string name;
         datatype_ptr type;
-        size_t offset;
+        ptrdiff_t offset;
 
-        pole_t(std::string name, datatype_ptr type, const size_t& offset) :
+        pole_t(std::string name, datatype_ptr type, const ptrdiff_t& offset) :
             name(std::move(name)),
             type(std::move(type)),
             offset(offset) {
@@ -37,7 +37,12 @@ namespace alone::amasm {
             for (const auto& it : poles)
                 size += it.type->size;
             for (size_t i = 0; i != poles.size() - 1; i++)
-                poles[i + i].offset = poles[i].offset + poles[i].type->size;
+                poles[i + i].offset = poles[i].offset + (ptrdiff_t) poles[i].type->size;
+        }
+
+        void add_pole(const std::string& name, const datatype_ptr& type) {
+            poles.emplace_back(name, type, poles.empty() ? 0 : poles.back().offset + poles.back().type->size);
+            size += type->size;
         }
     };
 

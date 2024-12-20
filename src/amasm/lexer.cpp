@@ -10,8 +10,8 @@
 #include "amasm/info/context.hpp"
 
 namespace alone::amasm {
-    Lexer::Lexer(const AmasmContext& amasm_context) :
-        _amasm_context(amasm_context) {
+    Lexer::Lexer(AmasmContext& ctx) :
+        _ctx(ctx) {
         for (char c : "()[]{}.,:;@$%\"+-*/")
             _singular_tokens.insert(c);
     }
@@ -24,12 +24,12 @@ namespace alone::amasm {
             if (shared::is_alpha_numeric(c)) {
                 temp += c;
             } else if (!temp.empty()) {
-                result.emplace_back(make_token(_amasm_context, temp));
+                result.emplace_back(make_token(_ctx, temp));
                 temp.clear();
             }
 
             if (_singular_tokens.contains(c))
-                result.emplace_back(make_token(_amasm_context, c));
+                result.emplace_back(make_token(_ctx, c));
         }
 
         return result;

@@ -10,12 +10,12 @@
 namespace alone::amasm {
     class Scanner {
     public:
-        explicit Scanner(const AmasmContext& amasm_context);
+        explicit Scanner(AmasmContext& ctx);
 
         std::string scan(std::fstream& file) const;
         std::string scan(const std::string& input) const;
 
     private:
-        const AmasmContext& _amasm_context;
+        AmasmContext& _ctx;
     };
 }
