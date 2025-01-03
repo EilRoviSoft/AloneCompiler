@@ -1,17 +1,26 @@
-//std
-#include <functional>
-#include <iostream>
-#include <ranges>
-#include <vector>
+//amasm
+#include "amasm/info/context.hpp"
+#include "amasm/scanner.hpp"
+#include "amasm/lexer.hpp"
+#include "amasm/parser.hpp"
+
+using namespace alone;
+
+namespace alone::tests {
+    void f0() {
+        auto context = amasm::Context();
+        const auto scanner = amasm::Scanner(context);
+        const auto lexer = amasm::Lexer(context);
+        const auto parser = amasm::Parser(context);
+
+        const auto text = scanner.scan("example.amasm");
+        const auto tokens = lexer.tokenize_code(text);
+        const auto bytecode = parser.parse(tokens);
+    }
+}
 
 int main() {
-    auto slice = [](const std::vector<int>& c, const size_t& begin, const size_t& end) {
-        return c | std::views::drop(begin) | std::views::take(end - begin);
-    };
 
-    const auto vec = std::vector { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    for (const auto& it : slice(vec, 2, 4))
-        std::cout << it;
 
     return 0;
 }

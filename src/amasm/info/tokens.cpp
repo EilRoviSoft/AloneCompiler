@@ -18,11 +18,11 @@ namespace alone::amasm {
         literal(std::move(literal)) {
     }
 
-    token_t make_token(const AmasmContext& ctx, const char& ch) {
+    token_t make_token(const Context& ctx, const char& ch) {
         return { (token_type) ch, std::string(1, ch) };
     }
 
-    token_t make_token(const AmasmContext& ctx, std::string str) {
+    token_t make_token(const Context& ctx, std::string str) {
         token_type type;
 
         switch (shared::check_literal_type(str)) {

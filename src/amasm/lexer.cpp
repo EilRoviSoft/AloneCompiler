@@ -10,7 +10,7 @@
 #include "amasm/info/context.hpp"
 
 namespace alone::amasm {
-    Lexer::Lexer(AmasmContext& ctx) :
+    Lexer::Lexer(Context& ctx) :
         _ctx(ctx) {
         for (char c : "()[]{}.,:;@$%\"+-*/")
             _singular_tokens.insert(c);

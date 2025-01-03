@@ -15,10 +15,18 @@
 #include "amasm/info/tokens.hpp"
 #include "amasm/info/variables.hpp"
 
-namespace alone::amasm {
-    class AmasmContext;
+#define PARSER_ARGS_BODY size_t, const token_array_t&, parse_queue_t&, labels_t&
+#define PARSER_ARGS_DEFINE size_t i, const token_array_t& tokens, parse_queue_t& queue, labels_t& labels
+//#define PARSER_LOCAL_ARGS_TUPLE i, tokens, queue, labels
 
-    // TODO: make queue and tokens local variables
+namespace alone::amasm {
+    class Context;
+
+    struct inst_decl_t {
+        std::string name;
+        std::vector<argument_t> args;
+    };
+
     class Parser {
         struct parse_unit_t {
             std::string name;
@@ -29,15 +37,12 @@ namespace alone::amasm {
             std::string label_name;
         };
 
-        struct inst_t {
-            std::string name;
-            std::vector<argument_t> args;
-        };
         struct func_info_t {
             std::string name;
             datatype_ptr return_type;
             std::vector<datatype_ptr> args;
-            Variables scope;
+            Variables variables;
+            std::vector<inst_decl_t> lines;
         };
         /*struct func_incomplete_signature_t {
             std::string fullname;
@@ -47,32 +52,30 @@ namespace alone::amasm {
 
         using parse_variant_t = std::variant<datatype_ptr, func_info_t>;
         using parse_queue_t = std::queue<std::tuple<std::string, bool, parse_variant_t>>;
+        using labels_t = std::unordered_map<std::string, size_t>;
 
     public:
-        explicit Parser(AmasmContext& ctx);
+        explicit Parser(Context& ctx);
 
         // TODO: return queue of functions' signatures
-        shared::Bytecode parse(token_array_t tokens);
+        shared::Bytecode parse(const token_array_t& tokens) const;
 
     private:
-        AmasmContext& _ctx;
-
-        token_array_t _tokens;
-        std::unordered_map<std::string, size_t> _labels;
-        parse_queue_t _queue;
+        Context& _ctx;
 
         static auto make_parse_rule(const token_type& type, std::function<size_t(const size_t&)> pred) {
             return std::make_pair(type, std::move(pred));
         }
 
-        size_t _do_parse_logic(const size_t& i);
+        size_t _do_parse_logic(PARSER_ARGS_DEFINE) const;
 
-        size_t _start_parse_struct(const size_t& i);
-        size_t _start_parse_func(const size_t& i);
-        size_t _parse_variable(const size_t& i);
-        size_t _parse_instruction(const size_t& i);
-        size_t _parse_generic_instruction(const size_t& i);
-        size_t _parse_fcall_instruction(const size_t& i);
-        size_t _finish_parse(const size_t& i);
+        size_t _start_parse_struct(PARSER_ARGS_DEFINE) const;
+        size_t _start_parse_func(PARSER_ARGS_DEFINE) const;
+        size_t _parse_variable(PARSER_ARGS_DEFINE) const;
+        // TODO: make separate methods for parsing fcall and other instructions
+        size_t _parse_instruction(PARSER_ARGS_DEFINE) const;
+        /*std::tuple<size_t, inst_decl_t> _parse_generic_instruction(PARSER_ARGS_DEFINE) const;
+        std::tuple<size_t, inst_decl_t> _parse_fcall_instruction(PARSER_ARGS_DEFINE) const;*/
+        size_t _finish_parse(PARSER_ARGS_DEFINE) const;
     };
 }

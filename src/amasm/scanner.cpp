@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace alone::amasm {
-    Scanner::Scanner(AmasmContext& ctx) :
+    Scanner::Scanner(Context& ctx) :
         _ctx(ctx) {
     }
 
