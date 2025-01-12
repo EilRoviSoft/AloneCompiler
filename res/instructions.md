@@ -13,15 +13,15 @@
 
 # System
 
-| Name  | Size          | ID     | Semantics                     | Notes                                                                     |
-| ----- | ------------- | ------ | ----------------------------- | ------------------------------------------------------------------------- |
-| halt  | 4             | `0x00` | `halt`                        | Stops program                                                             |
-| ncall | 12            | `0x01` | `ncall @native_func_id(args)` | Calls native function                                                     |
-| fcall | 12            | `0x02` | `fcall @func_id(args)`        | `[%spx] = %bpx; %spx += 8; %bpx = %ipx; %ipx = [%ipx + 4]`                |
-| ret   | 4 + `a0.size` | `0x03` | `ret a0`                      | `%asx/%grx = a0; %ipx = %bpx; %spx -= %func_args.size + 8; %bpx = [%spx]` |
-| ret   | 4             | `0x03` | `ret a0`                      | `%ipx = %bpx; %bpx -= %func_args.size + 8; %bpx = [%spx]`                 |
-| enter | 12            | `0x04` | `enter`                       |                                                                           |
-| leave | 4             | `0x05` | `leave`                       |                                                                           |
+| Name  | Size          | ID     | Semantics                     | Notes                                                              |
+| ----- | ------------- | ------ | ----------------------------- | ------------------------------------------------------------------ |
+| halt  | 4             | `0x00` | `halt`                        | Stops program                                                      |
+| ncall | 12            | `0x01` | `ncall @native_func_id(args)` | Calls native function                                              |
+| fcall | 12            | `0x02` | `fcall @func_id(args)`        | `[%sp] = %bp; %sp += 8; %bp = %ip; %ip = [%ip + 4]`                |
+| ret   | 4 + `a0.size` | `0x03` | `ret a0`                      | `%ax/%gp = a0; %ip = %bp; %sp -= %func_args.size + 8; %bp = [%sp]` |
+| ret   | 4             | `0x03` | `ret a0`                      | `%ip = %bp; %bp -= %func_args.size + 8; %bp = [%sp]`               |
+| enter | 12            | `0x04` | `enter`                       |                                                                    |
+| leave | 4             | `0x05` | `leave`                       |                                                                    |
 
 ---
 
@@ -57,25 +57,25 @@ Offset ranges
 | 32   | `0x120 - 0x12F` |
 | 64   | `0x130 - 0x13F` |
 
-| Name | Size                       | Offset + ID     | Semantics        | Equals to                                    |
-| ---- | -------------------------- | --------------- | ---------------- | -------------------------------------------- |
-| mov  | 12 + `a1.size`             | `Offset + 0x00` | `mov a0, a1`     | `a0 = a1`                                    |
-| push | 4 + `a0.size`              | `Offset + 0x01` | `push a0`        | `[%spx] = a0; %spx += pop.size;`             |
-| push | 4                          | `Offset + 0x01` | `push`           | `%spx += pop.size;`                          |
-| pop  | 12                         | `Offset + 0x02` | `pop a0`         | `a0 = [%spx - pop.size]; %spx -= pop.size`   |
-| pop  | 4                          | `Offset + 0x02` | `pop`            | `%asx = [%spx - pop.size]; %spx -= pop.size` |
-| not  | 20                         | `Offset + 0x03` | `not a0, a1`     | `a0 = ~a1`                                   |
-| not  | 12                         | `Offset + 0x03` | `not a0`         | `a0 = ~a0`                                   |
-| and  | 12 + `a1.size` + `a2.size` | `Offset + 0x04` | `and a0, a1, a2` | `a0 = a1 & a2`                               |
-| and  | 12 + `a1.size`             | `Offset + 0x04` | `and a0, a1`     | `a0 &= a1`                                   |
-| or   | 12 + `a1.size` + `a2.size` | `Offset + 0x05` | `or a0, a1, a2`  | `a0 = a1 \| a2`                              |
-| or   | 12 + `a1.size`             | `Offset + 0x05` | `or a0, a1`      | `a0 \|= a1`                                  |
-| xor  | 12 + `a1.size` + `a2.size` | `Offset + 0x06` | `xor a0, a1, a2` | `a0 = a1 ^ a2`                               |
-| xor  | 12 + `a1.size`             | `Offset + 0x06` | `xor a0, a1`     | `a0 ^= a1`                                   |
-| shl  | 12 + `a1.size` + `a2.size` | `Offset + 0x07` | `shl a0, a1, a2` | `a0 = a1 << a2`                              |
-| shl  | 12 + `a1.size`             | `Offset + 0x07` | `shl a0, a1`     | `a0 <<= a1`                                  |
-| shr  | 12 + `a1.size` + `a2.size` | `Offset + 0x08` | `shr a0, a1, a2` | `a0 = a1 >> a2`                              |
-| shr  | 12 + `a1.size`             | `Offset + 0x08` | `shr a0, a1`     | `a0 >>= a1`                                  |
+| Name | Size                       | Offset + ID     | Semantics        | Equals to                                 |
+| ---- | -------------------------- | --------------- | ---------------- | ----------------------------------------- |
+| mov  | 12 + `a1.size`             | `Offset + 0x00` | `mov a0, a1`     | `a0 = a1`                                 |
+| push | 4 + `a0.size`              | `Offset + 0x01` | `push a0`        | `[%sp] = a0; %sp += pop.size;`            |
+| push | 4                          | `Offset + 0x01` | `push`           | `%sp += pop.size;`                        |
+| pop  | 12                         | `Offset + 0x02` | `pop a0`         | `a0 = [%sp - pop.size]; %sp -= pop.size`  |
+| pop  | 4                          | `Offset + 0x02` | `pop`            | `%ax = [%sp - pop.size]; %sp -= pop.size` |
+| not  | 20                         | `Offset + 0x03` | `not a0, a1`     | `a0 = ~a1`                                |
+| not  | 12                         | `Offset + 0x03` | `not a0`         | `a0 = ~a0`                                |
+| and  | 12 + `a1.size` + `a2.size` | `Offset + 0x04` | `and a0, a1, a2` | `a0 = a1 & a2`                            |
+| and  | 12 + `a1.size`             | `Offset + 0x04` | `and a0, a1`     | `a0 &= a1`                                |
+| or   | 12 + `a1.size` + `a2.size` | `Offset + 0x05` | `or a0, a1, a2`  | `a0 = a1 \| a2`                           |
+| or   | 12 + `a1.size`             | `Offset + 0x05` | `or a0, a1`      | `a0 \|= a1`                               |
+| xor  | 12 + `a1.size` + `a2.size` | `Offset + 0x06` | `xor a0, a1, a2` | `a0 = a1 ^ a2`                            |
+| xor  | 12 + `a1.size`             | `Offset + 0x06` | `xor a0, a1`     | `a0 ^= a1`                                |
+| shl  | 12 + `a1.size` + `a2.size` | `Offset + 0x07` | `shl a0, a1, a2` | `a0 = a1 << a2`                           |
+| shl  | 12 + `a1.size`             | `Offset + 0x07` | `shl a0, a1`     | `a0 <<= a1`                               |
+| shr  | 12 + `a1.size` + `a2.size` | `Offset + 0x08` | `shr a0, a1, a2` | `a0 = a1 >> a2`                           |
+| shr  | 12 + `a1.size`             | `Offset + 0x08` | `shr a0, a1`     | `a0 >>= a1`                               |
 
 ---
 

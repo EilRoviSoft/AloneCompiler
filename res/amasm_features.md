@@ -9,7 +9,6 @@
   - [Predefined data aka Constants](#predefined-data-aka-constants)
   - [Registers set](#registers-set)
   - [Different bit modes](#different-bit-modes)
-- [Comments](#comments)
 - [Addressing modes](#addressing-modes)
   - [Direct operands](#direct-operands)
 - [Labels and branches](#labels-and-branches)
@@ -46,7 +45,7 @@ You can define names for memory regions from stack and heap.
 This only affects compilation time.
 
 ```asm
-var %a, uint64, [%spx - 8];
+var %a, uint64, [%rsp - 8];
 ```
 
 ## Predefined data aka Constants
@@ -87,14 +86,6 @@ If you need other parts of registers set, just use absolute adresses or make you
 
 ---
 
-# Comments
-
-```asm
-mov32 %lox, %rox # can be read as "moves contents of %rox register to %lox register"
-```
-
----
-
 # Addressing modes
 
 There are 4 types of addressing modes for several binary functions
@@ -104,10 +95,10 @@ There are 4 types of addressing modes for several binary functions
 Works directly with given part of memories without changing it
 
 ```asm
-mov32 %lox, %rox
+mov32 %ecx, %edx
 ```
 
-This can be read as "moves contents of %rox register to %lox register"
+This can be read as "moves contents of %ecx register to %edx register"
 
 # Labels and branches
 
@@ -123,9 +114,9 @@ This function adds int64 and int32 from stack; removes these arguments from stac
 
 ```asm
 func @add6432(int64, int32): int64 { # arguments pushes right-to-left
-    mov %lox, [%spx - 12];
-    mov %rox, [%spx - 4];
-    add64i %asx, %lox, %rox;
+    mov64 %rcx, [%rsp - 12];
+    mov32 %rdx, [%rsp - 4];
+    add64i %rbx, %rcx, %rdx;
     ret;
 }
 ```
@@ -143,7 +134,7 @@ struct some_t {                     # you can define rules for struct align
 }
 
 func @main() {
-    var %sizes, some_t, [%spx];
+    var %sizes, some_t, [%rsp];
     mov64 %sizes.a, 10;
     mov32 %sizes.b, 20;
     push64 %sizes.a;

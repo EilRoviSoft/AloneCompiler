@@ -23,7 +23,7 @@ include_directories(src/shared)
 add_executable(AloneCompiler
 		"src/amasm/info/context.cpp"
 		"src/amasm/info/instructions.cpp"
-		"src/amasm/info/Tokens.cpp"
+		"src/amasm/info/tokens.cpp"
 		"src/amasm/info/variables.cpp" 
 		"src/amasm/scanner.cpp"
 		"src/amasm/lexer.cpp"
