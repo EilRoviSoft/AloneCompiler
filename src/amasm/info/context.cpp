@@ -1,7 +1,11 @@
 #include "context.hpp"
 
 //shared
-#include "general_functions.hpp"
+#include <ranges>
+
+//shared
+#include "shared/general_functions.hpp"
+#include "shared/registers.hpp"
 
 namespace alone::amasm {
     // constructors
@@ -18,7 +22,7 @@ namespace alone::amasm {
 
     // getters
 
-    const token_type& Context::get_token_or(const std::string& key, const token_type& default_token) const {
+    const Tokens& Context::get_token_or(const std::string& key, const Tokens& default_token) const {
         const auto it = _defined_tokens.find(key);
         return it != _defined_tokens.end() ? it->second : default_token;
     }
@@ -26,7 +30,7 @@ namespace alone::amasm {
         const auto it = _datatypes.find(shared::hash_string(key));
         return it != _datatypes.end() ? it->second : nullptr;
     }
-    const std::vector<token_type>& Context::get_rule(const std::string& key) const {
+    const std::vector<Tokens>& Context::get_rule(const std::string& key) const {
         return _rules.at(key);
     }
     const inst_info_t& Context::get_inst(const std::string& key) {
@@ -38,17 +42,18 @@ namespace alone::amasm {
     void Context::_init() {
         _init_defined_tokens();
         _init_datatypes();
+        _init_rules();
         _init_surrounded_by_braces_signatures();
         _init_instructions();
     }
     void Context::_init_defined_tokens() {
         _defined_tokens = {
-            { "this", token_type::kw_this },
-            { "var", token_type::kw_var },
-            { "section", token_type::kw_section },
-            { "label", token_type::kw_label },
-            { "func", token_type::kw_func },
-            { "struct", token_type::kw_struct },
+            { "this", Tokens::KwThis },
+            { "var", Tokens::KwVar },
+            { "section", Tokens::KwSection },
+            { "label", Tokens::KwLabel },
+            { "func", Tokens::KwFunc },
+            { "struct", Tokens::KwStruct },
         };
     }
     void Context::_init_datatypes() {
@@ -70,13 +75,13 @@ namespace alone::amasm {
         };
     }
     void Context::_init_rules() {
-        using enum token_type;
+        using enum Tokens;
         _rules = {
-            { "struct_define", { kw_struct, identifier, lbrace } },
-            { "pole_define", { kw_var, percent, identifier, comma, datatype } },
-            { "func_define", { kw_func, at, identifier, lparen } },
-            { "direct_argument", { percent, identifier } },
-            { "indirect_argument", { lbracket, percent, identifier } }
+            { "struct_define", { KwStruct, Identifier, LBrace } },
+            { "pole_define", { KwVar, Percent, Identifier, Comma, Datatype } },
+            { "func_define", { KwFunc, At, Identifier, LParen } },
+            { "direct_argument", { Percent, Identifier } },
+            { "indirect_argument", { LBracket, Percent, Identifier } }
         };
     }
     void Context::_init_surrounded_by_braces_signatures() {
@@ -91,5 +96,14 @@ namespace alone::amasm {
             const auto key = shared::hash_string(it.name);
             _instructions.emplace(key, std::move(it));
         }
+
+        for (const auto& value : _instructions | std::views::values)
+            _defined_tokens.emplace(value.name, Tokens::InstName);
+    }
+    void Context::_init_global_variables() {
+        using enum shared::Registers;
+        _global_variables = {
+            make_variable("asx", "uint64", (shared::address_t))
+        };
     }
 }

@@ -8,24 +8,24 @@
 namespace alone::amasm {
     class Context;
 
-    enum class token_type : uint8_t {
-        none       = 0x0,
-        lparen     = '(', rparen    = ')', lbracket = '[', rbracket  = ']', lbrace = '{', rbrace = '}',
-        dot        = '.', comma     = ',', colon    = ':', semicolon = ';',
-        at         = '@', dollar    = '$', percent  = '%', quote     = '\"',
-        plus       = '+', minus     = '-', star     = '*', slash     = '/',
-        identifier = 0x80, number   = 129,
-        datatype   = 130, inst_name = 131,
-        kw_this    = 132, kw_var    = 133, kw_section = 134, kw_label = 135, kw_func = 136, kw_struct = 137,
-        max        = 0xFF
+    enum class Tokens : uint8_t {
+        None       = 0x0,
+        LParen     = '(', RParen   = ')', LBracket = '[', RBracket  = ']', LBrace = '{', RBrace = '}',
+        Dot        = '.', Comma    = ',', Colon    = ':', Semicolon = ';',
+        At         = '@', Dollar   = '$', Percent  = '%', Quote     = '\"',
+        Plus       = '+', Minus    = '-', Star     = '*', Slash     = '/',
+        Identifier = 0x80, Number  = 129,
+        Datatype   = 130, InstName = 131,
+        KwThis     = 132, KwVar    = 133, KwSection = 134, KwLabel = 135, KwFunc = 136, KwStruct = 137,
+        Max        = 0xFF
     };
 
     struct token_t {
-        token_type type;
+        Tokens type;
         std::string literal;
 
         token_t();
-        token_t(const token_type& type, std::string literal);
+        token_t(const Tokens& type, std::string literal);
     };
 
     token_t make_token(const Context& ctx, const char& ch);

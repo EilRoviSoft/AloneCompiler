@@ -1,40 +1,40 @@
-#include "tokens.hpp"
+#include "Tokens.hpp"
 
 //std
 #include <stdexcept>
 
 //shared
-#include "shared/literals.hpp"
+#include "shared/Literals.hpp"
 
 //amasm
 #include "amasm/info/context.hpp"
 
 namespace alone::amasm {
     token_t::token_t() :
-        type(token_type::none) {
+        type(Tokens::None) {
     }
-    token_t::token_t(const token_type& type, std::string literal) :
+    token_t::token_t(const Tokens& type, std::string literal) :
         type(type),
         literal(std::move(literal)) {
     }
 
     token_t make_token(const Context& ctx, const char& ch) {
-        return { (token_type) ch, std::string(1, ch) };
+        return { (Tokens) ch, std::string(1, ch) };
     }
 
     token_t make_token(const Context& ctx, std::string str) {
-        token_type type;
+        Tokens type;
 
         switch (shared::check_literal_type(str)) {
-        case shared::literal_type::word:
-            type = ctx.get_token_or(str, token_type::identifier);
+        case shared::Literals::Word:
+            type = ctx.get_token_or(str, Tokens::Identifier);
             break;
 
-        case shared::literal_type::binary:
-        case shared::literal_type::decimal:
-        case shared::literal_type::hexadecimal:
-        case shared::literal_type::floating:
-            type = token_type::number;
+        case shared::Literals::Binary:
+        case shared::Literals::Decimal:
+        case shared::Literals::Hexadecimal:
+        case shared::Literals::Float:
+            type = Tokens::Number;
             break;
 
         default:

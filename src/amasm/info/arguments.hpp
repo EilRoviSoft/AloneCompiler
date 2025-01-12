@@ -6,17 +6,16 @@
 //shared
 
 namespace alone::amasm {
-    enum class argument_type : uint8_t {
-        empty = 0,                  // none
-        direct,                     // idk how to define it now
-        //indirect,                 // name + value
-        indirect_with_displacement, // name + value
-        immediate,                  // value
-        jump_address                // value
+    enum class Arguments : uint8_t {
+        Empty = 0,                // none
+        Direct,                   // idk how to define it now
+        IndirectWithDisplacement, // name + value
+        Immediate,                // value
+        JumpAddress               // value
     };
 
     struct argument_t {
-        argument_type type;
+        Arguments type;
         std::string name;
         ptrdiff_t value;
     };

@@ -4,7 +4,7 @@
 #include <unordered_set>
 
 //alone::amasm::info
-#include "amasm/info//tokens.hpp"
+#include "amasm/info//Tokens.hpp"
 
 namespace alone::amasm {
     class Context;

@@ -9,7 +9,7 @@ namespace alone::amasm {
         _ctx(ctx) {
     }
 
-    std::string Scanner::scan(std::fstream& file) const {
+    std::string Scanner::scan_from_file(std::fstream& file) const {
         std::string temp, buffer;
 
         while (!file.eof()) {
@@ -17,10 +17,22 @@ namespace alone::amasm {
             temp += buffer + '\n';
         }
 
-        return scan(temp);
+        return scan_from_string(temp);
+    }
+    std::string Scanner::scan_from_file(const std::string& filename) const {
+        std::string temp, buffer;
+
+        std::fstream file(filename);
+        while (!file.eof()) {
+            std::getline(file, buffer, '\n');
+            temp += buffer + '\n';
+        }
+        file.close();
+
+        return scan_from_string(temp);
     }
 
-    std::string Scanner::scan(const std::string& input) const {
+    std::string Scanner::scan_from_string(const std::string& input) const {
         std::string result;
         std::vector<std::pair<size_t, size_t>> ranges;
         size_t line_start_pos = 0;

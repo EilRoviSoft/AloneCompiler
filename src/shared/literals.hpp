@@ -5,14 +5,14 @@
 #include <string>
 
 namespace alone::shared {
-	enum class literal_type : uint8_t {
-        none = 0,
-        word,
-        binary, 
-        decimal, 
-        hexadecimal, 
-        floating
+    enum class Literals : uint8_t {
+        None = 0,
+        Word,
+        Binary,
+        Decimal,
+        Hexadecimal,
+        Float
     };
 
-    literal_type check_literal_type(const std::string& str);
+    Literals check_literal_type(const std::string& str);
 }

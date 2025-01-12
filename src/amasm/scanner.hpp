@@ -12,8 +12,10 @@ namespace alone::amasm {
     public:
         explicit Scanner(Context& ctx);
 
-        std::string scan(std::fstream& file) const;
-        std::string scan(const std::string& input) const;
+        std::string scan_from_file(std::fstream& file) const;
+        std::string scan_from_file(const std::string& filename) const;
+
+        std::string scan_from_string(const std::string& input) const;
 
     private:
         Context& _ctx;
