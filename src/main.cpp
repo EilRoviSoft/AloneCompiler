@@ -33,6 +33,10 @@ namespace alone::unit_tests {
     }
 }
 
+// TODO: remove % requirement before variables
+// TODO: add check for bit-depth of system
+// TODO: add dynamic scope for datatypes and functions
+
 int main() {
     unit_tests::test();
 

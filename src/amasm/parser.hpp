@@ -9,17 +9,16 @@
 #include "shared/bytecode.hpp"
 
 //amasm
+#include "amasm/info/context.hpp"
 #include "amasm/info/datatypes.hpp"
 #include "amasm/info/functions.hpp"
-#include "amasm/info/Tokens.hpp"
-#include "amasm/info/variables.hpp"
+#include "amasm/info/tokens.hpp"
 
 #define PARSER_ARGS_BODY size_t, const token_array_t&, parse_queue_t&, labels_t&, composed_funcs_t&
 #define PARSER_ARGS_DEFINE size_t i, const token_array_t& tokens, parse_queue_t& queue, labels_t& labels, composed_funcs_t& result
+#define PARSING_INST_ARGS_DEFINE PARSER_ARGS_DEFINE, func_info_t func_info
 
 namespace alone::amasm {
-    class Context;
-
     class Parser {
         struct parse_unit_t {
             std::string name;
@@ -54,7 +53,7 @@ namespace alone::amasm {
         size_t _parse_variable(PARSER_ARGS_DEFINE) const;
         // TODO: make separate methods for parsing fcall and other instructions
         size_t _parse_instruction(PARSER_ARGS_DEFINE) const;
-        std::tuple<size_t, inst_decl_t> _parse_generic_instruction(PARSER_ARGS_DEFINE) const;
+        std::tuple<size_t, inst_decl_t> _parse_generic_instruction(PARSING_INST_ARGS_DEFINE) const;
         size_t _finish_parse(PARSER_ARGS_DEFINE) const;
     };
 }

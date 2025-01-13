@@ -1,12 +1,13 @@
 #pragma once
 
 //std
+#include <queue>
 #include <string>
 #include <vector>
-#include <queue>
 
 //amasm
 #include "amasm/info/datatypes.hpp"
+#include "amasm/info/instructions.hpp"
 #include "amasm/info/variables.hpp"
 
 namespace alone::amasm {

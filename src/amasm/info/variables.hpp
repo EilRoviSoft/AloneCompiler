@@ -10,7 +10,6 @@
 
 //amasm
 #include "amasm/info/datatypes.hpp"
-#include "context.hpp"
 
 namespace alone::amasm {
     struct variable_t {
@@ -28,6 +27,7 @@ namespace alone::amasm {
         using local_scope_ptr = std::shared_ptr<local_scope_t>;
 
         void inherit_from(const Variables& another);
+        void inherit_from(const std::initializer_list<variable_ptr>& list);
 
         void insert_local_variable(std::string name, datatype_ptr type, const shared::address_t& address);
         void insert_global_variable(std::string name, datatype_ptr type, const shared::address_t& address);
@@ -38,5 +38,6 @@ namespace alone::amasm {
         std::vector<local_scope_ptr> _scopes;
 
         static void _insert_variable(const local_scope_ptr& where, variable_ptr&& var);
+        static void _insert_variable(const local_scope_ptr& where, const variable_ptr& var);
     };
 }

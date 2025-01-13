@@ -4,7 +4,7 @@
 #include "amasm/info/arguments.hpp"
 
 #define BIND_PARSE_CASE(TYPE, PRED) std::make_pair(TYPE, std::function<size_t(PARSER_ARGS_BODY)>(std::bind(PRED, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5)))
-#define RULE_STATEMENT(RULE_NAME, MESSAGE) if (!match_rule(_ctx, RULE_NAME, Tokens, i)) { throw std::runtime_error(MESSAGE); }
+#define RULE_STATEMENT(RULE_NAME, MESSAGE) if (!match_rule(_ctx, RULE_NAME, tokens, i)) { throw std::runtime_error(MESSAGE); }
 
 namespace alone::amasm::inline parser_inlined {
     bool match_rule(const Context& ctx, const std::string& name, const token_array_t& tokens, const size_t begin) {
@@ -21,7 +21,7 @@ namespace alone::amasm::inline parser_inlined {
         ptrdiff_t offset = 0;
         size_t i = 0;
 
-        while (tokens[i + begin].type == Tokens::Comma) {
+        while (tokens[i + begin].type == Tokens::Dot) {
             const auto it = std::ranges::find_if(curr_type->poles, [&](const pole_t& pole) {
                 return pole.name == tokens[i + begin + 2].literal;
             });
@@ -86,6 +86,7 @@ namespace alone::amasm {
         func_info_t on_push;
 
         on_push.name = tokens[i + 2].literal;
+        on_push.variables.inherit_from(_ctx.global_variables());
         // arguments dispatching up to rparen token
         for (j = i + 4; tokens[j].type != Tokens::RParen; j++) {
             if ((j - i) % 2) {
@@ -133,7 +134,7 @@ namespace alone::amasm {
         if (name != "func_define")
             throw std::runtime_error("wrong instruction definition placement");
 
-        auto& func_data = std::get<func_info_t>(data);
+        auto& func_info = std::get<func_info_t>(data);
         size_t delta;
         inst_decl_t inst_decl;
 
@@ -146,62 +147,64 @@ namespace alone::amasm {
                 inst_decl.args.front().name += tokens[j++].literal;
             delta = j - i + 1;
         } else
-            std::tie(delta, inst_decl) = _parse_generic_instruction(i, tokens, queue, labels, result);
+            std::tie(delta, inst_decl) = _parse_generic_instruction(i, tokens, queue, labels, result, func_info);
 
         inst_decl.args.shrink_to_fit();
-        func_data.lines.emplace_back(std::move(inst_decl));
+        func_info.lines.emplace_back(std::move(inst_decl));
         return delta;
     }
 
-    std::tuple<size_t, inst_decl_t> Parser::_parse_generic_instruction(PARSER_ARGS_DEFINE) const {
-        size_t j = i, dj, args_n = 0;
+    std::tuple<size_t, inst_decl_t> Parser::_parse_generic_instruction(PARSING_INST_ARGS_DEFINE) const {
+        size_t j = i, args_n = 0;
         inst_decl_t inst_decl;
         const auto& inst_info = _ctx.get_inst(tokens[i].literal);
+        bool flag = tokens[j + 1].type != Tokens::Semicolon;
 
         inst_decl.name = tokens[j].literal;
-        while (args_n < inst_info.max_args && tokens[j].type != Tokens::Semicolon) {
+        j++;
+
+        while (args_n < inst_info.max_args && flag) {
             argument_t on_emplace;
 
-            if (tokens[j].type != Tokens::InstName && tokens[j].type != Tokens::Comma)
-                throw std::runtime_error("wrong instruction's arguments definition");
-
-            if (match_rule(_ctx, "direct_argument", tokens, j + 1)) {
-                auto [var_offset, delta] = calc_offset(_ctx.get_datatype(inst_decl.name), tokens, j + 3);
+            if (match_rule(_ctx, "direct_argument", tokens, j)) {
+                const auto& var = func_info.variables.get_variable(tokens[j + 1].literal);
+                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 2);
                 on_emplace = {
                     .type = var_offset ? Arguments::IndirectWithDisplacement : Arguments::Direct,
-                    .name = tokens[j + 2].literal,
+                    .name = tokens[j + 1].literal,
                     .value = var_offset
                 };
-                dj = delta + 3;
-            } else if (tokens[j + 1].type == Tokens::Number) {
+                j += delta + 2;
+            } else if (tokens[j].type == Tokens::Number) {
                 on_emplace = {
                     .type = Arguments::Immediate,
                     .name = "",
-                    .value = std::stoll(tokens[j + 1].literal)
+                    .value = std::stoll(tokens[j].literal)
                 };
-                dj = 2;
-            } else if (match_rule(_ctx, "indirect_argument", tokens, j + 1)) {
-                auto [var_offset, delta] = calc_offset(_ctx.get_datatype(inst_decl.name), tokens, j + 4);
+                j++;
+            } else if (match_rule(_ctx, "indirect_argument", tokens, j)) {
+                const auto& var = func_info.variables.get_variable(tokens[j + 2].literal);
+                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 3);
                 on_emplace = {
                     .type = Arguments::IndirectWithDisplacement,
-                    .name = tokens[j + 3].literal,
+                    .name = tokens[j + 2].literal,
                     .value = var_offset
                 };
 
-                switch (tokens[j + delta + 4].type) {
+                switch (tokens[j + delta + 3].type) {
                 case Tokens::Plus:
-                    on_emplace.value += std::stoll(tokens[j + delta + 5].literal);
+                    on_emplace.value += std::stoll(tokens[j + delta + 4].literal);
                     delta += 2;
                     break;
                 case Tokens::Minus:
-                    on_emplace.value -= std::stoll(tokens[j + delta + 5].literal);
+                    on_emplace.value -= std::stoll(tokens[j + delta + 4].literal);
                     delta += 2;
                     break;
                 default:
                     break;
                 }
 
-                dj = delta + 5;
+                j += delta + 4;
             } else if (args_n >= inst_info.min_args) {
                 j += 1;
                 break;
@@ -209,11 +212,16 @@ namespace alone::amasm {
                 throw std::runtime_error("wrong instruction definition");
 
             inst_decl.args.emplace_back(std::move(on_emplace));
-            j += dj;
             args_n++;
+
+            // to add colon to diff
+            if (tokens[j].type != Tokens::Semicolon)
+                j++;
+            else
+                flag = false;
         }
 
-        return { j - i + 1 + (args_n == 0), inst_decl };
+        return { j - i + 1, inst_decl };
     }
 
     size_t Parser::_finish_parse(PARSER_ARGS_DEFINE) const {

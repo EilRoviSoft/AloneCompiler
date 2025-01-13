@@ -12,9 +12,22 @@ namespace alone::amasm {
     }
 
     void Variables::inherit_from(const Variables& another) {
+        _scopes.clear();
         _scopes.reserve(another._scopes.size() + 1);
         _scopes.append_range(another._scopes);
-        _scopes.emplace_back();
+        if (!another._scopes.back()->empty())
+            _scopes.emplace_back(std::make_shared<local_scope_t>());
+    }
+    void Variables::inherit_from(const std::initializer_list<variable_ptr>& list) {
+        _scopes.clear();
+        _scopes.reserve(2);
+
+        _scopes.emplace_back(std::make_shared<local_scope_t>());
+        for (const auto& it : list)
+            _insert_variable(_scopes.back(), it);
+
+        // to add new empty scope with variables
+        _scopes.emplace_back(std::make_shared<local_scope_t>());
     }
 
     void Variables::insert_local_variable(std::string name, datatype_ptr type, const shared::address_t& address) {
@@ -23,9 +36,14 @@ namespace alone::amasm {
     void Variables::insert_global_variable(std::string name, datatype_ptr type, const shared::address_t& address) {
         _insert_variable(_scopes.front(), make_variable(std::move(name), std::move(type), address));
     }
+
     void Variables::_insert_variable(const local_scope_ptr& where, variable_ptr&& var) {
         const size_t temp = shared::hash_string(var->name);
         where->emplace(temp, std::move(var));
+    }
+    void Variables::_insert_variable(const local_scope_ptr& where, const variable_ptr& var) {
+        const size_t temp = shared::hash_string(var->name);
+        where->emplace(temp, var);
     }
 
     variable_ptr Variables::get_variable(const std::string& key) const {

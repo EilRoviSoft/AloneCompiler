@@ -7,58 +7,54 @@
 
 namespace alone::shared {
 	enum class Registers : uint8_t {
-		AL     = machine_word_size * 0,
-		AH     = AL + 1,
-		BL     = machine_word_size * 1,
-		BH     = BL + 1,
-		CL     = machine_word_size * 2,
-		CH     = CL + 1,
-		DL     = machine_word_size * 3,
-		DH     = DL + 1,
-		IPL    = machine_word_size * 4,
-		BPL    = machine_word_size * 5,
-		CPL    = machine_word_size * 6,
-		SPL    = machine_word_size * 7,
-		LFLAGS = machine_word_size * 8,
-		GPL    = machine_word_size * 10,
+		// 8-bit registers
 
-#if SYSTEM_BIT_DEPTH >= 16
+		AL  = machine_word_size * 0,
+		AH  = AL + 1,
+		BL  = machine_word_size * 1,
+		BH  = BL + 1,
+		CL  = machine_word_size * 2,
+		CH  = CL + 1,
+		DL  = machine_word_size * 3,
+		DH  = DL + 1,
+
+		// 16-bit registers
+
 		AX    = AL,
 		BX    = BL,
 		CX    = CL,
 		DX    = DL,
-		IP    = IPL,
-		BP    = BPL,
-		CP    = CPL,
-		SP    = SPL,
-		FLAGS = LFLAGS,
-		GP    = GPL,
-#endif
+		IP    = machine_word_size * 4,
+		BP    = machine_word_size * 5,
+		CP    = machine_word_size * 6,
+		SP    = machine_word_size * 7,
+		FLAGS = machine_word_size * 8,
+		GP    = machine_word_size * 10,
 
-#if SYSTEM_BIT_DEPTH >= 32
+		// 32-bit registers
+
 		EAX    = AL,
 		EBX    = BL,
 		ECX    = CL,
 		EDX    = DL,
-		EIP    = IPL,
-		EBP    = BPL,
-		ECP    = CPL,
-		ESP    = SPL,
-		EFLAGS = LFLAGS,
-		EGP    = GPL,
-#endif
+		EIP    = IP,
+		EBP    = BP,
+		ECP    = CP,
+		ESP    = SP,
+		EFLAGS = FLAGS,
+		EGP    = GP,
 
-#if SYSTEM_BIT_DEPTH >= 64
+		// 64-bit registers
+
 		RAX    = AL,
 		RBX    = BL,
 		RCX    = CL,
 		RDX    = DL,
-		RIP    = IPL,
-		RBP    = BPL,
-		RCP    = CPL,
-		RSP    = SPL,
-		RFLAGS = LFLAGS,
-		RGP    = GPL
-#endif
+		RIP    = IP,
+		RBP    = BP,
+		RCP    = CP,
+		RSP    = SP,
+		RFLAGS = FLAGS,
+		RGP    = GP
 	};
 }
