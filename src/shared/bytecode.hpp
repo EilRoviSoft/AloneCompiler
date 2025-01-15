@@ -12,33 +12,28 @@
 namespace alone::shared {
     class Bytecode {
     public:
-        using mask_predicate_t = std::function<std::byte(const std::byte&, const std::byte&)>;
+        size_t size() const;
 
-        std::byte& operator[](const size_t& idx);
-        const std::byte& operator[](const size_t& idx) const;
+        std::byte& operator[](size_t idx);
+        const std::byte& operator[](size_t idx) const;
 
-        data_sequence_t get(const size_t& length, const size_t& offset) const {
-            data_sequence_t result;
-
-            result.reserve(length);
-            for (size_t i = 0; i < length; i++)
-                result.emplace_back(m_container[i + offset]);
-
-            return std::ranges::to<std::vector>(m_container | std::views::take(offset));
-        }
+        data_sequence_t get(size_t length, size_t offset) const;
         template<typename T>
-        void set(const T& val, const size_t& offset) {
+        void set(const T& val, size_t offset) {
             for (size_t i = 0; i < sizeof(T); i++)
-                m_container[i + offset] = std::byte((val & 0xff << i * 8) >> i * 8);
+                _container[i + offset] = std::byte((val & 0xff << i * 8) >> i * 8);
         }
 
-        void apply_mask(const std::vector<std::byte>& mask, const mask_predicate_t& pred, const size_t& offset = 0) {
-            const auto as_bytes = reinterpret_cast<const std::byte*>(&mask);
-            for (size_t i = 0; i < mask.size(); i++)
-                m_container[i + offset] = pred(m_container[i + offset], as_bytes[i]);
+        void transform(size_t offset, size_t length, const std::function<std::byte(std::byte)>& pred);
+
+        void append_sequence(const data_sequence_t& what);
+        template<typename T>
+        void append_value(const T& value, size_t size = sizeof(T)) {
+            const auto as_bytes = reinterpret_cast<const std::byte*>(&value);
+            _container.append_range(std::initializer_list(as_bytes, as_bytes + size));
         }
 
-    protected:
-        std::deque<std::byte> m_container;
+    private:
+        std::deque<std::byte> _container;
     };
 }

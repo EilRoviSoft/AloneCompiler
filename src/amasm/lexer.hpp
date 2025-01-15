@@ -4,11 +4,10 @@
 #include <unordered_set>
 
 //alone::amasm::info
-#include "amasm/info//Tokens.hpp"
+#include "amasm/info/context.hpp"
+#include "amasm/info/tokens.hpp"
 
 namespace alone::amasm {
-    class Context;
-
     class Lexer {
     public:
         explicit Lexer(Context& ctx);

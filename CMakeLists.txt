@@ -19,20 +19,21 @@ include_directories(src/amasm/info)
 include_directories(src/vm)
 include_directories(src/shared)
 
-# Add source to this project's executable.
 add_executable(AloneCompiler
-		"src/amasm/info/context.cpp"
-		"src/amasm/info/instructions.cpp"
-		"src/amasm/info/tokens.cpp"
-		"src/amasm/info/variables.cpp" 
-		"src/amasm/scanner.cpp"
-		"src/amasm/lexer.cpp"
-		"src/amasm/parser.cpp"
+	"src/amasm/info/context.cpp"
+	"src/amasm/info/instructions.cpp"
+	"src/amasm/info/tokens.cpp"
+	"src/amasm/info/variables.cpp" 
+	"src/amasm/lexer.cpp"
+	"src/amasm/parser.cpp"
+	"src/amasm/scanner.cpp"
+	"src/amasm/translator.cpp"
 
-		"src/shared/bytecode.cpp"
-		"src/shared/literals.cpp"
+	"src/shared/bytecode.cpp"
+	"src/shared/literals.cpp"
 		
-		"src/main.cpp"  )
+	"src/main.cpp"
+)
 
 add_compile_definitions(DEBUG_STATUS)
 

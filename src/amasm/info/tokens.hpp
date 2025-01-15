@@ -28,7 +28,7 @@ namespace alone::amasm {
         token_t(const Tokens& type, std::string literal);
     };
 
-    token_t make_token(const Context& ctx, const char& ch);
+    token_t make_token(const Context& ctx, char ch);
     token_t make_token(const Context& ctx, std::string str);
 
     using token_array_t = std::vector<token_t>;

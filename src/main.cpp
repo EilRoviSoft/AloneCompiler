@@ -5,6 +5,7 @@
 #include "amasm/scanner.hpp"
 #include "amasm/lexer.hpp"
 #include "amasm/parser.hpp"
+#include "amasm/translator.hpp"
 
 using namespace alone;
 
@@ -14,10 +15,12 @@ namespace alone::unit_tests {
         const auto scanner = amasm::Scanner(context);
         const auto lexer = amasm::Lexer(context);
         const auto parser = amasm::Parser(context);
+        const auto translator = amasm::Translator(context);
 
         const auto text = scanner.scan_from_file("example.amasm");
         const auto tokens = lexer.tokenize_code(text);
-        const auto bytecode = parser.parse(tokens);
+        const auto composed = parser.parse(tokens);
+        const auto bytecode = translator.translate(composed);
     }
 
     void test() {
@@ -32,10 +35,6 @@ namespace alone::unit_tests {
         }
     }
 }
-
-// TODO: remove % requirement before variables
-// TODO: add check for bit-depth of system
-// TODO: add dynamic scope for datatypes and functions
 
 int main() {
     unit_tests::test();

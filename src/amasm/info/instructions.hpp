@@ -3,6 +3,7 @@
 //std
 #include <list>
 #include <string>
+#include <tuple>
 
 //shared
 #include "shared/types.hpp"
@@ -24,4 +25,6 @@ namespace alone::amasm {
     };
 
     std::list<inst_info_t> generate_isa_info();
+
+    using composed_inst_t = std::tuple<size_t, inst_decl_t>;
 }

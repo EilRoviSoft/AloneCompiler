@@ -30,7 +30,6 @@ namespace alone::amasm {
 
         return result;
     }
-
     template<typename T, size_t TOffset>
     std::list<inst_info_t> generate_universal_size_isa_info() {
         std::list<inst_info_t> result;
@@ -103,7 +102,6 @@ namespace alone::amasm {
 
         return result;
     }
-
     template<typename T, char TPostfix, size_t TOffset>
     std::list<inst_info_t> generate_universal_type_isa_info() {
         std::list<inst_info_t> result;

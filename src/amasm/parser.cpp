@@ -3,11 +3,11 @@
 //amasm
 #include "amasm/info/arguments.hpp"
 
-#define BIND_PARSE_CASE(TYPE, PRED) std::make_pair(TYPE, std::function<size_t(PARSER_ARGS_BODY)>(std::bind(PRED, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5)))
+#define BIND_PARSE_CASE(TYPE, PRED) std::make_pair(TYPE, std::function<size_t(size_t, const token_array_t&, parse_queue_t&, composed_funcs_t&)>(std::bind(PRED, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)))
 #define RULE_STATEMENT(RULE_NAME, MESSAGE) if (!match_rule(_ctx, RULE_NAME, tokens, i)) { throw std::runtime_error(MESSAGE); }
 
 namespace alone::amasm::inline parser_inlined {
-    bool match_rule(const Context& ctx, const std::string& name, const token_array_t& tokens, const size_t begin) {
+    bool match_rule(const Context& ctx, const std::string& name, const token_array_t& tokens, size_t begin) {
         const auto& pattern = ctx.get_rule(name);
         bool result = true;
 
@@ -16,7 +16,7 @@ namespace alone::amasm::inline parser_inlined {
 
         return result;
     }
-    auto calc_offset(const datatype_ptr& type, const token_array_t& tokens, const size_t begin) {
+    auto calc_offset(const datatype_ptr& type, const token_array_t& tokens, size_t begin) {
         datatype_ptr curr_type = type;
         ptrdiff_t offset = 0;
         size_t i = 0;
@@ -43,15 +43,14 @@ namespace alone::amasm {
     composed_funcs_t Parser::parse(const token_array_t& tokens) const {
         composed_funcs_t result;
         parse_queue_t queue;
-        labels_t labels;
 
         for (size_t i = 0, di; i < tokens.size(); i += di, di = 0)
-            di = _do_parse_logic(i, tokens, queue, labels, result);
+            di = _do_parse_logic(i, tokens, queue, result);
 
         return result;
     }
 
-    size_t Parser::_do_parse_logic(PARSER_ARGS_DEFINE) const {
+    size_t Parser::_do_parse_logic(PARSER_ARGS) const {
         using enum Tokens;
 
         static const std::unordered_map logic = {
@@ -64,14 +63,14 @@ namespace alone::amasm {
 
         size_t delta;
         if (const auto it = logic.find(tokens[i].type); it != logic.end())
-            delta = it->second(i, tokens, queue, labels, result);
+            delta = it->second(i, tokens, queue, result);
         else
             throw std::runtime_error("this parse rule doesn't exist");
 
         return delta;
     }
 
-    size_t Parser::_start_parse_struct(PARSER_ARGS_DEFINE) const {
+    size_t Parser::_start_parse_struct(PARSER_ARGS) const {
         RULE_STATEMENT("struct_define", "wrong struct definition")
 
         datatype_ptr ntype = make_datatype(tokens[i + 1].literal, 0);
@@ -79,7 +78,7 @@ namespace alone::amasm {
 
         return 3;
     }
-    size_t Parser::_start_parse_func(PARSER_ARGS_DEFINE) const {
+    size_t Parser::_start_parse_func(PARSER_ARGS) const {
         RULE_STATEMENT("func_define", "wrong func definition")
 
         size_t j, delta;
@@ -112,12 +111,13 @@ namespace alone::amasm {
         return delta;
     }
 
-    size_t Parser::_parse_variable(PARSER_ARGS_DEFINE) const {
+    size_t Parser::_parse_variable(PARSER_ARGS) const {
         RULE_STATEMENT("pole_define", "wrong pole definition")
 
+        const auto& [name, data] = queue.front();
         size_t delta;
 
-        if (const auto& [name, data] = queue.front(); name == "struct_define") {
+        if (name == "struct_define") {
             const auto& ntype = std::get<datatype_ptr>(data);
             const bool has_own_offset = tokens[i + 5].type == Tokens::Comma;
 
@@ -129,7 +129,7 @@ namespace alone::amasm {
         return delta;
     }
 
-    size_t Parser::_parse_instruction(PARSER_ARGS_DEFINE) const {
+    size_t Parser::_parse_instruction(PARSER_ARGS) const {
         auto& [name, data] = queue.front();
         if (name != "func_define")
             throw std::runtime_error("wrong instruction definition placement");
@@ -147,14 +147,14 @@ namespace alone::amasm {
                 inst_decl.args.front().name += tokens[j++].literal;
             delta = j - i + 1;
         } else
-            std::tie(delta, inst_decl) = _parse_generic_instruction(i, tokens, queue, labels, result, func_info);
+            std::tie(delta, inst_decl) = _parse_generic_instruction(func_info, i, tokens, queue, result);
 
         inst_decl.args.shrink_to_fit();
         func_info.lines.emplace_back(std::move(inst_decl));
         return delta;
     }
 
-    std::tuple<size_t, inst_decl_t> Parser::_parse_generic_instruction(PARSING_INST_ARGS_DEFINE) const {
+    composed_inst_t Parser::_parse_generic_instruction(const func_info_t& func_info, PARSER_ARGS) const {
         size_t j = i, args_n = 0;
         inst_decl_t inst_decl;
         const auto& inst_info = _ctx.get_inst(tokens[i].literal);
@@ -224,7 +224,7 @@ namespace alone::amasm {
         return { j - i + 1, inst_decl };
     }
 
-    size_t Parser::_finish_parse(PARSER_ARGS_DEFINE) const {
+    size_t Parser::_finish_parse(PARSER_ARGS) const {
         auto& [name, variant] = queue.front();
 
         if (name == "struct_define") {

@@ -1,10 +1,34 @@
 #include "bytecode.hpp"
 
 namespace alone::shared {
-    std::byte& Bytecode::operator[](const size_t& idx) {
-        return m_container[idx];
+    size_t Bytecode::size() const {
+        return _container.size();
     }
-    const std::byte& Bytecode::operator[](const size_t& idx) const {
-        return m_container[idx];
+
+    std::byte& Bytecode::operator[](size_t idx) {
+        return _container[idx];
+    }
+    const std::byte& Bytecode::operator[](size_t idx) const {
+        return _container[idx];
+    }
+
+    data_sequence_t Bytecode::get(size_t length, size_t offset) const {
+        data_sequence_t result;
+
+        result.reserve(length);
+        for (size_t i = 0; i < length; i++)
+            result.emplace_back(_container[i + offset]);
+
+        return std::ranges::to<std::vector>(_container | std::views::take(offset));
+    }
+
+    void Bytecode::transform(size_t offset, size_t length, const std::function<std::byte(std::byte)>& pred) {
+        for (size_t i = 0; i < length; i++)
+            _container[i + offset] = pred(_container[i + offset]);
+    }
+
+    void Bytecode::append_sequence(const data_sequence_t& what) {
+        const auto begin = what.data();
+        _container.append_range(std::initializer_list(begin, begin + what.size()));
     }
 }

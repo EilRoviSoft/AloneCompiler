@@ -20,7 +20,7 @@ namespace alone::amasm {
         token_array_t result;
         std::string temp;
 
-        for (const auto& c : code) {
+        for (char c : code) {
             if (shared::is_alpha_numeric(c)) {
                 temp += c;
             } else if (!temp.empty()) {

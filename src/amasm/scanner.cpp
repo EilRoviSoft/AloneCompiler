@@ -38,7 +38,7 @@ namespace alone::amasm {
         size_t line_start_pos = 0;
         bool comment_flag = false;
 
-        for (size_t i = 0; i != input.size(); ++i) {
+        for (size_t i = 0; i < input.size(); ++i) {
             if (input[i] == '#') {
                 comment_flag = true;
                 size_t j;

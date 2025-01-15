@@ -23,8 +23,8 @@ namespace alone::amasm {
         _scopes.reserve(2);
 
         _scopes.emplace_back(std::make_shared<local_scope_t>());
-        for (const auto& it : list)
-            _insert_variable(_scopes.back(), it);
+        for (const auto& ptr : list)
+            _insert_variable(_scopes.back(), ptr);
 
         // to add new empty scope with variables
         _scopes.emplace_back(std::make_shared<local_scope_t>());

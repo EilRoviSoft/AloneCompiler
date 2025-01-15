@@ -14,7 +14,7 @@ namespace alone::amasm {
         datatype_ptr type;
         ptrdiff_t offset;
 
-        pole_t(std::string name, datatype_ptr type, const ptrdiff_t& offset) :
+        pole_t(std::string name, datatype_ptr type, ptrdiff_t offset) :
             name(std::move(name)),
             type(std::move(type)),
             offset(offset) {
@@ -26,7 +26,7 @@ namespace alone::amasm {
         size_t size;
         std::vector<pole_t> poles;
 
-        datatype_t(std::string name, const size_t& size) :
+        datatype_t(std::string name, size_t size) :
             name(std::move(name)),
             size(size) {
         }
@@ -40,8 +40,8 @@ namespace alone::amasm {
                 poles[i + i].offset = poles[i].offset + (ptrdiff_t) poles[i].type->size;
         }
 
-        void add_pole(const std::string& name, const datatype_ptr& type) {
-            poles.emplace_back(name, type, poles.empty() ? 0 : poles.back().offset + poles.back().type->size);
+        void add_pole(const std::string& pole_name, const datatype_ptr& type) {
+            poles.emplace_back(pole_name, type, poles.empty() ? 0 : poles.back().offset + poles.back().type->size);
             size += type->size;
         }
     };

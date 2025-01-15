@@ -99,7 +99,7 @@ namespace alone::amasm {
     void Context::_init_instructions() {
         auto inst_collection = generate_isa_info();
 
-        for (auto& it : inst_collection) {
+        for (auto&& it : inst_collection) {
             const auto key = shared::hash_string(it.name);
             _instructions.emplace(key, std::move(it));
         }

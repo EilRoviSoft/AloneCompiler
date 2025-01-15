@@ -61,8 +61,8 @@ namespace alone::shared {
         }
 
         //check whether it is integer number
-        for (size_t i = 0; i < str.size(); i++)
-            if (!is_numeric(str[i])) {
+        for (char i : str)
+            if (!is_numeric(i)) {
                 THROW_EXCEPTION("wrong numeric value");
                 return Literals::None;
             }

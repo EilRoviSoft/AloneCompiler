@@ -19,10 +19,4 @@ namespace alone::amasm {
         std::vector<inst_decl_t> lines;
     };
     using composed_funcs_t = std::queue<func_info_t>;
-
-    /*struct func_incomplete_signature_t {
-        std::string fullname;
-        shared::Bytecode bytecode;
-        std::list<edit_hint_t> hints;
-    };*/
 }

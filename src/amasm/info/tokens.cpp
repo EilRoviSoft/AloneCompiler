@@ -18,7 +18,7 @@ namespace alone::amasm {
         literal(std::move(literal)) {
     }
 
-    token_t make_token(const Context& ctx, const char& ch) {
+    token_t make_token(const Context& ctx, char ch) {
         return { (Tokens) ch, std::string(1, ch) };
     }
 
