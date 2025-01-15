@@ -22,13 +22,17 @@ namespace alone::shared {
         return std::ranges::to<std::vector>(_container | std::views::take(offset));
     }
 
-    void Bytecode::transform(size_t offset, size_t length, const std::function<std::byte(std::byte)>& pred) {
+    void Bytecode::transform(size_t offset, size_t length, const std::function<std::byte(size_t, std::byte)>& pred) {
         for (size_t i = 0; i < length; i++)
-            _container[i + offset] = pred(_container[i + offset]);
+            _container[i + offset] = pred(i, _container[i + offset]);
     }
 
     void Bytecode::append_sequence(const data_sequence_t& what) {
         const auto begin = what.data();
         _container.append_range(std::initializer_list(begin, begin + what.size()));
+    }
+
+    std::vector<std::byte> Bytecode::to_vector() {
+        return std::ranges::to<std::vector>(_container);
     }
 }

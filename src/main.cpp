@@ -28,11 +28,8 @@ namespace alone::unit_tests {
             std::make_tuple(0, true, std::function(f0))
         };
 
-        for (const auto& [id, status, f] : container) {
-            std::cout << "test " << id;
+        for (const auto& [id, status, f] : container)
             f();
-            std::cout << " is done\n";
-        }
     }
 }
 

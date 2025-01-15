@@ -18,20 +18,23 @@ namespace alone::shared {
         const std::byte& operator[](size_t idx) const;
 
         data_sequence_t get(size_t length, size_t offset) const;
-        template<typename T>
+        template<typename T = machine_word_t>
         void set(const T& val, size_t offset) {
             for (size_t i = 0; i < sizeof(T); i++)
                 _container[i + offset] = std::byte((val & 0xff << i * 8) >> i * 8);
         }
 
-        void transform(size_t offset, size_t length, const std::function<std::byte(std::byte)>& pred);
+        void transform(size_t offset, size_t length, const std::function<std::byte(size_t, std::byte)>& pred);
 
         void append_sequence(const data_sequence_t& what);
-        template<typename T>
+        // size <= sizeof(T)
+        template<typename T = machine_word_t>
         void append_value(const T& value, size_t size = sizeof(T)) {
             const auto as_bytes = reinterpret_cast<const std::byte*>(&value);
             _container.append_range(std::initializer_list(as_bytes, as_bytes + size));
         }
+
+        std::vector<std::byte> to_vector();
 
     private:
         std::deque<std::byte> _container;

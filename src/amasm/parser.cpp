@@ -142,9 +142,16 @@ namespace alone::amasm {
             size_t j = i + 1;
 
             inst_decl.name = "fcall";
-            inst_decl.args.resize(1);
-            while (tokens[j].type != Tokens::Semicolon)
-                inst_decl.args.front().name += tokens[j++].literal;
+            inst_decl.args.emplace_back(
+                Arguments::JumpAddress,
+                [&] {
+                    std::string name;
+                    while (tokens[j].type != Tokens::Semicolon)
+                        name += tokens[j++].literal;
+                    return name;
+                }(),
+                0
+            );
             delta = j - i + 1;
         } else
             std::tie(delta, inst_decl) = _parse_generic_instruction(func_info, i, tokens, queue, result);
