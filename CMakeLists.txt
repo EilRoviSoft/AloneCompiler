@@ -33,7 +33,7 @@ add_executable(AloneCompiler
 	"src/shared/literals.cpp"
 		
 	"src/main.cpp"
-)
+ "src/amasm/info/functions.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 

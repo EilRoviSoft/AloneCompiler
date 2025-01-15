@@ -1,6 +1,7 @@
-//amasm
+//std
 #include <iostream>
 
+//amasm
 #include "amasm/info/context.hpp"
 #include "amasm/scanner.hpp"
 #include "amasm/lexer.hpp"

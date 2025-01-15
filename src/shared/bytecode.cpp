@@ -31,6 +31,9 @@ namespace alone::shared {
         const auto begin = what.data();
         _container.append_range(std::initializer_list(begin, begin + what.size()));
     }
+    void Bytecode::append_sequence(const Bytecode& another) {
+        _container.append_range(another._container);
+    }
 
     std::vector<std::byte> Bytecode::to_vector() {
         return std::ranges::to<std::vector>(_container);

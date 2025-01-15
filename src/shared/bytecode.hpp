@@ -27,6 +27,7 @@ namespace alone::shared {
         void transform(size_t offset, size_t length, const std::function<std::byte(size_t, std::byte)>& pred);
 
         void append_sequence(const data_sequence_t& what);
+        void append_sequence(const Bytecode& another);
         // size <= sizeof(T)
         template<typename T = machine_word_t>
         void append_value(const T& value, size_t size = sizeof(T)) {
