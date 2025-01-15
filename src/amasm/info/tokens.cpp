@@ -1,30 +1,46 @@
-#include "tokens.hpp"
+#include "Tokens.hpp"
 
-//alone
-#include "error_codes.hpp"
-#include "general.hpp"
+//std
+#include <stdexcept>
 
-//alone::amasm::info
-#include "consts.hpp"
+//shared
+#include "shared/Literals.hpp"
+
+//amasm
+#include "amasm/info/context.hpp"
 
 namespace alone::amasm {
     token_t::token_t() :
-        type(token_type::none) {
+        type(Tokens::None) {
     }
-    token_t::token_t(char c) :
-        type((token_type) c),
-        literal(1, c) {
+    token_t::token_t(const Tokens& type, std::string literal) :
+        type(type),
+        literal(std::move(literal)) {
     }
-    token_t::token_t(std::string s) :
-        literal(std::move(s)) {
-        auto literal_type = lib::check_type(literal);
-        if (literal_type == lib::literal_type::word) {
-            auto temp = defined_tokens.find(literal);
-            type = temp == defined_tokens.end() ? token_type::identifier : temp->second;
-        } else if (literal_type == lib::literal_type::binary || literal_type == lib::literal_type::decimal ||
-            literal_type == lib::literal_type::hexadecimal || literal_type == lib::literal_type::floating) {
-            type = token_type::number;
-        } else
-            throw AMASM_TOKENS_WRONG_INPUT;
+
+    token_t make_token(const Context& ctx, char ch) {
+        return { (Tokens) ch, std::string(1, ch) };
+    }
+
+    token_t make_token(const Context& ctx, std::string str) {
+        Tokens type;
+
+        switch (shared::check_literal_type(str)) {
+        case shared::Literals::Word:
+            type = ctx.get_token_or(str, Tokens::Identifier);
+            break;
+
+        case shared::Literals::Binary:
+        case shared::Literals::Decimal:
+        case shared::Literals::Hexadecimal:
+        case shared::Literals::Float:
+            type = Tokens::Number;
+            break;
+
+        default:
+            throw std::runtime_error("wrong make_token arguments");
+        }
+
+        return { type, std::move(str) };
     }
 }

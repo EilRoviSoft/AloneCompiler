@@ -1,11 +1,22 @@
 #pragma once
 
+//std
+#include <unordered_set>
+
 //alone::amasm::info
-#include "amasm/info/include.hpp"
+#include "amasm/info/context.hpp"
+#include "amasm/info/tokens.hpp"
 
 namespace alone::amasm {
     class Lexer {
     public:
-        static token_array_t tokenize_code(const std::string& code);
+        explicit Lexer(Context& ctx);
+
+        token_array_t tokenize_code(const std::string& code) const;
+
+    private:
+        Context& _ctx;
+
+        std::unordered_set<char> _singular_tokens;
     };
 }
