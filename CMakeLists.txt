@@ -21,6 +21,7 @@ include_directories(src/shared)
 
 add_executable(AloneCompiler
 	"src/amasm/info/context.cpp"
+	"src/amasm/info/functions.cpp"
 	"src/amasm/info/instructions.cpp"
 	"src/amasm/info/tokens.cpp"
 	"src/amasm/info/variables.cpp" 
@@ -32,8 +33,7 @@ add_executable(AloneCompiler
 	"src/shared/bytecode.cpp"
 	"src/shared/literals.cpp"
 		
-	"src/main.cpp"
- "src/amasm/info/functions.cpp")
+	"src/main.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 
