@@ -12,7 +12,7 @@
 //shared
 #include "shared/general_functions.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     Translator::Translator(Context& ctx) :
         _ctx(ctx) {
     }

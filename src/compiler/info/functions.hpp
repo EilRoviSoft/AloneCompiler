@@ -5,12 +5,12 @@
 #include <string>
 #include <vector>
 
-//amasm
-#include "amasm/info/datatypes.hpp"
-#include "amasm/info/instructions.hpp"
-#include "amasm/info/variables.hpp"
+//compiler
+#include "compiler/info/datatypes.hpp"
+#include "compiler/info/instructions.hpp"
+#include "compiler/info/variables.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     struct func_info_t {
         std::string name;
         datatype_ptr return_type;

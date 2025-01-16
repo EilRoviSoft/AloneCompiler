@@ -9,7 +9,7 @@
 //shared
 #include "shared/types.hpp"
 
-namespace alone::shared {
+namespace amasm::shared {
     class Bytecode {
     public:
         size_t size() const;

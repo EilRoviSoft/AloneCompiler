@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace alone::amasm {
+namespace amasm::compiler {
     class Context;
 
     enum class Tokens : uint8_t {

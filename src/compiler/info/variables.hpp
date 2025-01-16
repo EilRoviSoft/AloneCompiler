@@ -8,10 +8,10 @@
 //shared
 #include "shared/types.hpp"
 
-//amasm
-#include "amasm/info/datatypes.hpp"
+//compiler
+#include "compiler/info/datatypes.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     struct variable_t {
         std::string name;
         datatype_ptr type;

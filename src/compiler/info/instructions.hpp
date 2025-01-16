@@ -9,9 +9,9 @@
 #include "shared/types.hpp"
 
 //amasm
-#include "amasm/info/arguments.hpp"
+#include "compiler/info/arguments.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     struct inst_info_t {
         std::string name;
         shared::inst_code_t code;

@@ -1,22 +1,22 @@
 //std
 #include <iostream>
 
-//amasm
-#include "amasm/info/context.hpp"
-#include "amasm/scanner.hpp"
-#include "amasm/lexer.hpp"
-#include "amasm/parser.hpp"
-#include "amasm/translator.hpp"
+//compiler
+#include "compiler/info/context.hpp"
+#include "compiler/scanner.hpp"
+#include "compiler/lexer.hpp"
+#include "compiler/parser.hpp"
+#include "compiler/translator.hpp"
 
-using namespace alone;
-
-namespace alone::unit_tests {
+namespace unit_tests {
     void f0() {
-        auto context = amasm::Context();
-        const auto scanner = amasm::Scanner(context);
-        const auto lexer = amasm::Lexer(context);
-        const auto parser = amasm::Parser(context);
-        const auto translator = amasm::Translator(context);
+        using namespace amasm::compiler;
+
+        auto context = Context();
+        const auto scanner = Scanner(context);
+        const auto lexer = Lexer(context);
+        const auto parser = Parser(context);
+        const auto translator = Translator(context);
 
         const auto text = scanner.scan_from_file("example.amasm");
         const auto tokens = lexer.tokenize_code(text);

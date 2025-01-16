@@ -4,7 +4,7 @@
 #include <functional>
 #include <string>
 
-namespace alone::shared {
+namespace amasm::shared {
     inline size_t hash_string(const std::string& what) {
         static std::hash<std::string> hasher;
         return hasher(what);

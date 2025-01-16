@@ -1,6 +1,6 @@
 #include "functions.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     std::string generate_func_full_name(const func_info_t& func) {
         std::string result = '@' + func.name + '(';
         if (!func.args.empty()) {

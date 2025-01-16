@@ -6,10 +6,10 @@
 //shared
 #include "shared/Literals.hpp"
 
-//amasm
-#include "amasm/info/context.hpp"
+//compiler
+#include "compiler/info/context.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     token_t::token_t() :
         type(Tokens::None) {
     }

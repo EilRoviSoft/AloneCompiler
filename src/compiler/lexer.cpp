@@ -6,10 +6,10 @@
 //shared
 #include "shared/general_functions.hpp"
 
-//amasm
-#include "amasm/info/context.hpp"
+//compiler
+#include "compiler/info/context.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     Lexer::Lexer(Context& ctx) :
         _ctx(ctx) {
         for (char c : "()[]{}.,:;@$%\"+-*/")

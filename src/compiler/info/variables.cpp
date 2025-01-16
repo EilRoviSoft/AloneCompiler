@@ -6,7 +6,7 @@
 //shared
 #include "shared/general_functions.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     variable_ptr make_variable(std::string name, datatype_ptr type, const shared::address_t& address) {
         return std::make_shared<variable_t>(std::move(name), std::move(type), address);
     }

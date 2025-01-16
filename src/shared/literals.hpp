@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-namespace alone::shared {
+namespace amasm::shared {
     enum class Literals : uint8_t {
         None = 0,
         Word,

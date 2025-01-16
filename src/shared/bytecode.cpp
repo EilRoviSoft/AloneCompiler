@@ -1,6 +1,6 @@
 #include "bytecode.hpp"
 
-namespace alone::shared {
+namespace amasm::shared {
     size_t Bytecode::size() const {
         return _container.size();
     }

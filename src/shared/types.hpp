@@ -10,7 +10,7 @@
 #define SYSTEM_INST_TYPE uint32_t
 #define SYSTEM_BIT_DEPTH 64
 
-namespace alone::shared {
+namespace amasm::shared {
 	using data_sequence_t = std::vector<SYSTEM_MIN_TYPE>;
 	using machine_word_t = SYSTEM_MW_TYPE;
 	using address_t = SYSTEM_MW_TYPE;

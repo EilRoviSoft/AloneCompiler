@@ -3,11 +3,11 @@
 //shared
 #include "shared/bytecode.hpp"
 
-//amasm
-#include "amasm/info/context.hpp"
-#include "amasm/info/functions.hpp"
+//compiler
+#include "compiler/info/context.hpp"
+#include "compiler/info/functions.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
 	class Translator {
 	public:
 		struct hint_t {

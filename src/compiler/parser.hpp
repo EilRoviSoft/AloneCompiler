@@ -8,15 +8,15 @@
 //shared
 #include "shared/bytecode.hpp"
 
-//amasm
-#include "amasm/info/context.hpp"
-#include "amasm/info/datatypes.hpp"
-#include "amasm/info/functions.hpp"
-#include "amasm/info/tokens.hpp"
+//compiler
+#include "compiler/info/context.hpp"
+#include "compiler/info/datatypes.hpp"
+#include "compiler/info/functions.hpp"
+#include "compiler/info/tokens.hpp"
 
 #define PARSER_ARGS size_t i, const token_array_t& tokens, parse_queue_t& queue, composed_funcs_t& result
 
-namespace alone::amasm {
+namespace amasm::compiler {
     class Parser {
         using parse_variant_t = std::variant<datatype_ptr, func_info_t>;
         using parse_queue_t = std::queue<std::tuple<std::string, parse_variant_t>>;

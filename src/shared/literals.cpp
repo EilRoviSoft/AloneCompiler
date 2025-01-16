@@ -8,7 +8,7 @@
 
 #define THROW_EXCEPTION(MESSAGE) std::cerr << __FUNCTION__ << (MESSAGE) << '\n'
 
-namespace alone::shared {
+namespace amasm::shared {
     Literals check_literal_type(const std::string& str) {
         //check whether it is word
         if (is_alpha(str.front())) {

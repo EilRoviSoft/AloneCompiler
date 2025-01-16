@@ -4,10 +4,10 @@
 #include <fstream>
 #include <string>
 
-//alone::amasm::info
-#include "amasm/info/context.hpp"
+//compiler
+#include "compiler/info/context.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     class Scanner {
     public:
         explicit Scanner(Context& ctx);

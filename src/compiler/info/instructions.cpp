@@ -1,6 +1,6 @@
 #include "instructions.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     std::list<inst_info_t> generate_system_isa_info() {
         std::list<inst_info_t> result;
 

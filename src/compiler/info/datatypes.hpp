@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace alone::amasm {
+namespace amasm::compiler {
     using datatype_ptr = std::shared_ptr<struct datatype_t>;
 
     struct pole_t {

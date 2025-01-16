@@ -5,13 +5,13 @@
 #include <unordered_map>
 #include <unordered_set>
 
-//amasm
-#include "amasm/info/datatypes.hpp"
-#include "amasm/info/instructions.hpp"
-#include "amasm/info/tokens.hpp"
-#include "amasm/info/variables.hpp"
+//compiler
+#include "compiler/info/datatypes.hpp"
+#include "compiler/info/instructions.hpp"
+#include "compiler/info/tokens.hpp"
+#include "compiler/info/variables.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     class Context {
     public:
         Context();

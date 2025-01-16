@@ -1,12 +1,12 @@
 #include "parser.hpp"
 
 //amasm
-#include "amasm/info/arguments.hpp"
+#include "compiler/info/arguments.hpp"
 
 #define BIND_PARSE_CASE(TYPE, PRED) std::make_pair(TYPE, std::function<size_t(size_t, const token_array_t&, parse_queue_t&, composed_funcs_t&)>(std::bind(PRED, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)))
 #define RULE_STATEMENT(RULE_NAME, MESSAGE) if (!match_rule(_ctx, RULE_NAME, tokens, i)) { throw std::runtime_error(MESSAGE); }
 
-namespace alone::amasm::inline parser_inlined {
+namespace amasm::compiler {
     bool match_rule(const Context& ctx, const std::string& name, const token_array_t& tokens, size_t begin) {
         const auto& pattern = ctx.get_rule(name);
         bool result = true;
@@ -33,9 +33,9 @@ namespace alone::amasm::inline parser_inlined {
 
         return std::make_tuple(offset, i);
     }
-}
 
-namespace alone::amasm {
+    // Parser
+
     Parser::Parser(Context& ctx) :
         _ctx(ctx) {
     }

@@ -1,13 +1,13 @@
 #include "context.hpp"
 
-//shared
+//std
 #include <ranges>
 
 //shared
 #include "shared/general_functions.hpp"
 #include "shared/registers.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     // constructors
 
     Context::Context() {

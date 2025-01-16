@@ -5,7 +5,7 @@
 
 #define CALC_DIFF(ID) machine_word_size * ID
 
-namespace alone::shared {
+namespace amasm::shared {
 	enum class Registers : uint8_t {
 		// 8-bit registers
 

@@ -14,21 +14,21 @@ project("AloneCompiler")
 set(CMAKE_CXX_STANDARD 26)
 
 include_directories(src)
-include_directories(src/amasm)
-include_directories(src/amasm/info)
+include_directories(src/compiler)
+include_directories(src/compiler/info)
 include_directories(src/vm)
 include_directories(src/shared)
 
 add_executable(AloneCompiler
-	"src/amasm/info/context.cpp"
-	"src/amasm/info/functions.cpp"
-	"src/amasm/info/instructions.cpp"
-	"src/amasm/info/tokens.cpp"
-	"src/amasm/info/variables.cpp" 
-	"src/amasm/lexer.cpp"
-	"src/amasm/parser.cpp"
-	"src/amasm/scanner.cpp"
-	"src/amasm/translator.cpp"
+	"src/compiler/info/context.cpp"
+	"src/compiler/info/functions.cpp"
+	"src/compiler/info/instructions.cpp"
+	"src/compiler/info/tokens.cpp"
+	"src/compiler/info/variables.cpp" 
+	"src/compiler/lexer.cpp"
+	"src/compiler/parser.cpp"
+	"src/compiler/scanner.cpp"
+	"src/compiler/translator.cpp"
 
 	"src/shared/bytecode.cpp"
 	"src/shared/literals.cpp"
@@ -41,8 +41,8 @@ add_compile_definitions(DEBUG_STATUS)
 
 target_include_directories(AloneCompiler PRIVATE
 		src
-		src/amasm
-		src/amasm/info
+		src/compiler
+		src/compiler/info
 		src/vm
 		src/shared)
 

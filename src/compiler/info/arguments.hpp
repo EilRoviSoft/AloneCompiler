@@ -5,7 +5,7 @@
 
 //shared
 
-namespace alone::amasm {
+namespace amasm::compiler {
     enum class Arguments : uint8_t {
         Empty = 0,                // none
         Direct,                   // idk how to define it now
