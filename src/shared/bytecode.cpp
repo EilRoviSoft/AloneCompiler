@@ -15,7 +15,7 @@ namespace amasm::shared {
         return _container[idx];
     }
 
-    ByteVector Bytecode::get(size_t length, size_t offset) const {
+    byte_vector Bytecode::get(size_t length, size_t offset) const {
         return std::ranges::to<std::vector>(_container | std::views::take(offset));
     }
 
@@ -24,7 +24,7 @@ namespace amasm::shared {
             _container[i + offset] = pred(i, _container[i + offset]);
     }
 
-    void Bytecode::append_sequence(const ByteVector& what) {
+    void Bytecode::append_sequence(const byte_vector& what) {
         const auto begin = what.data();
         _container.append_range(what);
     }
@@ -32,10 +32,10 @@ namespace amasm::shared {
         _container.append_range(another._container);
     }
 
-    ByteVector& Bytecode::raw() {
+    byte_vector& Bytecode::raw() {
         return this->_container;
     }
-    const ByteVector& Bytecode::raw() const {
+    const byte_vector& Bytecode::raw() const {
         return this->_container;
     }
 }

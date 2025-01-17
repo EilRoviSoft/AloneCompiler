@@ -16,10 +16,10 @@ namespace amasm::executor {
         return _program_size;
     }
 
-    shared::MachineWord& Context::reg(shared::Address address) const {
-        return reinterpret_cast<shared::MachineWord&>(_parent->_mframe[address]);
+    shared::machine_word& Context::reg(shared::address address) const {
+        return reinterpret_cast<shared::machine_word&>(_parent->_mframe[address]);
     }
-    shared::Flags& Context::flags() const {
-        return reinterpret_cast<shared::Flags&>(_parent->_mframe[FLAGS]);
+    shared::flags& Context::flags() const {
+        return reinterpret_cast<shared::flags&>(_parent->_mframe[FLAGS]);
     }
 }

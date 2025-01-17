@@ -24,18 +24,18 @@ namespace amasm::compiler {
         std::list<hint> hints;
 
         // adds total size of program to the front of the code
-        result.append_value<shared::MachineWord>(0);
+        result.append_value<shared::machine_word>(0);
         while (!composed.empty()) {
             const auto func = std::move(composed.front());
             composed.pop();
 
-            result.append_value<shared::MachineWord>(shared::for_each_by_rule(
+            result.append_value<shared::machine_word>(shared::for_each_by_rule(
                 func.args,
                 0,
                 std::plus {},
                 [](const datatype_ptr& ptr) { return ptr->size; }
             ));
-            result.append_value<shared::MachineWord>(func.return_type->size);
+            result.append_value<shared::machine_word>(func.return_type->size);
             labels.emplace(generate_func_full_name(func), result.size());
 
             for (const auto& inst : func.lines) {
@@ -59,7 +59,7 @@ namespace amasm::compiler {
         const func_info& scope,
         const inst_decl& inst) const {
         shared::Bytecode bytecode;
-        shared::InstCode mask = 0;
+        shared::inst_code mask = 0;
         std::list<hint> hints;
         size_t start = bytecode.size(), arg_idx = 0;
         const auto& info = _ctx.get_inst(inst.name);
@@ -67,7 +67,7 @@ namespace amasm::compiler {
         bytecode.append_value(info.code);
         if (inst.name == "fcall") {
             hints.emplace_back(bytecode.size(), inst.args.front().name);
-            bytecode.append_value<shared::MachineWord>(0);
+            bytecode.append_value<shared::machine_word>(0);
         } else {
             for (const auto& arg : inst.args) {
                 mask |= (size_t) arg.type << arg_idx * 2;

@@ -21,11 +21,11 @@ namespace amasm::executor {
 
         size_t program_size() const;
 
-        shared::MachineWord& reg(shared::Address address) const;
-        shared::Flags& flags() const;
+        shared::machine_word& reg(shared::address address) const;
+        shared::flags& flags() const;
 
-        template<typename T = shared::MachineWord>
-        T* get(shared::Address address) const {
+        template<typename T = shared::machine_word>
+        T* get(shared::address address) const {
             T* result;
 
             switch (auto [actual_address, mem_type] = decompose_address(address); mem_type) {
@@ -46,12 +46,12 @@ namespace amasm::executor {
             return result;
         }
         template<typename T>
-        T* get_indirect(shared::Address address) const {
+        T* get_indirect(shared::address address) const {
             const auto nested_address = *get(address);
             return get<T>(nested_address);
         }
         template<typename T>
-        T* get_with_displacement(shared::Address address) const {
+        T* get_with_displacement(shared::address address) const {
             const auto nested_address = *get(address);
             const auto value = *get(nested_address);
             const auto offset = *get<ptrdiff_t>(address + shared::machine_word_size);

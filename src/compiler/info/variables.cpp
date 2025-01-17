@@ -7,7 +7,7 @@
 #include "shared/general_functions.hpp"
 
 namespace amasm::compiler {
-    variable_ptr make_variable(std::string name, datatype_ptr type, const shared::Address& address) {
+    variable_ptr make_variable(std::string name, datatype_ptr type, const shared::address& address) {
         return std::make_shared<variable>(std::move(name), std::move(type), address);
     }
 
@@ -32,12 +32,12 @@ namespace amasm::compiler {
 
     void VariablesCollection::insert_local_variable(std::string name,
                                                     datatype_ptr type,
-                                                    const shared::Address& address) {
+                                                    const shared::address& address) {
         _insert_variable(_scopes.back(), make_variable(std::move(name), std::move(type), address));
     }
     void VariablesCollection::insert_global_variable(std::string name,
                                                      datatype_ptr type,
-                                                     const shared::Address& address) {
+                                                     const shared::address& address) {
         _insert_variable(_scopes.front(), make_variable(std::move(name), std::move(type), address));
     }
 

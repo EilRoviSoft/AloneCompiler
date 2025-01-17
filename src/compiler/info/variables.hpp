@@ -15,11 +15,11 @@ namespace amasm::compiler {
     struct variable {
         std::string name;
         datatype_ptr type;
-        shared::Address address;
+        shared::address address;
     };
     using variable_ptr = std::shared_ptr<variable>;
 
-    variable_ptr make_variable(std::string name, datatype_ptr type, const shared::Address& address);
+    variable_ptr make_variable(std::string name, datatype_ptr type, const shared::address& address);
 
     class VariablesCollection {
     public:
@@ -29,8 +29,8 @@ namespace amasm::compiler {
         void inherit_from(const VariablesCollection& another);
         void inherit_from(const std::initializer_list<variable_ptr>& list);
 
-        void insert_local_variable(std::string name, datatype_ptr type, const shared::Address& address);
-        void insert_global_variable(std::string name, datatype_ptr type, const shared::Address& address);
+        void insert_local_variable(std::string name, datatype_ptr type, const shared::address& address);
+        void insert_global_variable(std::string name, datatype_ptr type, const shared::address& address);
 
         variable_ptr get_variable(const std::string& key) const;
 

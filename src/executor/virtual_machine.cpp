@@ -15,6 +15,6 @@ namespace amasm::executor {
 
         ctx->flags()[RF] = true;
         ctx->reg(SPX) = shared::registers_size + ctx->_program_size;
-        ctx->reg(IPX) = reinterpret_cast<shared::MachineWord>(program.get(shared::machine_word_size, 0).data());
+        ctx->reg(IPX) = reinterpret_cast<shared::machine_word>(program.get(shared::machine_word_size, 0).data());
     }
 }

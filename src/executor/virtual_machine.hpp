@@ -23,6 +23,6 @@ namespace amasm::executor {
 
 	private:
 		std::array<std::byte, mframe_size> _mframe;
-		std::unordered_map<shared::Address, std::vector<std::byte>> _dframe;
+		std::unordered_map<shared::address, std::vector<std::byte>> _dframe;
 	};
 }

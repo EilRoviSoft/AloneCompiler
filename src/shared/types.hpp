@@ -83,12 +83,12 @@ namespace amasm {
 }
 
 namespace amasm::shared {
-    using ByteVector = std::vector<SYSTEM_MIN_TYPE>;
-    using MachineWord = SYSTEM_MW_TYPE;
-    using Address = SYSTEM_MW_TYPE;
-    using InstCode = SYSTEM_INST_TYPE;
-    using Flags = std::bitset<SYSTEM_BIT_DEPTH>;
-    using ArgumentsData = std::array<ArgumentType, 4>;
+    using byte_vector = std::vector<SYSTEM_MIN_TYPE>;
+    using machine_word = SYSTEM_MW_TYPE;
+    using address = SYSTEM_MW_TYPE;
+    using inst_code = SYSTEM_INST_TYPE;
+    using flags = std::bitset<SYSTEM_BIT_DEPTH>;
+    using arguments_data = std::array<ArgumentType, 4>;
 
     constexpr size_t machine_word_size = sizeof(SYSTEM_MW_TYPE);
     constexpr size_t address_size = sizeof(SYSTEM_MW_TYPE);
