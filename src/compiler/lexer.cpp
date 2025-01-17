@@ -16,8 +16,8 @@ namespace amasm::compiler {
             _singular_tokens.insert(c);
     }
 
-    token_array_t Lexer::tokenize_code(const std::string& code) const {
-        token_array_t result;
+    token_vector Lexer::tokenize_code(const std::string& code) const {
+        token_vector result;
         std::string temp;
 
         for (char c : code) {

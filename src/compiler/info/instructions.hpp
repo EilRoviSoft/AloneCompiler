@@ -8,23 +8,27 @@
 //shared
 #include "shared/types.hpp"
 
-//amasm
-#include "compiler/info/arguments.hpp"
-
 namespace amasm::compiler {
-    struct inst_info_t {
+    struct inst_info {
         std::string name;
-        shared::inst_code_t code;
+        shared::InstCode code;
         size_t min_args;
         size_t max_args;
         size_t bid_depth;
     };
-    struct inst_decl_t {
+
+    struct argument_info {
+        ArgumentType type;
         std::string name;
-        std::vector<argument_t> args;
+        ptrdiff_t value;
     };
 
-    std::list<inst_info_t> generate_isa_info();
+    struct inst_decl {
+        std::string name;
+        std::vector<argument_info> args;
+    };
 
-    using composed_inst_t = std::tuple<size_t, inst_decl_t>;
+    std::list<inst_info> generate_isa_info();
+
+    using composed_inst = std::tuple<size_t, inst_decl>;
 }

@@ -12,25 +12,25 @@
 #include "compiler/info/datatypes.hpp"
 
 namespace amasm::compiler {
-    struct variable_t {
+    struct variable {
         std::string name;
         datatype_ptr type;
-        shared::address_t address;
+        shared::Address address;
     };
-    using variable_ptr = std::shared_ptr<variable_t>;
+    using variable_ptr = std::shared_ptr<variable>;
 
-    variable_ptr make_variable(std::string name, datatype_ptr type, const shared::address_t& address);
+    variable_ptr make_variable(std::string name, datatype_ptr type, const shared::Address& address);
 
-    class Variables {
+    class VariablesCollection {
     public:
-        using local_scope_t = std::unordered_map<size_t, variable_ptr>;
-        using local_scope_ptr = std::shared_ptr<local_scope_t>;
+        using local_scope = std::unordered_map<size_t, variable_ptr>;
+        using local_scope_ptr = std::shared_ptr<local_scope>;
 
-        void inherit_from(const Variables& another);
+        void inherit_from(const VariablesCollection& another);
         void inherit_from(const std::initializer_list<variable_ptr>& list);
 
-        void insert_local_variable(std::string name, datatype_ptr type, const shared::address_t& address);
-        void insert_global_variable(std::string name, datatype_ptr type, const shared::address_t& address);
+        void insert_local_variable(std::string name, datatype_ptr type, const shared::Address& address);
+        void insert_global_variable(std::string name, datatype_ptr type, const shared::Address& address);
 
         variable_ptr get_variable(const std::string& key) const;
 

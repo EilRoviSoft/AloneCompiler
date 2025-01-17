@@ -14,22 +14,22 @@
 #include "compiler/info/functions.hpp"
 #include "compiler/info/tokens.hpp"
 
-#define PARSER_ARGS size_t i, const token_array_t& tokens, parse_queue_t& queue, composed_funcs_t& result
+#define PARSER_ARGS size_t i, const token_vector& tokens, parse_queue& queue, funcs_queue& result
 
 namespace amasm::compiler {
     class Parser {
-        using parse_variant_t = std::variant<datatype_ptr, func_info_t>;
-        using parse_queue_t = std::queue<std::tuple<std::string, parse_variant_t>>;
+        using parse_variant = std::variant<datatype_ptr, func_info>;
+        using parse_queue = std::queue<std::tuple<std::string, parse_variant>>;
 
     public:
         explicit Parser(Context& ctx);
 
-        composed_funcs_t parse(const token_array_t& tokens) const;
+        funcs_queue parse(const token_vector& tokens) const;
 
     private:
         Context& _ctx;
 
-        static auto make_parse_rule(const Tokens& type, std::function<size_t(const size_t&)> pred) {
+        static auto make_parse_rule(const TokenType& type, std::function<size_t(const size_t&)> pred) {
             return std::make_pair(type, std::move(pred));
         }
 
@@ -39,7 +39,7 @@ namespace amasm::compiler {
         size_t _start_parse_func(PARSER_ARGS) const;
         size_t _parse_variable(PARSER_ARGS) const;
         size_t _parse_instruction(PARSER_ARGS) const;
-        composed_inst_t _parse_generic_instruction(const func_info_t& func_info, PARSER_ARGS) const;
+        composed_inst _parse_generic_instruction(const func_info& func, PARSER_ARGS) const;
         size_t _finish_parse(PARSER_ARGS) const;
     };
 }

@@ -18,20 +18,20 @@ namespace amasm::compiler {
 
         void insert_datatype(const datatype_ptr& ptr);
 
-        const Tokens& get_token_or(const std::string& key, const Tokens& default_token) const;
+        const TokenType& get_token_or(const std::string& key, const TokenType& default_token) const;
         datatype_ptr get_datatype(const std::string& key) const;
-        const std::vector<Tokens>& get_rule(const std::string& key) const;
-        const inst_info_t& get_inst(const std::string& key);
+        const std::vector<TokenType>& get_rule(const std::string& key) const;
+        const inst_info& get_inst(const std::string& key);
 
-        const Variables& global_variables() const;
+        const VariablesCollection& global_variables() const;
 
     private:
-        std::unordered_map<std::string, Tokens> _defined_tokens;
+        std::unordered_map<std::string, TokenType> _defined_tokens;
         std::unordered_map<size_t, datatype_ptr> _datatypes;
-        std::unordered_map<std::string, std::vector<Tokens>> _rules;
+        std::unordered_map<std::string, std::vector<TokenType>> _rules;
         std::unordered_set<std::string> _surrounded_by_braces_signatures;
-        std::unordered_map<size_t, inst_info_t> _instructions;
-        Variables _global_variables;
+        std::unordered_map<size_t, inst_info> _instructions;
+        VariablesCollection _global_variables;
 
         void _init();
         void _init_defined_tokens();

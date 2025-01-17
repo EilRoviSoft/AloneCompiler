@@ -1,25 +1,25 @@
 #include "instructions.hpp"
 
 namespace amasm::compiler {
-    std::list<inst_info_t> generate_system_isa_info() {
-        std::list<inst_info_t> result;
+    std::list<inst_info> generate_system_isa_info() {
+        std::list<inst_info> result;
 
         result.append_range(std::initializer_list {
-            inst_info_t {
+            inst_info {
                 .name = "halt",
                 .code = 0x0,
                 .min_args = 0,
                 .max_args = 0,
                 .bid_depth = 0
             },
-            inst_info_t {
+            inst_info {
                 .name = "fcall",
                 .code = 0x2,
                 .min_args = 1,
                 .max_args = 1,
                 .bid_depth = 0
             },
-            inst_info_t {
+            inst_info {
                 .name = "ret",
                 .code = 0x3,
                 .min_args = 0,
@@ -31,67 +31,67 @@ namespace amasm::compiler {
         return result;
     }
     template<typename T, size_t TOffset>
-    std::list<inst_info_t> generate_universal_size_isa_info() {
-        std::list<inst_info_t> result;
+    std::list<inst_info> generate_universal_size_isa_info() {
+        std::list<inst_info> result;
 
         result.append_range(std::initializer_list {
-            inst_info_t {
+            inst_info {
                 .name = "mov" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x0,
                 .min_args = 2,
                 .max_args = 2,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "push" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x1,
                 .min_args = 0,
                 .max_args = 1,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "pop" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x2,
                 .min_args = 0,
                 .max_args = 1,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "not" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x3,
                 .min_args = 1,
                 .max_args = 2,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "and" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x4,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "or" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x5,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "xor" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x6,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "shl" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x7,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "shr" + std::to_string(sizeof(T) * 8),
                 .code = TOffset + 0x8,
                 .min_args = 2,
@@ -103,60 +103,60 @@ namespace amasm::compiler {
         return result;
     }
     template<typename T, char TPostfix, size_t TOffset>
-    std::list<inst_info_t> generate_universal_type_isa_info() {
-        std::list<inst_info_t> result;
+    std::list<inst_info> generate_universal_type_isa_info() {
+        std::list<inst_info> result;
 
         result.append_range(std::initializer_list {
-            inst_info_t {
+            inst_info {
                 .name = "add" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x0,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "sub" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x1,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "mul" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x2,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "div" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x3,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "mod" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x4,
                 .min_args = 2,
                 .max_args = 3,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "inc" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x5,
                 .min_args = 1,
                 .max_args = 2,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "dec" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x6,
                 .min_args = 1,
                 .max_args = 2,
                 .bid_depth = sizeof(T) * 8
             },
-            inst_info_t {
+            inst_info {
                 .name = "cmp" + std::to_string(sizeof(T) * 8) + TPostfix,
                 .code = TOffset + 0x7,
                 .min_args = 2,
@@ -168,11 +168,11 @@ namespace amasm::compiler {
         return result;
     }
     template<typename T, char TPostfix, size_t TOffset>
-    std::list<inst_info_t> generate_signed_type_isa_info() {
-        std::list<inst_info_t> result;
+    std::list<inst_info> generate_signed_type_isa_info() {
+        std::list<inst_info> result;
 
         result.append_range(generate_universal_type_isa_info<T, TPostfix, TOffset>());
-        result.emplace_back(inst_info_t {
+        result.emplace_back(inst_info {
             .name = "neg" + std::to_string(sizeof(T) * 8) + 'i',
             .code = TOffset + 0x8,
             .min_args = 1,
@@ -183,8 +183,8 @@ namespace amasm::compiler {
         return result;
     }
 
-    std::list<inst_info_t> generate_isa_info() {
-        std::list<inst_info_t> result;
+    std::list<inst_info> generate_isa_info() {
+        std::list<inst_info> result;
 
         // [halt, fcall, ret]
         result.append_range(generate_system_isa_info());

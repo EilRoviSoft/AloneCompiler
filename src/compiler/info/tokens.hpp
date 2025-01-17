@@ -8,7 +8,7 @@
 namespace amasm::compiler {
     class Context;
 
-    enum class Tokens : uint8_t {
+    enum class TokenType : uint8_t {
         None       = 0x0,
         LParen     = '(', RParen   = ')', LBracket = '[', RBracket  = ']', LBrace = '{', RBrace = '}',
         Dot        = '.', Comma    = ',', Colon    = ':', Semicolon = ';',
@@ -20,16 +20,16 @@ namespace amasm::compiler {
         Max        = 0xFF
     };
 
-    struct token_t {
-        Tokens type;
+    struct token {
+        TokenType type;
         std::string literal;
 
-        token_t();
-        token_t(const Tokens& type, std::string literal);
+        token();
+        token(const TokenType& type, std::string literal);
     };
 
-    token_t make_token(const Context& ctx, char ch);
-    token_t make_token(const Context& ctx, std::string str);
+    token make_token(const Context& ctx, char ch);
+    token make_token(const Context& ctx, std::string str);
 
-    using token_array_t = std::vector<token_t>;
+    using token_vector = std::vector<token>;
 }

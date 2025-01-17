@@ -12,7 +12,7 @@ namespace amasm::compiler {
     public:
         explicit Lexer(Context& ctx);
 
-        token_array_t tokenize_code(const std::string& code) const;
+        token_vector tokenize_code(const std::string& code) const;
 
     private:
         Context& _ctx;

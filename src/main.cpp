@@ -8,6 +8,9 @@
 #include "compiler/parser.hpp"
 #include "compiler/translator.hpp"
 
+//executor
+#include "executor/virtual_machine.hpp"
+
 namespace unit_tests {
     void f0() {
         using namespace amasm::compiler;

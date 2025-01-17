@@ -1,13 +1,13 @@
 #include "parser.hpp"
 
-//amasm
-#include "compiler/info/arguments.hpp"
+//shared
+#include "shared/types.hpp"
 
-#define BIND_PARSE_CASE(TYPE, PRED) std::make_pair(TYPE, std::function<size_t(size_t, const token_array_t&, parse_queue_t&, composed_funcs_t&)>(std::bind(PRED, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)))
+#define BIND_PARSE_CASE(TYPE, PRED) std::make_pair(TYPE, std::function<size_t(size_t, const token_vector&, parse_queue&, funcs_queue&)>(std::bind(PRED, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)))
 #define RULE_STATEMENT(RULE_NAME, MESSAGE) if (!match_rule(_ctx, RULE_NAME, tokens, i)) { throw std::runtime_error(MESSAGE); }
 
 namespace amasm::compiler {
-    bool match_rule(const Context& ctx, const std::string& name, const token_array_t& tokens, size_t begin) {
+    bool match_rule(const Context& ctx, const std::string& name, const token_vector& tokens, size_t begin) {
         const auto& pattern = ctx.get_rule(name);
         bool result = true;
 
@@ -16,13 +16,13 @@ namespace amasm::compiler {
 
         return result;
     }
-    auto calc_offset(const datatype_ptr& type, const token_array_t& tokens, size_t begin) {
+    auto calc_offset(const datatype_ptr& type, const token_vector& tokens, size_t begin) {
         datatype_ptr curr_type = type;
         ptrdiff_t offset = 0;
         size_t i = 0;
 
-        while (tokens[i + begin].type == Tokens::Dot) {
-            const auto it = std::ranges::find_if(curr_type->poles, [&](const pole_t& pole) {
+        while (tokens[i + begin].type == TokenType::Dot) {
+            const auto it = std::ranges::find_if(curr_type->poles, [&](const pole& pole) {
                 return pole.name == tokens[i + begin + 2].literal;
             });
             curr_type = it->type;
@@ -40,9 +40,9 @@ namespace amasm::compiler {
         _ctx(ctx) {
     }
 
-    composed_funcs_t Parser::parse(const token_array_t& tokens) const {
-        composed_funcs_t result;
-        parse_queue_t queue;
+    funcs_queue Parser::parse(const token_vector& tokens) const {
+        funcs_queue result;
+        parse_queue queue;
 
         for (size_t i = 0, di; i < tokens.size(); i += di, di = 0)
             di = _do_parse_logic(i, tokens, queue, result);
@@ -51,7 +51,7 @@ namespace amasm::compiler {
     }
 
     size_t Parser::_do_parse_logic(PARSER_ARGS) const {
-        using enum Tokens;
+        using enum TokenType;
 
         static const std::unordered_map logic = {
             BIND_PARSE_CASE(KwStruct, &Parser::_start_parse_struct),
@@ -82,16 +82,16 @@ namespace amasm::compiler {
         RULE_STATEMENT("func_define", "wrong func definition")
 
         size_t j, delta;
-        func_info_t on_push;
+        func_info on_push;
 
         on_push.name = tokens[i + 2].literal;
         on_push.variables.inherit_from(_ctx.global_variables());
         // arguments dispatching up to rparen token
-        for (j = i + 4; tokens[j].type != Tokens::RParen; j++) {
+        for (j = i + 4; tokens[j].type != TokenType::RParen; j++) {
             if ((j - i) % 2) {
-                if (tokens[j].type != Tokens::Comma)
+                if (tokens[j].type != TokenType::Comma)
                     throw std::runtime_error("wrong func definition");
-            } else if (tokens[j].type == Tokens::Datatype) {
+            } else if (tokens[j].type == TokenType::Datatype) {
                 on_push.args.emplace_back(_ctx.get_datatype(tokens[j].literal));
             } else
                 throw std::runtime_error("wrong func definition");
@@ -99,7 +99,7 @@ namespace amasm::compiler {
         on_push.args.shrink_to_fit();
 
         // return-type detecting ('cause it's optional)
-        if (tokens[j + 1].type == Tokens::Colon) {
+        if (tokens[j + 1].type == TokenType::Colon) {
             on_push.return_type = _ctx.get_datatype(tokens[j + 2].literal);
             delta = j - i + 4;
         } else {
@@ -119,7 +119,7 @@ namespace amasm::compiler {
 
         if (name == "struct_define") {
             const auto& ntype = std::get<datatype_ptr>(data);
-            const bool has_own_offset = tokens[i + 5].type == Tokens::Comma;
+            const bool has_own_offset = tokens[i + 5].type == TokenType::Comma;
 
             ntype->add_pole(tokens[i + 2].literal, _ctx.get_datatype(tokens[i + 4].literal));
             delta = has_own_offset ? 13 : 6;
@@ -134,76 +134,76 @@ namespace amasm::compiler {
         if (name != "func_define")
             throw std::runtime_error("wrong instruction definition placement");
 
-        auto& func_info = std::get<func_info_t>(data);
+        auto& func = std::get<func_info>(data);
         size_t delta;
-        inst_decl_t inst_decl;
+        inst_decl inst_decl;
 
         if (tokens[i].literal == "fcall") {
             size_t j = i + 1;
 
             inst_decl.name = "fcall";
             inst_decl.args.emplace_back(
-                Arguments::JumpAddress,
+                JumpAddress,
                 [&] {
-                    std::string name;
-                    while (tokens[j].type != Tokens::Semicolon)
-                        name += tokens[j++].literal;
-                    return name;
+                    std::string temp;
+                    while (tokens[j].type != TokenType::Semicolon)
+                        temp += tokens[j++].literal;
+                    return temp;
                 }(),
                 0
             );
             delta = j - i + 1;
         } else
-            std::tie(delta, inst_decl) = _parse_generic_instruction(func_info, i, tokens, queue, result);
+            std::tie(delta, inst_decl) = _parse_generic_instruction(func, i, tokens, queue, result);
 
         inst_decl.args.shrink_to_fit();
-        func_info.lines.emplace_back(std::move(inst_decl));
+        func.lines.emplace_back(std::move(inst_decl));
         return delta;
     }
 
-    composed_inst_t Parser::_parse_generic_instruction(const func_info_t& func_info, PARSER_ARGS) const {
+    composed_inst Parser::_parse_generic_instruction(const func_info& func, PARSER_ARGS) const {
         size_t j = i, args_n = 0;
-        inst_decl_t inst_decl;
+        inst_decl inst_decl;
         const auto& inst_info = _ctx.get_inst(tokens[i].literal);
-        bool flag = tokens[j + 1].type != Tokens::Semicolon;
+        bool flag = tokens[j + 1].type != TokenType::Semicolon;
 
         inst_decl.name = tokens[j].literal;
         j++;
 
         while (args_n < inst_info.max_args && flag) {
-            argument_t on_emplace;
+            argument_info on_emplace;
 
             if (match_rule(_ctx, "direct_argument", tokens, j)) {
-                const auto& var = func_info.variables.get_variable(tokens[j + 1].literal);
+                const auto& var = func.variables.get_variable(tokens[j + 1].literal);
                 auto [var_offset, delta] = calc_offset(var->type, tokens, j + 2);
                 on_emplace = {
-                    .type = var_offset ? Arguments::IndirectWithDisplacement : Arguments::Direct,
+                    .type = var_offset ? IndirectWithDisplacement : Direct,
                     .name = tokens[j + 1].literal,
                     .value = var_offset
                 };
                 j += delta + 2;
-            } else if (tokens[j].type == Tokens::Number) {
+            } else if (tokens[j].type == TokenType::Number) {
                 on_emplace = {
-                    .type = Arguments::Immediate,
+                    .type = Immediate,
                     .name = "",
                     .value = std::stoll(tokens[j].literal)
                 };
                 j++;
             } else if (match_rule(_ctx, "indirect_argument", tokens, j)) {
-                const auto& var = func_info.variables.get_variable(tokens[j + 2].literal);
+                const auto& var = func.variables.get_variable(tokens[j + 2].literal);
                 auto [var_offset, delta] = calc_offset(var->type, tokens, j + 3);
                 on_emplace = {
-                    .type = Arguments::IndirectWithDisplacement,
+                    .type = IndirectWithDisplacement,
                     .name = tokens[j + 2].literal,
                     .value = var_offset
                 };
 
                 switch (tokens[j + delta + 3].type) {
-                case Tokens::Plus:
+                case TokenType::Plus:
                     on_emplace.value += std::stoll(tokens[j + delta + 4].literal);
                     delta += 2;
                     break;
-                case Tokens::Minus:
+                case TokenType::Minus:
                     on_emplace.value -= std::stoll(tokens[j + delta + 4].literal);
                     delta += 2;
                     break;
@@ -222,7 +222,7 @@ namespace amasm::compiler {
             args_n++;
 
             // to add colon to diff
-            if (tokens[j].type != Tokens::Semicolon)
+            if (tokens[j].type != TokenType::Semicolon)
                 j++;
             else
                 flag = false;
@@ -238,7 +238,7 @@ namespace amasm::compiler {
             const auto type = std::get<datatype_ptr>(variant);
             _ctx.insert_datatype(type);
         } else if (name == "func_define") {
-            const auto func = std::get<func_info_t>(variant);
+            const auto func = std::get<func_info>(variant);
             result.emplace(func);
         }
 

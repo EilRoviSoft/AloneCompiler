@@ -11,14 +11,14 @@
 #include "compiler/info/variables.hpp"
 
 namespace amasm::compiler {
-    struct func_info_t {
+    struct func_info {
         std::string name;
         datatype_ptr return_type;
         std::vector<datatype_ptr> args;
-        Variables variables;
-        std::vector<inst_decl_t> lines;
+        VariablesCollection variables;
+        std::vector<inst_decl> lines;
     };
-    using composed_funcs_t = std::queue<func_info_t>;
+    using funcs_queue = std::queue<func_info>;
 
-    std::string generate_func_full_name(const func_info_t& func);
+    std::string generate_func_full_name(const func_info& func);
 }

@@ -30,6 +30,10 @@ add_executable(AloneCompiler
 	"src/compiler/scanner.cpp"
 	"src/compiler/translator.cpp"
 
+	"src/executor/context.cpp"
+	"src/executor/util.cpp"
+	"src/executor/virtual_machine.cpp"
+
 	"src/shared/bytecode.cpp"
 	"src/shared/literals.cpp"
 		

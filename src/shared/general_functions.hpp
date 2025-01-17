@@ -53,4 +53,9 @@ namespace amasm::shared {
         }
         return init;
     }
+
+    template<typename TOut, typename TIn>
+    TOut view_as(TIn* ptr) {
+        return reinterpret_cast<TOut>(ptr);
+    }
 }

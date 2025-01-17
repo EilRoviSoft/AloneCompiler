@@ -5,7 +5,9 @@
 
 //shared
 #include "shared/general_functions.hpp"
-#include "shared/registers.hpp"
+#include "shared/types.hpp"
+
+#define MAKE(NAME, TYPE, ADDRESS) make_variable(NAME, get_datatype(TYPE), ADDRESS)
 
 namespace amasm::compiler {
     // constructors
@@ -22,7 +24,7 @@ namespace amasm::compiler {
 
     // getters
 
-    const Tokens& Context::get_token_or(const std::string& key, const Tokens& default_token) const {
+    const TokenType& Context::get_token_or(const std::string& key, const TokenType& default_token) const {
         const auto it = _defined_tokens.find(key);
         return it != _defined_tokens.end() ? it->second : default_token;
     }
@@ -30,13 +32,13 @@ namespace amasm::compiler {
         const auto it = _datatypes.find(shared::hash_string(key));
         return it != _datatypes.end() ? it->second : nullptr;
     }
-    const std::vector<Tokens>& Context::get_rule(const std::string& key) const {
+    const std::vector<TokenType>& Context::get_rule(const std::string& key) const {
         return _rules.at(key);
     }
-    const inst_info_t& Context::get_inst(const std::string& key) {
+    const inst_info& Context::get_inst(const std::string& key) {
         return _instructions.at(shared::hash_string(key));
     }
-    const Variables& Context::global_variables() const {
+    const VariablesCollection& Context::global_variables() const {
         return _global_variables;
     }
 
@@ -52,12 +54,12 @@ namespace amasm::compiler {
     }
     void Context::_init_defined_tokens() {
         _defined_tokens = {
-            { "this", Tokens::KwThis },
-            { "var", Tokens::KwVar },
-            { "section", Tokens::KwSection },
-            { "label", Tokens::KwLabel },
-            { "func", Tokens::KwFunc },
-            { "struct", Tokens::KwStruct },
+            { "this", TokenType::KwThis },
+            { "var", TokenType::KwVar },
+            { "section", TokenType::KwSection },
+            { "label", TokenType::KwLabel },
+            { "func", TokenType::KwFunc },
+            { "struct", TokenType::KwStruct },
         };
     }
     void Context::_init_datatypes() {
@@ -79,10 +81,10 @@ namespace amasm::compiler {
         };
 
         for (const auto& value : _datatypes | std::views::values)
-            _defined_tokens.emplace(value->name, Tokens::Datatype);
+            _defined_tokens.emplace(value->name, TokenType::Datatype);
     }
     void Context::_init_rules() {
-        using enum Tokens;
+        using enum TokenType;
         _rules = {
             { "struct_define", { KwStruct, Identifier, LBrace } },
             { "pole_define", { KwVar, Percent, Identifier, Comma, Datatype } },
@@ -105,52 +107,51 @@ namespace amasm::compiler {
         }
 
         for (const auto& value : _instructions | std::views::values)
-            _defined_tokens.emplace(value.name, Tokens::InstName);
+            _defined_tokens.emplace(value.name, TokenType::InstName);
     }
     void Context::_init_global_variables() {
-        using enum shared::Registers;
         _global_variables.inherit_from({
-            make_variable("al", get_datatype("uint8"), (shared::address_t) AL),
-            make_variable("ah", get_datatype("uint8"), (shared::address_t) AH),
-            make_variable("bl", get_datatype("uint8"), (shared::address_t) BL),
-            make_variable("bh", get_datatype("uint8"), (shared::address_t) BH),
-            make_variable("cl", get_datatype("uint8"), (shared::address_t) CL),
-            make_variable("ch", get_datatype("uint8"), (shared::address_t) CH),
-            make_variable("dl", get_datatype("uint8"), (shared::address_t) DL),
-            make_variable("dh", get_datatype("uint8"), (shared::address_t) DH),
+            MAKE("al", "uint8", AL),
+            MAKE("ah", "uint8", AH),
+            MAKE("bl", "uint8", BL),
+            MAKE("bh", "uint8", BH),
+            MAKE("cl", "uint8", CL),
+            MAKE("ch", "uint8", CH),
+            MAKE("dl", "uint8", DL),
+            MAKE("dh", "uint8", DH),
 
-            make_variable("ax", get_datatype("uint16"), (shared::address_t) AX),
-            make_variable("bx", get_datatype("uint16"), (shared::address_t) BX),
-            make_variable("cx", get_datatype("uint16"), (shared::address_t) CX),
-            make_variable("dx", get_datatype("uint16"), (shared::address_t) DX),
-            make_variable("ip", get_datatype("uint16"), (shared::address_t) IP),
-            make_variable("bp", get_datatype("uint16"), (shared::address_t) BP),
-            make_variable("cp", get_datatype("uint16"), (shared::address_t) CP),
-            make_variable("sp", get_datatype("uint16"), (shared::address_t) SP),
-            make_variable("flags", get_datatype("uint16"), (shared::address_t) FLAGS),
-            make_variable("gp", get_datatype("uint16"), (shared::address_t) GP),
+            MAKE("ax", "uint16", AX),
+            MAKE("bx", "uint16", BX),
+            MAKE("cx", "uint16", CX),
+            MAKE("dx", "uint16", DX),
+            MAKE("ipx", "uint16", IPX),
+            MAKE("bpx", "uint16", BPX),
+            MAKE("cpx", "uint16", CPX),
+            MAKE("spx", "uint16", SPX),
+            MAKE("flags", "uint16", FLAGS),
+            MAKE("gpx", "uint16", GPX),
 
-            make_variable("eax", get_datatype("uint32"), (shared::address_t) EAX),
-            make_variable("ebx", get_datatype("uint32"), (shared::address_t) EBX),
-            make_variable("ecx", get_datatype("uint32"), (shared::address_t) ECX),
-            make_variable("edx", get_datatype("uint32"), (shared::address_t) EDX),
-            make_variable("eip", get_datatype("uint32"), (shared::address_t) EIP),
-            make_variable("ebp", get_datatype("uint32"), (shared::address_t) EBP),
-            make_variable("ecp", get_datatype("uint32"), (shared::address_t) ECP),
-            make_variable("esp", get_datatype("uint32"), (shared::address_t) ESP),
-            make_variable("eflags", get_datatype("uint32"), (shared::address_t) EFLAGS),
-            make_variable("egp", get_datatype("uint32"), (shared::address_t) EGP),
+            MAKE("eax", "uint32", EAX),
+            MAKE("ebx", "uint32", EBX),
+            MAKE("ecx", "uint32", ECX),
+            MAKE("edx", "uint32", EDX),
+            MAKE("eip", "uint32", EIP),
+            MAKE("ebp", "uint32", EBP),
+            MAKE("ecp", "uint32", ECP),
+            MAKE("esp", "uint32", ESP),
+            MAKE("eflags", "uint32", EFLAGS),
+            MAKE("egp", "uint32", EGP),
 
-            make_variable("rax", get_datatype("uint64"), (shared::address_t) RAX),
-            make_variable("rbx", get_datatype("uint64"), (shared::address_t) RBX),
-            make_variable("rcx", get_datatype("uint64"), (shared::address_t) RCX),
-            make_variable("rdx", get_datatype("uint64"), (shared::address_t) RDX),
-            make_variable("rip", get_datatype("uint64"), (shared::address_t) RIP),
-            make_variable("rbp", get_datatype("uint64"), (shared::address_t) RBP),
-            make_variable("rcp", get_datatype("uint64"), (shared::address_t) RCP),
-            make_variable("rsp", get_datatype("uint64"), (shared::address_t) RSP),
-            make_variable("rflags", get_datatype("uint64"), (shared::address_t) RFLAGS),
-            make_variable("rgp", get_datatype("uint64"), (shared::address_t) RGP),
+            MAKE("rax", "uint64", RAX),
+            MAKE("rbx", "uint64", RBX),
+            MAKE("rcx", "uint64", RCX),
+            MAKE("rdx", "uint64", RDX),
+            MAKE("rip", "uint64", RIP),
+            MAKE("rbp", "uint64", RBP),
+            MAKE("rcp", "uint64", RCP),
+            MAKE("rsp", "uint64", RSP),
+            MAKE("rflags", "uint64", RFLAGS),
+            MAKE("rgp", "uint64", RGP),
         });
     }
 }
