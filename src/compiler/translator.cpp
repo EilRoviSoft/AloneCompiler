@@ -74,15 +74,15 @@ namespace amasm::compiler {
                 arg_idx++;
 
                 switch (arg.type) {
-                case Direct:
+                case ArgumentType::Direct:
                     bytecode.append_value(scope.variables.get_variable(arg.name)->address);
                     break;
 
-                case Immediate:
+                case ArgumentType::Immediate:
                     bytecode.append_value(arg.value, info.bid_depth / 8);
                     break;
 
-                case IndirectWithDisplacement:
+                case ArgumentType::IndirectWithDisplacement:
                     bytecode.append_value(scope.variables.get_variable(arg.name)->address);
                     bytecode.append_value(arg.value, info.bid_depth / 8);
                     break;
@@ -100,14 +100,14 @@ namespace amasm::compiler {
         std::cout << bytecode.size() << ' ' << inst.name << ' ';
         for (const auto& arg : inst.args) {
             switch (arg.type) {
-            case Direct:
-            case JumpAddress:
+            case ArgumentType::Direct:
+            case ArgumentType::JumpAddress:
                 std::cout << arg.name;
                 break;
-            case Immediate:
+            case ArgumentType::Immediate:
                 std::cout << arg.value;
                 break;
-            case IndirectWithDisplacement:
+            case ArgumentType::IndirectWithDisplacement:
                 std::cout << arg.name << (arg.value > 0 ? '+' : '-') << std::abs(arg.value);
                 break;
             default:

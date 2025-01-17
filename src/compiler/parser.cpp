@@ -143,7 +143,7 @@ namespace amasm::compiler {
 
             inst_decl.name = "fcall";
             inst_decl.args.emplace_back(
-                JumpAddress,
+                ArgumentType::JumpAddress,
                 [&] {
                     std::string temp;
                     while (tokens[j].type != TokenType::Semicolon)
@@ -177,14 +177,14 @@ namespace amasm::compiler {
                 const auto& var = func.variables.get_variable(tokens[j + 1].literal);
                 auto [var_offset, delta] = calc_offset(var->type, tokens, j + 2);
                 on_emplace = {
-                    .type = var_offset ? IndirectWithDisplacement : Direct,
+                    .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct,
                     .name = tokens[j + 1].literal,
                     .value = var_offset
                 };
                 j += delta + 2;
             } else if (tokens[j].type == TokenType::Number) {
                 on_emplace = {
-                    .type = Immediate,
+                    .type = ArgumentType::Immediate,
                     .name = "",
                     .value = std::stoll(tokens[j].literal)
                 };
@@ -193,7 +193,7 @@ namespace amasm::compiler {
                 const auto& var = func.variables.get_variable(tokens[j + 2].literal);
                 auto [var_offset, delta] = calc_offset(var->type, tokens, j + 3);
                 on_emplace = {
-                    .type = IndirectWithDisplacement,
+                    .type = ArgumentType::IndirectWithDisplacement,
                     .name = tokens[j + 2].literal,
                     .value = var_offset
                 };

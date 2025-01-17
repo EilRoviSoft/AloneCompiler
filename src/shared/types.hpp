@@ -13,7 +13,7 @@
 #define SYSTEM_BIT_DEPTH 64
 
 namespace amasm {
-    enum ArgumentType : uint8_t {
+    enum class ArgumentType : uint8_t {
         Empty = 0,                // none
         Direct,                   // idk how to define it now
         IndirectWithDisplacement, // name + value
