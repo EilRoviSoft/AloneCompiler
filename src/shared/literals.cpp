@@ -8,21 +8,21 @@
 
 #define THROW_EXCEPTION(MESSAGE) std::cerr << __FUNCTION__ << (MESSAGE) << '\n'
 
-namespace alone::shared {
-    Literals check_literal_type(const std::string& str) {
+namespace amasm::shared {
+    LiteralType check_literal_type(const std::string& str) {
         //check whether it is word
         if (is_alpha(str.front())) {
             for (size_t i = 1; i < str.size(); i++)
                 if (!is_alpha_numeric(str[i])) {
                     THROW_EXCEPTION("wrong word value");
-                    return Literals::None;
+                    return LiteralType::None;
                 }
-            return Literals::Word;
+            return LiteralType::Word;
         }
 
         //wtf is that?
         if (!is_numeric(str.front()))
-            return Literals::None;
+            return LiteralType::None;
 
         //check whether it is floating number
         if (str.contains('.')) {
@@ -30,14 +30,14 @@ namespace alone::shared {
             for (i = 1; str[i] != '.'; i++)
                 if (!is_numeric(str[i])) {
                     THROW_EXCEPTION("wrong floating value");
-                    return Literals::None;
+                    return LiteralType::None;
                 }
             for (i++; i < str.size(); i++)
                 if (!is_numeric(str[i])) {
                     THROW_EXCEPTION("wrong floating value after '.'");
-                    return Literals::None;
+                    return LiteralType::None;
                 }
-            return Literals::Float;
+            return LiteralType::Float;
         }
 
         //check whether it is binary number
@@ -45,9 +45,9 @@ namespace alone::shared {
             for (size_t i = 2; i < str.size(); i++)
                 if (!is_binary(str[i])) {
                     THROW_EXCEPTION("wrong binary value");
-                    return Literals::None;
+                    return LiteralType::None;
                 }
-            return Literals::Binary;
+            return LiteralType::Binary;
         }
 
         //check whether it is hexadecimal number
@@ -55,17 +55,17 @@ namespace alone::shared {
             for (size_t i = 2; i < str.size(); i++)
                 if (!is_hexadecimal(str[i])) {
                     THROW_EXCEPTION("wrong hex value");
-                    return Literals::None;
+                    return LiteralType::None;
                 }
-            return Literals::Hexadecimal;
+            return LiteralType::Hexadecimal;
         }
 
         //check whether it is integer number
         for (char i : str)
             if (!is_numeric(i)) {
                 THROW_EXCEPTION("wrong numeric value");
-                return Literals::None;
+                return LiteralType::None;
             }
-        return Literals::Decimal;
+        return LiteralType::Decimal;
     }
 }

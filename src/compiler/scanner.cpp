@@ -4,7 +4,7 @@
 #include <ranges>
 #include <vector>
 
-namespace alone::amasm {
+namespace amasm::compiler {
     Scanner::Scanner(Context& ctx) :
         _ctx(ctx) {
     }

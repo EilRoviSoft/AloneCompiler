@@ -4,7 +4,7 @@
 #include <functional>
 #include <string>
 
-namespace alone::shared {
+namespace amasm::shared {
     inline size_t hash_string(const std::string& what) {
         static std::hash<std::string> hasher;
         return hasher(what);
@@ -53,4 +53,22 @@ namespace alone::shared {
         }
         return init;
     }
+
+    template<typename TOut, typename TIn>
+    TOut view_as(TIn* ptr) {
+        return reinterpret_cast<TOut>(ptr);
+    }
+
+    template<typename T>
+    struct bit_shl {
+        constexpr auto operator()(T lhs, T rhs) const {
+            return lhs << rhs;
+        }
+    };
+    template<typename T>
+    struct bit_shr {
+        constexpr auto operator()(T lhs, T rhs) const {
+            return lhs >> rhs;
+        }
+    };
 }

@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <string>
 
-namespace alone::shared {
-    enum class Literals : uint8_t {
+namespace amasm::shared {
+    enum class LiteralType : uint8_t {
         None = 0,
         Word,
         Binary,
@@ -14,5 +14,5 @@ namespace alone::shared {
         Float
     };
 
-    Literals check_literal_type(const std::string& str);
+    LiteralType check_literal_type(const std::string& str);
 }

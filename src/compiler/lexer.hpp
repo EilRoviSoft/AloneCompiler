@@ -3,16 +3,16 @@
 //std
 #include <unordered_set>
 
-//alone::amasm::info
-#include "amasm/info/context.hpp"
-#include "amasm/info/tokens.hpp"
+//compiler
+#include "compiler/info/context.hpp"
+#include "compiler/info/tokens.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     class Lexer {
     public:
         explicit Lexer(Context& ctx);
 
-        token_array_t tokenize_code(const std::string& code) const;
+        token_vector tokenize_code(const std::string& code) const;
 
     private:
         Context& _ctx;

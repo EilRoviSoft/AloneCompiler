@@ -6,18 +6,18 @@
 //shared
 #include "shared/general_functions.hpp"
 
-//amasm
-#include "amasm/info/context.hpp"
+//compiler
+#include "compiler/info/context.hpp"
 
-namespace alone::amasm {
+namespace amasm::compiler {
     Lexer::Lexer(Context& ctx) :
         _ctx(ctx) {
         for (char c : "()[]{}.,:;@$%\"+-*/")
             _singular_tokens.insert(c);
     }
 
-    token_array_t Lexer::tokenize_code(const std::string& code) const {
-        token_array_t result;
+    token_vector Lexer::tokenize_code(const std::string& code) const {
+        token_vector result;
         std::string temp;
 
         for (char c : code) {
