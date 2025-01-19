@@ -37,7 +37,8 @@ add_executable(AloneCompiler
 	"src/shared/bytecode.cpp"
 	"src/shared/literals.cpp"
 		
-	"src/main.cpp")
+	"src/main.cpp"
+)
 
 add_compile_definitions(DEBUG_STATUS)
 

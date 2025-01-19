@@ -58,4 +58,17 @@ namespace amasm::shared {
     TOut view_as(TIn* ptr) {
         return reinterpret_cast<TOut>(ptr);
     }
+
+    template<typename T>
+    struct bit_shl {
+        constexpr auto operator()(T lhs, T rhs) const {
+            return lhs << rhs;
+        }
+    };
+    template<typename T>
+    struct bit_shr {
+        constexpr auto operator()(T lhs, T rhs) const {
+            return lhs >> rhs;
+        }
+    };
 }

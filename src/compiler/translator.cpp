@@ -40,7 +40,6 @@ namespace amasm::compiler {
 
             for (const auto& inst : func.lines) {
                 auto [new_bytecode, new_hints] = _decompose_instruction(func, inst);
-
                 for (auto& it : new_hints)
                     it.offset += result.size();
                 hints.append_range(new_hints);
@@ -50,7 +49,7 @@ namespace amasm::compiler {
 
         result.set(labels.at("@main()"), 0);
         for (const auto& it : hints)
-            result.set(labels[it.name], it.offset);
+            result.set(labels[it.name] + shared::registers_size, it.offset);
 
         return result;
     }
@@ -77,27 +76,24 @@ namespace amasm::compiler {
                 case ArgumentType::Direct:
                     bytecode.append_value(scope.variables.get_variable(arg.name)->address);
                     break;
-
                 case ArgumentType::Immediate:
                     bytecode.append_value(arg.value, info.bid_depth / 8);
                     break;
-
                 case ArgumentType::IndirectWithDisplacement:
                     bytecode.append_value(scope.variables.get_variable(arg.name)->address);
-                    bytecode.append_value(arg.value, info.bid_depth / 8);
+                    bytecode.append_value(arg.value, shared::machine_word_size);
                     break;
-
                 default:
                     throw std::runtime_error("wrong instruction definition");
                 }
             }
         }
 
-        bytecode[start] |= std::byte(mask);
+        bytecode[start + 3] |= std::byte(mask);
 
         // TODO: place this in debugger
 #ifdef DEBUG_STATUS
-        std::cout << bytecode.size() << ' ' << inst.name << ' ';
+        std::cout /*<< bytecode.size() << ' '*/ << inst.name << ' ';
         for (const auto& arg : inst.args) {
             switch (arg.type) {
             case ArgumentType::Direct:
@@ -117,7 +113,9 @@ namespace amasm::compiler {
         }
         std::cout << '\n';
 
-        for (size_t i = 0; i < bytecode.size(); i++)
+        const auto inst_full_data = *reinterpret_cast<const shared::inst_code*>(bytecode.data());
+        std::cout << (inst_full_data & 0xFFFF) << ' ';
+        for (size_t i = shared::inst_size; i < bytecode.size(); i++)
             std::cout << (int) bytecode[i] << ' ';
         std::cout << '\n';
 #endif

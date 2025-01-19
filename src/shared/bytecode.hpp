@@ -16,7 +16,6 @@ namespace amasm::shared {
         std::byte& operator[](size_t idx);
         const std::byte& operator[](size_t idx) const;
 
-        byte_vector get(size_t length, size_t offset) const;
         template<typename T = machine_word>
         void set(const T& val, size_t offset) {
             for (size_t i = 0; i < sizeof(T); i++)
@@ -34,8 +33,7 @@ namespace amasm::shared {
             _container.append_range(std::initializer_list(as_bytes, as_bytes + size));
         }
 
-        byte_vector& raw();
-        const byte_vector& raw() const;
+        const std::byte* data();
 
     private:
         byte_vector _container;

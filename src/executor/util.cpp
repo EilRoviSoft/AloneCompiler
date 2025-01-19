@@ -7,11 +7,11 @@ namespace amasm::executor {
             MemoryType((address & 0xC000000000000000) >> (sizeof(shared::address) * 8 - 2))
         };
     }
-    std::tuple<shared::inst_code, shared::arguments_data> decompose_instruction(shared::inst_code inst) {
+    std::tuple<shared::inst_code, shared::args_data> decompose_instruction(shared::inst_code inst) {
         const size_t args_metadata = (inst & 0xFF000000) >> 24;
         return std::make_tuple(
             inst & 0x00FFFFFF,
-            shared::arguments_data {
+            shared::args_data {
                 ArgumentType((args_metadata & 0b00000011) >> 0),
                 ArgumentType((args_metadata & 0b00001100) >> 2),
                 ArgumentType((args_metadata & 0b00110000) >> 4),

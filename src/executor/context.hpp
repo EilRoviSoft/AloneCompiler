@@ -46,7 +46,7 @@ namespace amasm::executor {
             return result;
         }
         template<typename T>
-        T* get_indirect(shared::address address) const {
+        T* get_direct(shared::address address) const {
             const auto nested_address = *get(address);
             return get<T>(nested_address);
         }

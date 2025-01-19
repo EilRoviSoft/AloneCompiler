@@ -1,5 +1,11 @@
 #include "instructions.hpp"
 
+//std
+#ifdef DEBUG_STATUS
+#include <algorithm>
+#include <iostream>
+#endif
+
 namespace amasm::compiler {
     std::list<inst_info> generate_system_isa_info() {
         std::list<inst_info> result;
@@ -143,22 +149,8 @@ namespace amasm::compiler {
                 .bid_depth = sizeof(T) * 8
             },
             inst_info {
-                .name = "inc" + std::to_string(sizeof(T) * 8) + TPostfix,
-                .code = TOffset + 0x5,
-                .min_args = 1,
-                .max_args = 2,
-                .bid_depth = sizeof(T) * 8
-            },
-            inst_info {
-                .name = "dec" + std::to_string(sizeof(T) * 8) + TPostfix,
-                .code = TOffset + 0x6,
-                .min_args = 1,
-                .max_args = 2,
-                .bid_depth = sizeof(T) * 8
-            },
-            inst_info {
                 .name = "cmp" + std::to_string(sizeof(T) * 8) + TPostfix,
-                .code = TOffset + 0x7,
+                .code = TOffset + 0x5,
                 .min_args = 2,
                 .max_args = 2,
                 .bid_depth = sizeof(T) * 8
@@ -195,17 +187,22 @@ namespace amasm::compiler {
         result.append_range(generate_universal_size_isa_info<uint32_t, 0x120>());
         result.append_range(generate_universal_size_isa_info<uint64_t, 0x130>());
 
-        // [add sub mul div mod inc dec cmp] for [8u 16u 32u 64u]
+        // [add sub mul div mod cmp] for [8u 16u 32u 64u]
         result.append_range(generate_universal_type_isa_info<uint8_t, 'u', 0x140>());
         result.append_range(generate_universal_type_isa_info<uint16_t, 'u', 0x150>());
         result.append_range(generate_universal_type_isa_info<uint32_t, 'u', 0x160>());
         result.append_range(generate_universal_type_isa_info<uint64_t, 'u', 0x170>());
 
-        // [add sub mul div mod inc dec cmp neg] for [8i 16i 32i 64i]
+        // [add sub mul div mod cmp neg] for [8i 16i 32i 64i]
         result.append_range(generate_universal_type_isa_info<uint8_t, 'i', 0x180>());
         result.append_range(generate_universal_type_isa_info<uint16_t, 'i', 0x190>());
         result.append_range(generate_universal_type_isa_info<uint32_t, 'i', 0x1A0>());
         result.append_range(generate_universal_type_isa_info<uint64_t, 'i', 0x1B0>());
+
+#ifdef DEBUG_STATUS
+        const auto amount = std::ranges::count_if(result, [](const auto& it) { return it.name == "push64"; });
+        //std::cerr << amount << '\n';
+#endif
 
         return result;
     }
