@@ -2,9 +2,6 @@
 
 //std
 #include <functional>
-#ifdef DEBUG_STATUS
-#include <iostream>
-#endif
 #include <list>
 
 //shared
@@ -90,7 +87,6 @@ namespace amasm::executor {
             _instructions.emplace(it);
         for (const auto& it : gisa_size_related())
             _instructions.emplace(it);
-        std::cout << std::boolalpha << '\n' << _instructions.contains(307) << '\n';
         for (const auto& it : gisa_type_related())
             _instructions.emplace(it);
     }

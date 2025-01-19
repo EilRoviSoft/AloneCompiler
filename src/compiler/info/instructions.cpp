@@ -1,11 +1,5 @@
 #include "instructions.hpp"
 
-//std
-#ifdef DEBUG_STATUS
-#include <algorithm>
-#include <iostream>
-#endif
-
 namespace amasm::compiler {
     std::list<inst_info> generate_system_isa_info() {
         std::list<inst_info> result;
@@ -198,11 +192,6 @@ namespace amasm::compiler {
         result.append_range(generate_universal_type_isa_info<uint16_t, 'i', 0x190>());
         result.append_range(generate_universal_type_isa_info<uint32_t, 'i', 0x1A0>());
         result.append_range(generate_universal_type_isa_info<uint64_t, 'i', 0x1B0>());
-
-#ifdef DEBUG_STATUS
-        const auto amount = std::ranges::count_if(result, [](const auto& it) { return it.name == "push64"; });
-        //std::cerr << amount << '\n';
-#endif
 
         return result;
     }
