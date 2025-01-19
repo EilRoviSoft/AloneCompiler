@@ -11,7 +11,7 @@ endif()
 
 project("AloneCompiler")
 
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23)
 
 include_directories(src)
 include_directories(src/compiler)
@@ -49,6 +49,7 @@ target_include_directories(AloneCompiler PRIVATE
 		src/compiler
 		src/compiler/info
 		src/vm
-		src/shared)
+		src/shared
+)
 
 set_property(TARGET AloneCompiler PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res")
