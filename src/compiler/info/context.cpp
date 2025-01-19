@@ -87,10 +87,10 @@ namespace amasm::compiler {
         using enum TokenType;
         _rules = {
             { "struct_define", { KwStruct, Identifier, LBrace } },
-            { "pole_define", { KwVar, Percent, Identifier, Comma, Datatype } },
+            { "pole_define", { KwVar, Identifier, Comma, Datatype } },
             { "func_define", { KwFunc, At, Identifier, LParen } },
-            { "direct_argument", { Percent, Identifier } },
-            { "indirect_argument", { LBracket, Percent, Identifier } }
+            { "direct_argument", { Identifier } },
+            { "indirect_argument", { LBracket, Identifier } }
         };
     }
     void Context::_init_surrounded_by_braces_signatures() {

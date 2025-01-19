@@ -174,14 +174,14 @@ namespace amasm::compiler {
             argument_info on_emplace;
 
             if (match_rule(_ctx, "direct_argument", tokens, j)) {
-                const auto& var = func.variables.get_variable(tokens[j + 1].literal);
-                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 2);
+                const auto& var = func.variables.get_variable(tokens[j].literal);
+                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 1);
                 on_emplace = {
                     .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct,
-                    .name = tokens[j + 1].literal,
+                    .name = tokens[j].literal,
                     .value = var_offset
                 };
-                j += delta + 2;
+                j += delta + 1;
             } else if (tokens[j].type == TokenType::Number) {
                 on_emplace = {
                     .type = ArgumentType::Immediate,
@@ -190,28 +190,28 @@ namespace amasm::compiler {
                 };
                 j++;
             } else if (match_rule(_ctx, "indirect_argument", tokens, j)) {
-                const auto& var = func.variables.get_variable(tokens[j + 2].literal);
-                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 3);
+                const auto& var = func.variables.get_variable(tokens[j + 1].literal);
+                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 2);
                 on_emplace = {
                     .type = ArgumentType::IndirectWithDisplacement,
-                    .name = tokens[j + 2].literal,
+                    .name = tokens[j + 1].literal,
                     .value = var_offset
                 };
 
-                switch (tokens[j + delta + 3].type) {
+                switch (tokens[j + delta + 2].type) {
                 case TokenType::Plus:
-                    on_emplace.value += std::stoll(tokens[j + delta + 4].literal);
-                    delta += 2;
+                    on_emplace.value += std::stoll(tokens[j + delta + 3].literal);
+                    delta += 1;
                     break;
                 case TokenType::Minus:
-                    on_emplace.value -= std::stoll(tokens[j + delta + 4].literal);
-                    delta += 2;
+                    on_emplace.value -= std::stoll(tokens[j + delta + 3].literal);
+                    delta += 1;
                     break;
                 default:
                     break;
                 }
 
-                j += delta + 4;
+                j += delta + 3;
             } else if (args_n >= inst_info.min_args) {
                 j += 1;
                 break;
