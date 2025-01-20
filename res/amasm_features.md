@@ -69,10 +69,9 @@ Registers are predefined as variables and can be accessed at any time using `%` 
 | `dx`                       | 0x18  | Right operand       | Can be used as general register for binary and unary operations                                                              |
 | `ipx`                      | 0x20  | Instruction pointer | Contains pointer to current executing instruction                                                                            |
 | `bpx`                      | 0x28  | Base pointer        | Contains pointer to the last function entry                                                                                  |
-| `cpx`                      | 0x30  | Context pointer     | Contains pointer to the start of current function; probably would be deprecated and be replaced with %bp and math            |
-| `spx`                      | 0x38  | Stack pointer       | Contains pointer to the top of the stack                                                                                     |
-| `flags`                    | 0x40  | Flags pointer       | Contains several flags for other instructions                                                                                |
-| `gpx`                      | 0x50  | General             | Start of general purpose registers; size is defined as `registers_size - 80` bytes                                           |
+| `spx`                      | 0x30  | Stack pointer       | Contains pointer to the top of the stack                                                                                     |
+| `flags`                    | 0x38  | Flags pointer       | Contains several flags for other instructions                                                                                |
+| `gpx`                      | 0x40  | General             | Start of general purpose registers; size is defined as `registers_size - 80` bytes                                           |
 
 ## Different bit modes
 
