@@ -19,30 +19,26 @@ namespace amasm::executor::isa {
 
 	inline ptrdiff_t fcall(const Context& ctx, shared::args_data args) {
 		*ctx.get(ctx.reg(SPX)) = ctx.reg(BPX);
-		*ctx.get(ctx.reg(SPX) + shared::machine_word_size) = ctx.reg(CPX);
-		ctx.reg(SPX) += shared::machine_word_size * 2;
+		ctx.reg(SPX) += shared::machine_word_size;
 
 		ctx.reg(BPX) = ctx.reg(IPX) + shared::inst_size + shared::machine_word_size;
 		ctx.reg(IPX) = *ctx.get(ctx.reg(IPX) + shared::inst_size);
-		ctx.reg(CPX) = ctx.reg(IPX);
 
 		return 0;
 	}
 	inline ptrdiff_t ret(const Context& ctx, shared::args_data args) {
-		const auto& args_size = *ctx.get(ctx.reg(CPX) - 16);
-		const auto& ret_size = *ctx.get(ctx.reg(CPX) - 8);
-		const auto actual_result_size = args[0] != ArgumentType::Empty ? ret_size : 0;
+		const auto func_start = *ctx.get(ctx.reg(BPX) - shared::machine_word_size);
+		const auto args_size = *ctx.get(func_start - 16);
+		const auto ret_size = *ctx.get(func_start - 8);
 		const auto data = ctx.get<std::byte>(ctx.reg(IPX) + shared::inst_size);
 		const auto result = ctx.get<std::byte>(ret_size <= 8 ? AX : GPX);
 
-		for (size_t i = 0; i < actual_result_size; i++)
+		for (size_t i = 0; i < ret_size; i++)
 			result[i] = data[i];
 
-		ctx.reg(SPX) -= args_size + shared::machine_word_size * 2;
+		ctx.reg(SPX) -= args_size + shared::machine_word_size;
 		ctx.reg(IPX) = ctx.reg(BPX);
-
 		ctx.reg(BPX) = *ctx.get(ctx.reg(SPX) + args_size);
-		ctx.reg(CPX) = *ctx.get(ctx.reg(SPX) + args_size + shared::machine_word_size);
 
 		return 0;
 	}
