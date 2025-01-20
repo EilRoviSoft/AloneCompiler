@@ -4,7 +4,6 @@
 #include "shared/types.hpp"
 
 //executor
-#include "executor/util.hpp"
 #include "executor/virtual_machine.hpp"
 
 namespace amasm::executor {

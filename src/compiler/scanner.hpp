@@ -5,7 +5,7 @@
 #include <string>
 
 //compiler
-#include "compiler/info/context.hpp"
+#include "compiler/context.hpp"
 
 namespace amasm::compiler {
     class Scanner {

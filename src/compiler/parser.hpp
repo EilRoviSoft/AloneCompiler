@@ -9,10 +9,10 @@
 #include "shared/bytecode.hpp"
 
 //compiler
-#include "compiler/info/context.hpp"
-#include "compiler/info/datatypes.hpp"
-#include "compiler/info/functions.hpp"
-#include "compiler/info/tokens.hpp"
+#include "compiler/context.hpp"
+#include "compiler/datatypes.hpp"
+#include "compiler/functions.hpp"
+#include "compiler/tokens.hpp"
 
 #define PARSER_ARGS size_t i, const token_vector& tokens, parse_queue& queue, funcs_queue& result
 

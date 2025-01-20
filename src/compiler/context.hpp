@@ -6,10 +6,10 @@
 #include <unordered_set>
 
 //compiler
-#include "compiler/info/datatypes.hpp"
-#include "compiler/info/instructions.hpp"
-#include "compiler/info/tokens.hpp"
-#include "compiler/info/variables.hpp"
+#include "compiler/datatypes.hpp"
+#include "compiler/instructions.hpp"
+#include "compiler/tokens.hpp"
+#include "compiler/variables.hpp"
 
 namespace amasm::compiler {
     class Context {
@@ -41,4 +41,8 @@ namespace amasm::compiler {
         void _init_instructions();
         void _init_global_variables();
     };
+}
+
+namespace amasm {
+    using CompilerContext = compiler::Context;
 }

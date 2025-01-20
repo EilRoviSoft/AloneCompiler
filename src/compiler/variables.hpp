@@ -9,7 +9,7 @@
 #include "shared/types.hpp"
 
 //compiler
-#include "compiler/info/datatypes.hpp"
+#include "compiler/datatypes.hpp"
 
 namespace amasm::compiler {
     struct variable {

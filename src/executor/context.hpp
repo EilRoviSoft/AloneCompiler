@@ -16,6 +16,7 @@ namespace amasm::executor {
 
     class Context {
         friend class VirtualMachine;
+
     public:
         void set_parent(VirtualMachine& parent);
 
@@ -65,4 +66,8 @@ namespace amasm::executor {
         size_t _program_size = 0;
     };
     using SharedContext = std::shared_ptr<Context>;
+}
+
+namespace amasm {
+    using ExecutorContext = executor::Context;
 }

@@ -7,7 +7,7 @@
 #include "shared/literals.hpp"
 
 //compiler
-#include "compiler/info/context.hpp"
+#include "compiler/context.hpp"
 
 namespace amasm::compiler {
     token::token() :

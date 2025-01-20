@@ -7,7 +7,7 @@
 #include "shared/general_functions.hpp"
 
 //compiler
-#include "compiler/info/context.hpp"
+#include "compiler/context.hpp"
 
 namespace amasm::compiler {
     Lexer::Lexer(Context& ctx) :

@@ -6,9 +6,9 @@
 #include <vector>
 
 //compiler
-#include "compiler/info/datatypes.hpp"
-#include "compiler/info/instructions.hpp"
-#include "compiler/info/variables.hpp"
+#include "compiler/datatypes.hpp"
+#include "compiler/instructions.hpp"
+#include "compiler/variables.hpp"
 
 namespace amasm::compiler {
     struct func_info {
