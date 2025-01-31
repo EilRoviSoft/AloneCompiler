@@ -60,7 +60,7 @@ namespace amasm::compiler {
         lib::Bytecode bytecode;
         lib::inst_code mask = 0;
         std::list<hint> hints;
-        size_t start = bytecode.size(), arg_idx = 0;
+        size_t start = bytecode.size();
         const auto& info = _ctx.get_inst(inst.name);
 
         bytecode.append_value(info.code);
@@ -68,6 +68,7 @@ namespace amasm::compiler {
             hints.emplace_back(bytecode.size(), inst.args.front().name);
             bytecode.append_value<lib::machine_word>(0);
         } else {
+            size_t arg_idx = 0;
             for (const auto& arg : inst.args) {
                 mask |= (size_t) arg.type << arg_idx * 2;
                 arg_idx++;

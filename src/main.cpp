@@ -1,6 +1,3 @@
-//std
-#include <iostream>
-
 //compiler
 #include "compiler/context.hpp"
 #include "compiler/lexer.hpp"
