@@ -4,10 +4,9 @@
 #include <ranges>
 
 //shared
-#include "shared/general_functions.hpp"
 #include "shared/types.hpp"
 
-#define MAKE(NAME, TYPE, ADDRESS) make_variable(NAME, get_datatype(TYPE), ADDRESS)
+#define MAKE(NAME, TYPE, ADDRESS) make_variable(NAME, ADDRESS, get_datatype(TYPE))
 
 namespace amasm::compiler {
     // constructors
@@ -18,8 +17,8 @@ namespace amasm::compiler {
 
     // editors
 
-    void Context::insert_datatype(const datatype_ptr& ptr) {
-        _datatypes.emplace(shared::hash_string(ptr->name), ptr);
+    void Context::insert_datatype(const DatatypePtr& ptr) {
+        _datatypes.emplace(shared::hash_string(ptr->name()), ptr);
     }
 
     // getters
@@ -28,9 +27,10 @@ namespace amasm::compiler {
         const auto it = _defined_tokens.find(key);
         return it != _defined_tokens.end() ? it->second : default_token;
     }
-    datatype_ptr Context::get_datatype(const std::string& key) const {
+    const Datatype& Context::get_datatype(const std::string& key) const {
+        constexpr auto void_hash = shared::ext::crc64(0, "void", 4);
         const auto it = _datatypes.find(shared::hash_string(key));
-        return it != _datatypes.end() ? it->second : nullptr;
+        return *(it != _datatypes.end() ? it->second : _datatypes.at(void_hash));
     }
     const std::vector<TokenType>& Context::get_rule(const std::string& key) const {
         return _rules.at(key);
@@ -63,8 +63,8 @@ namespace amasm::compiler {
         };
     }
     void Context::_init_datatypes() {
-        static auto wrap = [](const datatype_ptr& ptr) {
-            return std::make_pair(shared::hash_string(ptr->name), ptr);
+        static auto wrap = [](const DatatypePtr& ptr) {
+            return std::make_pair(shared::hash_string(ptr->name()), ptr);
         };
         _datatypes = {
             wrap(make_datatype("void", 0)),
@@ -81,7 +81,7 @@ namespace amasm::compiler {
         };
 
         for (const auto& value : _datatypes | std::views::values)
-            _defined_tokens.emplace(value->name, TokenType::Datatype);
+            _defined_tokens.emplace(value->name(), TokenType::Datatype);
     }
     void Context::_init_rules() {
         using enum TokenType;

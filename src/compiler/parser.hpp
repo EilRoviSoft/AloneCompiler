@@ -18,7 +18,7 @@
 
 namespace amasm::compiler {
     class Parser {
-        using parse_variant = std::variant<datatype_ptr, func_info>;
+        using parse_variant = std::variant<DatatypePtr, func_info>;
         using parse_queue = std::queue<std::tuple<std::string, parse_variant>>;
 
     public:

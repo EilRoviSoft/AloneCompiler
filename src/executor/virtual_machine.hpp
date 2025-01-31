@@ -9,7 +9,6 @@
 #include "shared/types.hpp"
 
 //executor
-#include "context.hpp"
 #include "executor/instructions.hpp"
 
 namespace amasm::executor {

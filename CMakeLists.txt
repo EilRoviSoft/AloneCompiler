@@ -37,7 +37,7 @@ add_executable(AloneCompiler
 	"src/shared/literals.cpp"
 		
 	"src/main.cpp"
- "src/executor/instructions.cpp")
+ "src/executor/instructions.cpp" "src/compiler/datatypes.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 

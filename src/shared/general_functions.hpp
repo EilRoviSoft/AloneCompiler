@@ -4,10 +4,16 @@
 #include <functional>
 #include <string>
 
+namespace amasm::shared::ext {
+#include "shared/crc64.hpp"
+}
+
 namespace amasm::shared {
     inline size_t hash_string(const std::string& what) {
-        static std::hash<std::string> hasher;
-        return hasher(what);
+        return ext::crc64(0, what.data(), what.size());
+    }
+    constexpr size_t hash_cstr(const char* what, size_t length) {
+        return ext::crc64(0, what, length);
     }
 
     constexpr bool is_alpha(char c) {

@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
+//shared
+#include "shared/general_functions.hpp"
+
 //compiler
 #include "compiler/datatypes.hpp"
 #include "compiler/instructions.hpp"
@@ -16,10 +19,10 @@ namespace amasm::compiler {
     public:
         Context();
 
-        void insert_datatype(const datatype_ptr& ptr);
+        void insert_datatype(const DatatypePtr& ptr);
 
         const TokenType& get_token_or(const std::string& key, const TokenType& default_token) const;
-        datatype_ptr get_datatype(const std::string& key) const;
+        const Datatype& get_datatype(const std::string& key) const;
         const std::vector<TokenType>& get_rule(const std::string& key) const;
         const inst_info& get_inst(const std::string& key);
 
@@ -27,7 +30,7 @@ namespace amasm::compiler {
 
     private:
         std::unordered_map<std::string, TokenType> _defined_tokens;
-        std::unordered_map<size_t, datatype_ptr> _datatypes;
+        std::unordered_map<size_t, DatatypePtr> _datatypes;
         std::unordered_map<std::string, std::vector<TokenType>> _rules;
         std::unordered_set<std::string> _surrounded_by_braces_signatures;
         std::unordered_map<size_t, inst_info> _instructions;

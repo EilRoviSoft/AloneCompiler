@@ -13,8 +13,8 @@
 namespace amasm::compiler {
     struct func_info {
         std::string name;
-        datatype_ptr return_type;
-        std::vector<datatype_ptr> args;
+        const Datatype* return_type;
+        std::vector<const Datatype*> args;
         VariablesCollection variables;
         std::vector<inst_decl> lines;
     };

@@ -16,16 +16,16 @@ namespace amasm::compiler {
 
         return result;
     }
-    auto calc_offset(const datatype_ptr& type, const token_vector& tokens, size_t begin) {
-        datatype_ptr curr_type = type;
+    auto calc_offset(const Datatype& type, const token_vector& tokens, size_t begin) {
+        const Datatype* curr_type = &type;
         ptrdiff_t offset = 0;
         size_t i = 0;
 
         while (tokens[i + begin].type == TokenType::Dot) {
-            const auto it = std::ranges::find_if(curr_type->poles, [&](const pole& pole) {
+            const auto it = std::ranges::find_if(curr_type->poles(), [&](const Datatype::pole& pole) {
                 return pole.name == tokens[i + begin + 2].literal;
             });
-            curr_type = it->type;
+            curr_type = &it->type;
             offset += it->offset;
 
             i += 2;
@@ -73,7 +73,7 @@ namespace amasm::compiler {
     size_t Parser::_start_parse_struct(PARSER_ARGS) const {
         RULE_STATEMENT("struct_define", "wrong struct definition")
 
-        datatype_ptr ntype = make_datatype(tokens[i + 1].literal, 0);
+        DatatypePtr ntype = make_datatype(tokens[i + 1].literal, 0);
         queue.emplace("struct_define", std::move(ntype));
 
         return 3;
@@ -92,7 +92,7 @@ namespace amasm::compiler {
                 if (tokens[j].type != TokenType::Comma)
                     throw std::runtime_error("wrong func definition");
             } else if (tokens[j].type == TokenType::Datatype) {
-                on_push.args.emplace_back(_ctx.get_datatype(tokens[j].literal));
+                on_push.args.emplace_back(&_ctx.get_datatype(tokens[j].literal));
             } else
                 throw std::runtime_error("wrong func definition");
         }
@@ -100,10 +100,10 @@ namespace amasm::compiler {
 
         // return-type detecting ('cause it's optional)
         if (tokens[j + 1].type == TokenType::Colon) {
-            on_push.return_type = _ctx.get_datatype(tokens[j + 2].literal);
+            on_push.return_type = &_ctx.get_datatype(tokens[j + 2].literal);
             delta = j - i + 4;
         } else {
-            on_push.return_type = _ctx.get_datatype("void");
+            on_push.return_type = &_ctx.get_datatype("void");
             delta = j - i + 2;
         }
         queue.emplace("func_define", std::move(on_push));
@@ -118,10 +118,10 @@ namespace amasm::compiler {
         size_t delta;
 
         if (name == "struct_define") {
-            const auto& ntype = std::get<datatype_ptr>(data);
+            const auto& ntype = std::get<DatatypePtr>(data);
             const bool has_own_offset = tokens[i + 5].type == TokenType::Comma;
 
-            ntype->add_pole(tokens[i + 2].literal, _ctx.get_datatype(tokens[i + 4].literal));
+            ntype->add_pole(tokens[i + 2].literal, &_ctx.get_datatype(tokens[i + 4].literal));
             delta = has_own_offset ? 13 : 6;
         } else
             throw std::runtime_error("isn't done yet");
@@ -175,7 +175,7 @@ namespace amasm::compiler {
 
             if (match_rule(_ctx, "direct_argument", tokens, j)) {
                 const auto& var = func.variables.get_variable(tokens[j].literal);
-                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 1);
+                auto [var_offset, delta] = calc_offset(var.type, tokens, j + 1);
                 on_emplace = {
                     .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct,
                     .name = tokens[j].literal,
@@ -191,7 +191,7 @@ namespace amasm::compiler {
                 j++;
             } else if (match_rule(_ctx, "indirect_argument", tokens, j)) {
                 const auto& var = func.variables.get_variable(tokens[j + 1].literal);
-                auto [var_offset, delta] = calc_offset(var->type, tokens, j + 2);
+                auto [var_offset, delta] = calc_offset(var.type, tokens, j + 2);
                 on_emplace = {
                     .type = ArgumentType::IndirectWithDisplacement,
                     .name = tokens[j + 1].literal,
@@ -235,7 +235,7 @@ namespace amasm::compiler {
         auto& [name, variant] = queue.front();
 
         if (name == "struct_define") {
-            const auto type = std::get<datatype_ptr>(variant);
+            const auto type = std::get<DatatypePtr>(variant);
             _ctx.insert_datatype(type);
         } else if (name == "func_define") {
             const auto func = std::get<func_info>(variant);

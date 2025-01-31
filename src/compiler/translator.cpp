@@ -33,9 +33,9 @@ namespace amasm::compiler {
                 func.args,
                 0,
                 std::plus {},
-                [](const datatype_ptr& ptr) { return ptr->size; }
+                [](const Datatype* datatype) { return datatype->size(); }
             ));
-            result.append_value<shared::machine_word>(func.return_type->size);
+            result.append_value<shared::machine_word>(func.return_type->size());
             labels.emplace(generate_func_full_name(func), result.size());
 
             for (const auto& inst : func.lines) {
@@ -74,13 +74,13 @@ namespace amasm::compiler {
 
                 switch (arg.type) {
                 case ArgumentType::Direct:
-                    bytecode.append_value(scope.variables.get_variable(arg.name)->address);
+                    bytecode.append_value(scope.variables.get_variable(arg.name).address);
                     break;
                 case ArgumentType::Immediate:
                     bytecode.append_value(arg.value, info.bid_depth / 8);
                     break;
                 case ArgumentType::IndirectWithDisplacement:
-                    bytecode.append_value(scope.variables.get_variable(arg.name)->address);
+                    bytecode.append_value(scope.variables.get_variable(arg.name).address);
                     bytecode.append_value(arg.value, shared::machine_word_size);
                     break;
                 default:
