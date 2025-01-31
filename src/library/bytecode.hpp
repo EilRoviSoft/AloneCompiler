@@ -5,10 +5,10 @@
 #include <functional>
 #include <vector>
 
-//shared
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
 
-namespace amasm::shared {
+namespace amasm::lib {
     class Bytecode {
     public:
         size_t size() const;
@@ -26,11 +26,22 @@ namespace amasm::shared {
 
         void append_sequence(const byte_vector& what);
         void append_sequence(const Bytecode& another);
-        // size <= sizeof(T)
         template<typename T = machine_word>
         void append_value(const T& value, size_t size = sizeof(T)) {
             const auto as_bytes = reinterpret_cast<const std::byte*>(&value);
-            _container.append_range(std::initializer_list(as_bytes, as_bytes + size));
+            ptrdiff_t i = 0;
+
+            _container.reserve(_container.size() + size);
+
+            if (sizeof(T) < size)
+                while (i++ < size - sizeof(T)) {
+                    _container.emplace_back((std::byte) 0);
+                    i++;
+                }
+            while (i < size) {
+                _container.emplace_back(as_bytes[i]);
+                i++;
+            }
         }
 
         const std::byte* data();

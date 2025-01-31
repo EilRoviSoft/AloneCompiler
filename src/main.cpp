@@ -1,8 +1,5 @@
-//std
-#include <iostream>
-
 //compiler
-#include "compiler/info/context.hpp"
+#include "compiler/context.hpp"
 #include "compiler/lexer.hpp"
 #include "compiler/parser.hpp"
 #include "compiler/scanner.hpp"
@@ -16,7 +13,7 @@ namespace unit_tests {
     void f0() {
         using namespace amasm;
 
-        auto compiler_ctx = compiler::Context();
+        auto compiler_ctx = CompilerContext();
         const auto scanner = compiler::Scanner(compiler_ctx);
         const auto lexer = compiler::Lexer(compiler_ctx);
         const auto parser = compiler::Parser(compiler_ctx);
@@ -27,11 +24,10 @@ namespace unit_tests {
         const auto composed = parser.parse(tokens);
         const auto bytecode = translator.translate(composed);
 
-        auto vm_ctx = executor::Context();
         auto vm = executor::VirtualMachine();
 
-        vm.init_instructions();
-        vm.exec(vm_ctx, bytecode);
+        vm.init();
+        vm.exec(bytecode);
     }
 
     void test() {

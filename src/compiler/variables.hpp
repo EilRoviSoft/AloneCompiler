@@ -5,21 +5,21 @@
 #include <string>
 #include <unordered_map>
 
-//shared
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
 
 //compiler
-#include "compiler/info/datatypes.hpp"
+#include "compiler/datatypes.hpp"
 
 namespace amasm::compiler {
     struct variable {
         std::string name;
-        datatype_ptr type;
-        shared::address address;
+        lib::address address;
+        const Datatype& type;
     };
     using variable_ptr = std::shared_ptr<variable>;
 
-    variable_ptr make_variable(std::string name, datatype_ptr type, const shared::address& address);
+    variable_ptr make_variable(std::string name, const lib::address& address, const Datatype& type);
 
     class VariablesCollection {
     public:
@@ -29,10 +29,10 @@ namespace amasm::compiler {
         void inherit_from(const VariablesCollection& another);
         void inherit_from(const std::initializer_list<variable_ptr>& list);
 
-        void insert_local_variable(std::string name, datatype_ptr type, const shared::address& address);
-        void insert_global_variable(std::string name, datatype_ptr type, const shared::address& address);
+        void insert_local_variable(std::string name, const lib::address& address, const Datatype& type);
+        void insert_global_variable(std::string name, const lib::address& address, const Datatype& type);
 
-        variable_ptr get_variable(const std::string& key) const;
+        const variable& get_variable(const std::string& key) const;
 
     private:
         std::vector<local_scope_ptr> _scopes;

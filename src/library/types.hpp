@@ -41,10 +41,9 @@ namespace amasm {
         DX    = DL,
         IPX   = SYSTEM_MW_SIZE * 4,
         BPX   = SYSTEM_MW_SIZE * 5,
-        CPX   = SYSTEM_MW_SIZE * 6,
-        SPX   = SYSTEM_MW_SIZE * 7,
-        FLAGS = SYSTEM_MW_SIZE * 8,
-        GPX   = SYSTEM_MW_SIZE * 10,
+        SPX   = SYSTEM_MW_SIZE * 6,
+        FLAGS = SYSTEM_MW_SIZE * 7,
+        GPX   = SYSTEM_MW_SIZE * 8,
 
         // 32-bit registers
 
@@ -54,7 +53,6 @@ namespace amasm {
         EDX    = DL,
         EIP    = IPX,
         EBP    = BPX,
-        ECP    = CPX,
         ESP    = SPX,
         EFLAGS = FLAGS,
         EGP    = GPX,
@@ -67,7 +65,6 @@ namespace amasm {
         RDX    = DL,
         RIP    = IPX,
         RBP    = BPX,
-        RCP    = CPX,
         RSP    = SPX,
         RFLAGS = FLAGS,
         RGP    = GPX
@@ -82,7 +79,7 @@ namespace amasm {
     };
 }
 
-namespace amasm::shared {
+namespace amasm::lib {
     using byte_vector = std::vector<SYSTEM_MIN_TYPE>;
     using machine_word = SYSTEM_MW_TYPE;
     using address = SYSTEM_MW_TYPE;

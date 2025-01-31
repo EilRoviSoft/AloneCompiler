@@ -15,30 +15,30 @@ set(CMAKE_CXX_STANDARD 23)
 
 include_directories(src)
 include_directories(src/compiler)
-include_directories(src/compiler/info)
 include_directories(src/vm)
-include_directories(src/shared)
+include_directories(src/library)
 
 add_executable(AloneCompiler
-	"src/compiler/info/context.cpp"
-	"src/compiler/info/functions.cpp"
-	"src/compiler/info/instructions.cpp"
-	"src/compiler/info/tokens.cpp"
-	"src/compiler/info/variables.cpp" 
+	"src/compiler/context.cpp"
+	"src/compiler/datatypes.cpp"
+	"src/compiler/functions.cpp"
+	"src/compiler/instructions.cpp"
+	"src/compiler/tokens.cpp"
+	"src/compiler/variables.cpp" 
 	"src/compiler/lexer.cpp"
 	"src/compiler/parser.cpp"
 	"src/compiler/scanner.cpp"
 	"src/compiler/translator.cpp"
 
 	"src/executor/context.cpp"
+	"src/executor/instructions.cpp"
 	"src/executor/util.cpp"
 	"src/executor/virtual_machine.cpp"
 
-	"src/shared/bytecode.cpp"
-	"src/shared/literals.cpp"
+	"src/library/bytecode.cpp"
+	"src/library/literals.cpp"
 		
-	"src/main.cpp"
-)
+	"src/main.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 
@@ -47,9 +47,8 @@ add_compile_definitions(DEBUG_STATUS)
 target_include_directories(AloneCompiler PRIVATE
 		src
 		src/compiler
-		src/compiler/info
 		src/vm
-		src/shared
+		src/library
 )
 
 set_property(TARGET AloneCompiler PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res")

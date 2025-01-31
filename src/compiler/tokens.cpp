@@ -3,11 +3,11 @@
 //std
 #include <stdexcept>
 
-//shared
-#include "shared/literals.hpp"
+//lib
+#include "library/literals.hpp"
 
 //compiler
-#include "compiler/info/context.hpp"
+#include "compiler/context.hpp"
 
 namespace amasm::compiler {
     token::token() :
@@ -25,15 +25,15 @@ namespace amasm::compiler {
     token make_token(const Context& ctx, std::string str) {
         TokenType type;
 
-        switch (shared::check_literal_type(str)) {
-        case shared::LiteralType::Word:
+        switch (lib::check_literal_type(str)) {
+        case lib::LiteralType::Word:
             type = ctx.get_token_or(str, TokenType::Identifier);
             break;
 
-        case shared::LiteralType::Binary:
-        case shared::LiteralType::Decimal:
-        case shared::LiteralType::Hexadecimal:
-        case shared::LiteralType::Float:
+        case lib::LiteralType::Binary:
+        case lib::LiteralType::Decimal:
+        case lib::LiteralType::Hexadecimal:
+        case lib::LiteralType::Float:
             type = TokenType::Number;
             break;
 

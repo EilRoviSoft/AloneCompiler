@@ -6,20 +6,20 @@
 #include <unordered_set>
 
 //compiler
-#include "compiler/info/datatypes.hpp"
-#include "compiler/info/instructions.hpp"
-#include "compiler/info/tokens.hpp"
-#include "compiler/info/variables.hpp"
+#include "compiler/datatypes.hpp"
+#include "compiler/instructions.hpp"
+#include "compiler/tokens.hpp"
+#include "compiler/variables.hpp"
 
 namespace amasm::compiler {
     class Context {
     public:
         Context();
 
-        void insert_datatype(const datatype_ptr& ptr);
+        void insert_datatype(const DatatypePtr& ptr);
 
         const TokenType& get_token_or(const std::string& key, const TokenType& default_token) const;
-        datatype_ptr get_datatype(const std::string& key) const;
+        const Datatype& get_datatype(const std::string& key) const;
         const std::vector<TokenType>& get_rule(const std::string& key) const;
         const inst_info& get_inst(const std::string& key);
 
@@ -27,7 +27,7 @@ namespace amasm::compiler {
 
     private:
         std::unordered_map<std::string, TokenType> _defined_tokens;
-        std::unordered_map<size_t, datatype_ptr> _datatypes;
+        std::unordered_map<size_t, DatatypePtr> _datatypes;
         std::unordered_map<std::string, std::vector<TokenType>> _rules;
         std::unordered_set<std::string> _surrounded_by_braces_signatures;
         std::unordered_map<size_t, inst_info> _instructions;
@@ -41,4 +41,8 @@ namespace amasm::compiler {
         void _init_instructions();
         void _init_global_variables();
     };
+}
+
+namespace amasm {
+    using CompilerContext = compiler::Context;
 }

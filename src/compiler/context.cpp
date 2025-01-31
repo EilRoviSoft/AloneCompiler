@@ -3,11 +3,11 @@
 //std
 #include <ranges>
 
-//shared
-#include "shared/general_functions.hpp"
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
+#include "library/general_functions.hpp"
 
-#define MAKE(NAME, TYPE, ADDRESS) make_variable(NAME, get_datatype(TYPE), ADDRESS)
+#define MAKE(NAME, TYPE, ADDRESS) make_variable(NAME, ADDRESS, get_datatype(TYPE))
 
 namespace amasm::compiler {
     // constructors
@@ -18,8 +18,8 @@ namespace amasm::compiler {
 
     // editors
 
-    void Context::insert_datatype(const datatype_ptr& ptr) {
-        _datatypes.emplace(shared::hash_string(ptr->name), ptr);
+    void Context::insert_datatype(const DatatypePtr& ptr) {
+        _datatypes.emplace(lib::hash_string(ptr->name()), ptr);
     }
 
     // getters
@@ -28,15 +28,16 @@ namespace amasm::compiler {
         const auto it = _defined_tokens.find(key);
         return it != _defined_tokens.end() ? it->second : default_token;
     }
-    datatype_ptr Context::get_datatype(const std::string& key) const {
-        const auto it = _datatypes.find(shared::hash_string(key));
-        return it != _datatypes.end() ? it->second : nullptr;
+    const Datatype& Context::get_datatype(const std::string& key) const {
+        constexpr auto void_hash = lib::ext::crc64(0, "void", 4);
+        const auto it = _datatypes.find(lib::hash_string(key));
+        return *(it != _datatypes.end() ? it->second : _datatypes.at(void_hash));
     }
     const std::vector<TokenType>& Context::get_rule(const std::string& key) const {
         return _rules.at(key);
     }
     const inst_info& Context::get_inst(const std::string& key) {
-        return _instructions.at(shared::hash_string(key));
+        return _instructions.at(lib::hash_string(key));
     }
     const VariablesCollection& Context::global_variables() const {
         return _global_variables;
@@ -63,8 +64,8 @@ namespace amasm::compiler {
         };
     }
     void Context::_init_datatypes() {
-        static auto wrap = [](const datatype_ptr& ptr) {
-            return std::make_pair(shared::hash_string(ptr->name), ptr);
+        static auto wrap = [](const DatatypePtr& ptr) {
+            return std::make_pair(lib::hash_string(ptr->name()), ptr);
         };
         _datatypes = {
             wrap(make_datatype("void", 0)),
@@ -81,16 +82,16 @@ namespace amasm::compiler {
         };
 
         for (const auto& value : _datatypes | std::views::values)
-            _defined_tokens.emplace(value->name, TokenType::Datatype);
+            _defined_tokens.emplace(value->name(), TokenType::Datatype);
     }
     void Context::_init_rules() {
         using enum TokenType;
         _rules = {
             { "struct_define", { KwStruct, Identifier, LBrace } },
-            { "pole_define", { KwVar, Percent, Identifier, Comma, Datatype } },
+            { "pole_define", { KwVar, Identifier, Comma, Datatype } },
             { "func_define", { KwFunc, At, Identifier, LParen } },
-            { "direct_argument", { Percent, Identifier } },
-            { "indirect_argument", { LBracket, Percent, Identifier } }
+            { "direct_argument", { Identifier } },
+            { "indirect_argument", { LBracket, Identifier } }
         };
     }
     void Context::_init_surrounded_by_braces_signatures() {
@@ -102,7 +103,7 @@ namespace amasm::compiler {
         auto inst_collection = generate_isa_info();
 
         for (auto&& it : inst_collection) {
-            const auto key = shared::hash_string(it.name);
+            const auto key = lib::hash_string(it.name);
             _instructions.emplace(key, std::move(it));
         }
 
@@ -126,7 +127,6 @@ namespace amasm::compiler {
             MAKE("dx", "uint16", DX),
             MAKE("ipx", "uint16", IPX),
             MAKE("bpx", "uint16", BPX),
-            MAKE("cpx", "uint16", CPX),
             MAKE("spx", "uint16", SPX),
             MAKE("flags", "uint16", FLAGS),
             MAKE("gpx", "uint16", GPX),
@@ -137,7 +137,6 @@ namespace amasm::compiler {
             MAKE("edx", "uint32", EDX),
             MAKE("eip", "uint32", EIP),
             MAKE("ebp", "uint32", EBP),
-            MAKE("ecp", "uint32", ECP),
             MAKE("esp", "uint32", ESP),
             MAKE("eflags", "uint32", EFLAGS),
             MAKE("egp", "uint32", EGP),
@@ -148,7 +147,6 @@ namespace amasm::compiler {
             MAKE("rdx", "uint64", RDX),
             MAKE("rip", "uint64", RIP),
             MAKE("rbp", "uint64", RBP),
-            MAKE("rcp", "uint64", RCP),
             MAKE("rsp", "uint64", RSP),
             MAKE("rflags", "uint64", RFLAGS),
             MAKE("rgp", "uint64", RGP),
