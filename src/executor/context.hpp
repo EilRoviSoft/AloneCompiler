@@ -2,6 +2,7 @@
 
 //std
 #include <memory>
+#include <span>
 #include <stdexcept>
 
 //library
@@ -18,12 +19,15 @@ namespace amasm::executor {
         friend class VirtualMachine;
 
     public:
-        void set_parent(VirtualMachine& parent);
+        explicit Context(VirtualMachine& vm);
 
         size_t program_size() const;
 
-        lib::machine_word& reg(lib::address address) const;
-        lib::flags& flags() const;
+        // same as get(address) to get variable from mframe, but faster, because it doesn't do additional checks
+        // also always returns machine_word instead of T
+        // primarily used for getting registers
+        lib::machine_word& operator[](lib::address address) const;
+        std::bitset<64>::reference operator[](FlagType flag_id) const;
 
         template<typename T = lib::machine_word>
         T* get(lib::address address) const {
@@ -31,17 +35,13 @@ namespace amasm::executor {
 
             switch (auto [actual_address, mem_type] = decompose_address(address); mem_type) {
             case MemoryType::MainFrame:
-                result = reinterpret_cast<T*>(&_parent->_mframe[actual_address]);
+                result = reinterpret_cast<T*>(&_vm._mframe[actual_address]);
                 break;
             case MemoryType::DynamicFrame:
-                result = reinterpret_cast<T*>(_parent->_dframe.at(actual_address).data());
+                result = reinterpret_cast<T*>(_vm._dframe.at(actual_address).data());
                 break;
             default:
-#ifdef DEBUG_STATUS
                 throw std::runtime_error("memory type doesn't exist");
-#else
-                result = nullptr;
-#endif
             }
 
             return result;
@@ -61,7 +61,7 @@ namespace amasm::executor {
         // TODO: get_array
 
     protected:
-        VirtualMachine* _parent = nullptr;
+        VirtualMachine& _vm;
 
         size_t _program_size = 0;
     };

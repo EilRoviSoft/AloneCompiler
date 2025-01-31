@@ -29,12 +29,19 @@ namespace amasm::lib {
         template<typename T = machine_word>
         void append_value(const T& value, size_t size = sizeof(T)) {
             const auto as_bytes = reinterpret_cast<const std::byte*>(&value);
+            ptrdiff_t i = 0;
 
             _container.reserve(_container.size() + size);
-            for (size_t i = 0; i < size - sizeof(T); i++)
-                _container.emplace_back((std::byte) 0);
-            for (size_t i = size - sizeof(T); i < size; i++)
+
+            if (sizeof(T) < size)
+                while (i++ < size - sizeof(T)) {
+                    _container.emplace_back((std::byte) 0);
+                    i++;
+                }
+            while (i < size) {
                 _container.emplace_back(as_bytes[i]);
+                i++;
+            }
         }
 
         const std::byte* data();

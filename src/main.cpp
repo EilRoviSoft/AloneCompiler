@@ -24,11 +24,10 @@ namespace unit_tests {
         const auto composed = parser.parse(tokens);
         const auto bytecode = translator.translate(composed);
 
-        auto vm_ctx = ExecutorContext();
         auto vm = executor::VirtualMachine();
 
         vm.init();
-        vm.exec(vm_ctx, bytecode);
+        vm.exec(bytecode);
     }
 
     void test() {

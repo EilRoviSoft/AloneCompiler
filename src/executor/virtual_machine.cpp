@@ -88,23 +88,22 @@ namespace amasm::executor {
         _init(min_size, max_size);
     }
 
-    void VirtualMachine::exec(Context& ctx, lib::Bytecode program) {
-        ctx.set_parent(*this);
+    void VirtualMachine::exec(lib::Bytecode program) {
+        Context ctx(*this);
 
         ctx._program_size = program.size();
         for (size_t i = lib::machine_word_size; i < ctx.program_size(); i++)
             _mframe[i + lib::registers_size] = program[i];
 
-        //_stack_start = library::registers_size + ctx._program_size;
-        ctx.flags()[RF] = true;
-        ctx.reg(SPX) = ctx._program_size + lib::registers_size;
-        ctx.reg(IPX) = *reinterpret_cast<const lib::machine_word*>(program.data()) + lib::registers_size;
+        ctx[RF] = true;
+        ctx[SPX] = ctx._program_size + lib::registers_size;
+        ctx[IPX] = *reinterpret_cast<const lib::machine_word*>(program.data()) + lib::registers_size;
 
         const StepperSignature stepper = _min_size == _max_size
             ? &VirtualMachine::_do_step
             : &VirtualMachine::_do_step_with_check;
 
-        while (ctx.flags()[RF] && ctx.reg(IPX) < ctx._program_size + lib::registers_size)
+        while (ctx[RF] && ctx[IPX] < ctx._program_size + lib::registers_size)
             stepper(this, ctx);
     }
 
@@ -130,17 +129,17 @@ namespace amasm::executor {
     }
 
     void VirtualMachine::_do_step(const Context& ctx) {
-        const auto inst_code = *ctx.get<lib::inst_code>(ctx.reg(IPX));
+        const auto inst_code = *ctx.get<lib::inst_code>(ctx[IPX]);
         const auto [opcode, args_metadata] = decompose_instruction(inst_code);
         const auto& inst = _instructions.at(opcode);
         inst(ctx, args_metadata);
     }
     void VirtualMachine::_do_step_with_check(const Context& ctx) {
-        const auto inst_code = *ctx.get<lib::inst_code>(ctx.reg(IPX));
+        const auto inst_code = *ctx.get<lib::inst_code>(ctx[IPX]);
         const auto [opcode, args_metadata] = decompose_instruction(inst_code);
         const auto& inst = _instructions.at(opcode);
 
-        if (ctx.reg(SPX) + inst._memory_shift < _mframe.size())
+        if (ctx[SPX] + inst._memory_shift < _mframe.size())
             _alloc_more_memory();
 
         inst(ctx, args_metadata);

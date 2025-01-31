@@ -22,7 +22,7 @@ namespace amasm::executor {
         void init(lib::machine_word size);
         void init(lib::machine_word min_size, lib::machine_word max_size);
 
-        void exec(Context& ctx, lib::Bytecode program);
+        void exec(lib::Bytecode program);
 
     private:
         using StepperSignature = std::function<void(VirtualMachine*, const Context&)>;
