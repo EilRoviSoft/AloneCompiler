@@ -1,6 +1,7 @@
 #pragma once
 
 //std
+#include <functional>
 #include <queue>
 #include <string>
 #include <variant>
