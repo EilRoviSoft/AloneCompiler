@@ -4,9 +4,9 @@
 #include <functional>
 #include <list>
 
-//shared
-#include "shared/general_functions.hpp"
-#include "shared/types.hpp"
+//library
+#include "library/general_functions.hpp"
+#include "library/types.hpp"
 
 //executor
 #include "executor/constants.hpp"
@@ -35,8 +35,8 @@ namespace amasm::executor {
             make_instruction(Offset + 0x4, isa::inst_b23<T, std::bit_and<T>>),
             make_instruction(Offset + 0x5, isa::inst_b23<T, std::bit_or<T>>),
             make_instruction(Offset + 0x6, isa::inst_b23<T, std::bit_xor<T>>),
-            make_instruction(Offset + 0x7, isa::inst_b23<T, shared::bit_shl<T>>),
-            make_instruction(Offset + 0x8, isa::inst_b23<T, shared::bit_shr<T>>)
+            make_instruction(Offset + 0x7, isa::inst_b23<T, lib::bit_shl<T>>),
+            make_instruction(Offset + 0x8, isa::inst_b23<T, lib::bit_shr<T>>)
         };
     }
     std::list<InstructionPair> gisa_size_related() {
@@ -81,38 +81,38 @@ namespace amasm::executor {
     void VirtualMachine::init() {
         _init(mframe_size, mframe_size);
     }
-    void VirtualMachine::init(shared::machine_word size) {
+    void VirtualMachine::init(lib::machine_word size) {
         _init(size, size);
     }
-    void VirtualMachine::init(shared::machine_word min_size, shared::machine_word max_size) {
+    void VirtualMachine::init(lib::machine_word min_size, lib::machine_word max_size) {
         _init(min_size, max_size);
     }
 
-    void VirtualMachine::exec(Context& ctx, shared::Bytecode program) {
+    void VirtualMachine::exec(Context& ctx, lib::Bytecode program) {
         ctx.set_parent(*this);
 
         ctx._program_size = program.size();
-        for (size_t i = shared::machine_word_size; i < ctx.program_size(); i++)
-            _mframe[i + shared::registers_size] = program[i];
+        for (size_t i = lib::machine_word_size; i < ctx.program_size(); i++)
+            _mframe[i + lib::registers_size] = program[i];
 
-        //_stack_start = shared::registers_size + ctx._program_size;
+        //_stack_start = library::registers_size + ctx._program_size;
         ctx.flags()[RF] = true;
-        ctx.reg(SPX) = ctx._program_size + shared::registers_size;
-        ctx.reg(IPX) = *reinterpret_cast<const shared::machine_word*>(program.data()) + shared::registers_size;
+        ctx.reg(SPX) = ctx._program_size + lib::registers_size;
+        ctx.reg(IPX) = *reinterpret_cast<const lib::machine_word*>(program.data()) + lib::registers_size;
 
         const StepperSignature stepper = _min_size == _max_size
             ? &VirtualMachine::_do_step
             : &VirtualMachine::_do_step_with_check;
 
-        while (ctx.flags()[RF] && ctx.reg(IPX) < ctx._program_size + shared::registers_size)
+        while (ctx.flags()[RF] && ctx.reg(IPX) < ctx._program_size + lib::registers_size)
             stepper(this, ctx);
     }
 
-    void VirtualMachine::_init(shared::machine_word min_size, shared::machine_word max_size) {
+    void VirtualMachine::_init(lib::machine_word min_size, lib::machine_word max_size) {
         _init_memory(min_size, max_size);
         _init_instructions();
     }
-    void VirtualMachine::_init_memory(shared::machine_word min_size, shared::machine_word max_size) {
+    void VirtualMachine::_init_memory(lib::machine_word min_size, lib::machine_word max_size) {
         _min_size = min_size;
         _max_size = max_size;
         _mframe.resize(min_size);
@@ -130,13 +130,13 @@ namespace amasm::executor {
     }
 
     void VirtualMachine::_do_step(const Context& ctx) {
-        const auto inst_code = *ctx.get<shared::inst_code>(ctx.reg(IPX));
+        const auto inst_code = *ctx.get<lib::inst_code>(ctx.reg(IPX));
         const auto [opcode, args_metadata] = decompose_instruction(inst_code);
         const auto& inst = _instructions.at(opcode);
         inst(ctx, args_metadata);
     }
     void VirtualMachine::_do_step_with_check(const Context& ctx) {
-        const auto inst_code = *ctx.get<shared::inst_code>(ctx.reg(IPX));
+        const auto inst_code = *ctx.get<lib::inst_code>(ctx.reg(IPX));
         const auto [opcode, args_metadata] = decompose_instruction(inst_code);
         const auto& inst = _instructions.at(opcode);
 

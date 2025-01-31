@@ -3,11 +3,11 @@
 //std
 #include <stdexcept>
 
-//shared
-#include "shared/general_functions.hpp"
+//lib
+#include "library/general_functions.hpp"
 
 namespace amasm::compiler {
-    variable_ptr make_variable(std::string name, const shared::address& address, const Datatype& type) {
+    variable_ptr make_variable(std::string name, const lib::address& address, const Datatype& type) {
         return std::make_shared<variable>(std::move(name), address, type);
     }
 
@@ -31,28 +31,28 @@ namespace amasm::compiler {
     }
 
     void VariablesCollection::insert_local_variable(std::string name,
-                                                    const shared::address& address,
+                                                    const lib::address& address,
                                                     const Datatype& type) {
         _insert_variable(_scopes.back(), make_variable(std::move(name), address, type));
     }
     void VariablesCollection::insert_global_variable(std::string name,
-                                                     const shared::address& address,
+                                                     const lib::address& address,
                                                      const Datatype& type) {
         _insert_variable(_scopes.front(), make_variable(std::move(name), address, type));
     }
 
     void VariablesCollection::_insert_variable(const local_scope_ptr& where, variable_ptr&& var) {
-        const size_t temp = shared::hash_string(var->name);
+        const size_t temp = lib::hash_string(var->name);
         where->emplace(temp, std::move(var));
     }
     void VariablesCollection::_insert_variable(const local_scope_ptr& where, const variable_ptr& var) {
-        const size_t temp = shared::hash_string(var->name);
+        const size_t temp = lib::hash_string(var->name);
         where->emplace(temp, var);
     }
 
     const variable& VariablesCollection::get_variable(const std::string& key) const {
         variable_ptr result = nullptr;
-        const size_t hashed_key = shared::hash_string(key);
+        const size_t hashed_key = lib::hash_string(key);
 
         for (const auto& scope : _scopes)
             if (const auto it = scope->find(hashed_key); it != scope->end()) {

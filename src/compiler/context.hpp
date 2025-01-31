@@ -5,9 +5,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-//shared
-#include "shared/general_functions.hpp"
-
 //compiler
 #include "compiler/datatypes.hpp"
 #include "compiler/instructions.hpp"

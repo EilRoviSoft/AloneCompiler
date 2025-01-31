@@ -5,8 +5,8 @@
 #include <string>
 #include <unordered_map>
 
-//shared
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
 
 //compiler
 #include "compiler/datatypes.hpp"
@@ -14,12 +14,12 @@
 namespace amasm::compiler {
     struct variable {
         std::string name;
-        shared::address address;
+        lib::address address;
         const Datatype& type;
     };
     using variable_ptr = std::shared_ptr<variable>;
 
-    variable_ptr make_variable(std::string name, const shared::address& address, const Datatype& type);
+    variable_ptr make_variable(std::string name, const lib::address& address, const Datatype& type);
 
     class VariablesCollection {
     public:
@@ -29,8 +29,8 @@ namespace amasm::compiler {
         void inherit_from(const VariablesCollection& another);
         void inherit_from(const std::initializer_list<variable_ptr>& list);
 
-        void insert_local_variable(std::string name, const shared::address& address, const Datatype& type);
-        void insert_global_variable(std::string name, const shared::address& address, const Datatype& type);
+        void insert_local_variable(std::string name, const lib::address& address, const Datatype& type);
+        void insert_global_variable(std::string name, const lib::address& address, const Datatype& type);
 
         const variable& get_variable(const std::string& key) const;
 

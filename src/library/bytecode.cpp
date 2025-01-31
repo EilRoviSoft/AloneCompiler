@@ -1,9 +1,6 @@
 #include "bytecode.hpp"
 
-//std
-#include <ranges>
-
-namespace amasm::shared {
+namespace amasm::lib {
     size_t Bytecode::size() const {
         return _container.size();
     }

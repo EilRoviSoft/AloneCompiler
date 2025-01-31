@@ -4,11 +4,11 @@
 #include <functional>
 #include <string>
 
-namespace amasm::shared::ext {
-#include "shared/crc64.hpp"
+namespace amasm::lib::ext {
+#include "library/crc64.hpp"
 }
 
-namespace amasm::shared {
+namespace amasm::lib {
     inline size_t hash_string(const std::string& what) {
         return ext::crc64(0, what.data(), what.size());
     }

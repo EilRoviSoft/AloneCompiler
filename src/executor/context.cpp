@@ -1,7 +1,7 @@
 #include "context.hpp"
 
-//shared
-#include "shared/types.hpp"
+//library
+#include "library/types.hpp"
 
 //executor
 #include "executor/virtual_machine.hpp"
@@ -15,10 +15,10 @@ namespace amasm::executor {
         return _program_size;
     }
 
-    shared::machine_word& Context::reg(shared::address address) const {
-        return reinterpret_cast<shared::machine_word&>(_parent->_mframe[address]);
+    lib::machine_word& Context::reg(lib::address address) const {
+        return reinterpret_cast<lib::machine_word&>(_parent->_mframe[address]);
     }
-    shared::flags& Context::flags() const {
-        return reinterpret_cast<shared::flags&>(_parent->_mframe[FLAGS]);
+    lib::flags& Context::flags() const {
+        return reinterpret_cast<lib::flags&>(_parent->_mframe[FLAGS]);
     }
 }

@@ -5,9 +5,6 @@
 #include <string>
 #include <variant>
 
-//shared
-#include "shared/bytecode.hpp"
-
 //compiler
 #include "compiler/context.hpp"
 #include "compiler/datatypes.hpp"

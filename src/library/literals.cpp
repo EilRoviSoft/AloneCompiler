@@ -3,12 +3,12 @@
 //std
 #include <iostream>
 
-//shared
-#include "shared/general_functions.hpp"
+//lib
+#include "library/general_functions.hpp"
 
 #define THROW_EXCEPTION(MESSAGE) std::cerr << __FUNCTION__ << (MESSAGE) << '\n'
 
-namespace amasm::shared {
+namespace amasm::lib {
     LiteralType check_literal_type(const std::string& str) {
         //check whether it is word
         if (is_alpha(str.front())) {

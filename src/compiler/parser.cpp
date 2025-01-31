@@ -1,7 +1,7 @@
 #include "parser.hpp"
 
-//shared
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
 
 #define BIND_PARSE_CASE(TYPE, PRED) std::make_pair(TYPE, std::function<size_t(size_t, const token_vector&, parse_queue&, funcs_queue&)>(std::bind(PRED, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4)))
 #define RULE_STATEMENT(RULE_NAME, MESSAGE) if (!match_rule(_ctx, RULE_NAME, tokens, i)) { throw std::runtime_error(MESSAGE); }

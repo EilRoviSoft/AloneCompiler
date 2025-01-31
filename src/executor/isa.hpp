@@ -3,8 +3,8 @@
 //std
 #include <span>
 
-//shared
-#include "shared/types.hpp"
+//library
+#include "library/types.hpp"
 
 //executor
 #include "executor/context.hpp"
@@ -12,29 +12,29 @@
 namespace amasm::executor::isa {
     // system
 
-    inline void halt(const Context& ctx, shared::args_data args) {
+    inline void halt(const Context& ctx, lib::args_data args) {
         ctx.flags()[RF] = false;
-        ctx.reg(IPX) += shared::inst_size;
+        ctx.reg(IPX) += lib::inst_size;
     }
 
-    inline void fcall(const Context& ctx, shared::args_data args) {
+    inline void fcall(const Context& ctx, lib::args_data args) {
         *ctx.get(ctx.reg(SPX)) = ctx.reg(BPX);
-        ctx.reg(SPX) += shared::machine_word_size;
+        ctx.reg(SPX) += lib::machine_word_size;
 
-        ctx.reg(BPX) = ctx.reg(IPX) + shared::inst_size + shared::machine_word_size;
-        ctx.reg(IPX) = *ctx.get(ctx.reg(IPX) + shared::inst_size);
+        ctx.reg(BPX) = ctx.reg(IPX) + lib::inst_size + lib::machine_word_size;
+        ctx.reg(IPX) = *ctx.get(ctx.reg(IPX) + lib::inst_size);
     }
-    inline void ret(const Context& ctx, shared::args_data args) {
-        auto func_start = *ctx.get(ctx.reg(BPX) - shared::machine_word_size);
+    inline void ret(const Context& ctx, lib::args_data args) {
+        auto func_start = *ctx.get(ctx.reg(BPX) - lib::machine_word_size);
         auto args_size = *ctx.get(func_start - 16);
         auto ret_size = *ctx.get(func_start - 8);
-        auto data = ctx.get<std::byte>(ctx.reg(IPX) + shared::inst_size);
+        auto data = ctx.get<std::byte>(ctx.reg(IPX) + lib::inst_size);
         auto result = ctx.get<std::byte>(ret_size <= 8 ? AX : GPX);
 
         for (size_t i = 0; i < ret_size; i++)
             result[i] = data[i];
 
-        ctx.reg(SPX) -= args_size + shared::machine_word_size;
+        ctx.reg(SPX) -= args_size + lib::machine_word_size;
         ctx.reg(IPX) = ctx.reg(BPX);
         ctx.reg(BPX) = *ctx.get(ctx.reg(SPX) + args_size);
     }
@@ -42,19 +42,19 @@ namespace amasm::executor::isa {
     // size related
 
     template<typename T>
-    void inst_mov(const Context& ctx, shared::args_data args) {
-        ptrdiff_t offset = shared::inst_size;
+    void inst_mov(const Context& ctx, lib::args_data args) {
+        ptrdiff_t offset = lib::inst_size;
         T* a0;
         T a1;
 
         switch (args[0]) {
         case ArgumentType::Direct:
             a0 = ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::IndirectWithDisplacement:
             a0 = ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         default:
             throw std::runtime_error("wrong args information");
@@ -63,7 +63,7 @@ namespace amasm::executor::isa {
         switch (args[1]) {
         case ArgumentType::Direct:
             a1 = *ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a1 = *ctx.get<T>(ctx.reg(IPX) + offset);
@@ -71,7 +71,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a1 = *ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         default:
             throw std::runtime_error("wrong args information");
@@ -82,15 +82,15 @@ namespace amasm::executor::isa {
     }
 
     template<typename T>
-    void inst_push(const Context& ctx, shared::args_data args) {
-        ptrdiff_t offset = shared::inst_size;
+    void inst_push(const Context& ctx, lib::args_data args) {
+        ptrdiff_t offset = lib::inst_size;
         bool is_extended = true;
         T a0;
 
         switch (args[0]) {
         case ArgumentType::Direct:
             a0 = *ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a0 = *ctx.get<T>(ctx.reg(IPX) + offset);
@@ -98,7 +98,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a0 = *ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
             is_extended = false;
@@ -113,14 +113,14 @@ namespace amasm::executor::isa {
         ctx.reg(IPX) += offset;
     }
     template<typename T>
-    void inst_pop(const Context& ctx, shared::args_data args) {
-        ptrdiff_t offset = shared::inst_size;
+    void inst_pop(const Context& ctx, lib::args_data args) {
+        ptrdiff_t offset = lib::inst_size;
         T* a0;
 
         switch (args[0]) {
         case ArgumentType::Direct:
             a0 = ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a0 = ctx.get<T>(ctx.reg(IPX) + offset);
@@ -128,7 +128,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a0 = ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
             a0 = reinterpret_cast<T*>(&ctx.reg(AX));
@@ -145,9 +145,9 @@ namespace amasm::executor::isa {
     // universal
 
     template<typename T, typename TPred>
-    void inst_b23(const Context& ctx, shared::args_data args) {
+    void inst_b23(const Context& ctx, lib::args_data args) {
         TPred pred;
-        ptrdiff_t offset = shared::inst_size;
+        ptrdiff_t offset = lib::inst_size;
         bool is_extended = true;
         T* a0;
         T a1, a2;
@@ -155,11 +155,11 @@ namespace amasm::executor::isa {
         switch (args[0]) {
         case ArgumentType::Direct:
             a0 = ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::IndirectWithDisplacement:
             a0 = ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         default:
             throw std::runtime_error("wrong args information");
@@ -168,7 +168,7 @@ namespace amasm::executor::isa {
         switch (args[1]) {
         case ArgumentType::Direct:
             a1 = *ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a1 = *ctx.get<T>(ctx.reg(IPX) + offset);
@@ -176,7 +176,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a1 = *ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         default:
             throw std::runtime_error("wrong args information");
@@ -185,7 +185,7 @@ namespace amasm::executor::isa {
         switch (args[2]) {
         case ArgumentType::Direct:
             a2 = *ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a2 = *ctx.get<T>(ctx.reg(IPX) + offset);
@@ -193,7 +193,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a2 = *ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
             is_extended = false;
@@ -206,9 +206,9 @@ namespace amasm::executor::isa {
         ctx.reg(IPX) += offset;
     }
     template<typename T, typename TPred>
-    void inst_u12(const Context& ctx, shared::args_data args) {
+    void inst_u12(const Context& ctx, lib::args_data args) {
         TPred pred;
-        ptrdiff_t offset = shared::inst_size;
+        ptrdiff_t offset = lib::inst_size;
         bool is_extended = true;
         T* a0;
         T a1;
@@ -216,11 +216,11 @@ namespace amasm::executor::isa {
         switch (args[0]) {
         case ArgumentType::Direct:
             a0 = ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::IndirectWithDisplacement:
             a0 = ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         default:
             throw std::runtime_error("wrong args information");
@@ -229,7 +229,7 @@ namespace amasm::executor::isa {
         switch (args[1]) {
         case ArgumentType::Direct:
             a1 = *ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a1 = *ctx.get<T>(ctx.reg(IPX) + offset);
@@ -237,7 +237,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a1 = *ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
             is_extended = false;
@@ -251,14 +251,14 @@ namespace amasm::executor::isa {
     }
 
     template<typename T>
-    void inst_cmp(const Context& ctx, shared::args_data args) {
-        ptrdiff_t offset = shared::inst_size;
+    void inst_cmp(const Context& ctx, lib::args_data args) {
+        ptrdiff_t offset = lib::inst_size;
         T a0, a1;
 
         switch (args[0]) {
         case ArgumentType::Direct:
             a0 = *ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a0 = *ctx.get<T>(ctx.reg(IPX) + offset);
@@ -266,7 +266,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a0 = *ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         default:
             throw std::runtime_error("wrong args information");
@@ -275,7 +275,7 @@ namespace amasm::executor::isa {
         switch (args[1]) {
         case ArgumentType::Direct:
             a1 = *ctx.get_direct<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size;
+            offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
             a1 = *ctx.get<T>(ctx.reg(IPX) + offset);
@@ -283,7 +283,7 @@ namespace amasm::executor::isa {
             break;
         case ArgumentType::IndirectWithDisplacement:
             a1 = *ctx.get_with_displacement<T>(ctx.reg(IPX) + offset);
-            offset += shared::machine_word_size * 2;
+            offset += lib::machine_word_size * 2;
             break;
         default:
             throw std::runtime_error("wrong args information");

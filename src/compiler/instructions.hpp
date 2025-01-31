@@ -5,13 +5,13 @@
 #include <string>
 #include <tuple>
 
-//shared
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
 
 namespace amasm::compiler {
     struct inst_info {
         std::string name;
-        shared::inst_code code;
+        lib::inst_code code;
         size_t min_args;
         size_t max_args;
         size_t bid_depth;

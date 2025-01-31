@@ -1,7 +1,7 @@
 #pragma once
 
-//shared
-#include "shared/bytecode.hpp"
+//lib
+#include "library/bytecode.hpp"
 
 //compiler
 #include "compiler/context.hpp"
@@ -17,12 +17,12 @@ namespace amasm::compiler {
 
         explicit Translator(Context& ctx);
 
-        shared::Bytecode translate(funcs_queue composed) const;
+        lib::Bytecode translate(funcs_queue composed) const;
 
     private:
         Context& _ctx;
 
-        std::tuple<shared::Bytecode, std::list<hint>> _decompose_instruction(const func_info& scope,
+        std::tuple<lib::Bytecode, std::list<hint>> _decompose_instruction(const func_info& scope,
                                                                              const inst_decl& inst)
         const;
     };

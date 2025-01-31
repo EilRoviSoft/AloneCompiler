@@ -79,7 +79,7 @@ namespace amasm {
     };
 }
 
-namespace amasm::shared {
+namespace amasm::lib {
     using byte_vector = std::vector<SYSTEM_MIN_TYPE>;
     using machine_word = SYSTEM_MW_TYPE;
     using address = SYSTEM_MW_TYPE;

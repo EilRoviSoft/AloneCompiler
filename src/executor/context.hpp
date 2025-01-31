@@ -4,8 +4,8 @@
 #include <memory>
 #include <stdexcept>
 
-//shared
-#include "shared/types.hpp"
+//library
+#include "library/types.hpp"
 
 //executor
 #include "executor/util.hpp"
@@ -22,11 +22,11 @@ namespace amasm::executor {
 
         size_t program_size() const;
 
-        shared::machine_word& reg(shared::address address) const;
-        shared::flags& flags() const;
+        lib::machine_word& reg(lib::address address) const;
+        lib::flags& flags() const;
 
-        template<typename T = shared::machine_word>
-        T* get(shared::address address) const {
+        template<typename T = lib::machine_word>
+        T* get(lib::address address) const {
             T* result;
 
             switch (auto [actual_address, mem_type] = decompose_address(address); mem_type) {
@@ -47,15 +47,15 @@ namespace amasm::executor {
             return result;
         }
         template<typename T>
-        T* get_direct(shared::address address) const {
+        T* get_direct(lib::address address) const {
             const auto nested_address = *get(address);
             return get<T>(nested_address);
         }
         template<typename T>
-        T* get_with_displacement(shared::address address) const {
+        T* get_with_displacement(lib::address address) const {
             const auto nested_address = *get(address);
             const auto value = *get(nested_address);
-            const auto offset = *get<ptrdiff_t>(address + shared::machine_word_size);
+            const auto offset = *get<ptrdiff_t>(address + lib::machine_word_size);
             return get<T>(value + offset);
         }
         // TODO: get_array

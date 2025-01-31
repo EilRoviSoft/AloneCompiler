@@ -5,10 +5,10 @@
 #include <functional>
 #include <vector>
 
-//shared
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
 
-namespace amasm::shared {
+namespace amasm::lib {
     class Bytecode {
     public:
         size_t size() const;

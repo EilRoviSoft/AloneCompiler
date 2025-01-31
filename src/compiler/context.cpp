@@ -3,8 +3,9 @@
 //std
 #include <ranges>
 
-//shared
-#include "shared/types.hpp"
+//lib
+#include "library/types.hpp"
+#include "library/general_functions.hpp"
 
 #define MAKE(NAME, TYPE, ADDRESS) make_variable(NAME, ADDRESS, get_datatype(TYPE))
 
@@ -18,7 +19,7 @@ namespace amasm::compiler {
     // editors
 
     void Context::insert_datatype(const DatatypePtr& ptr) {
-        _datatypes.emplace(shared::hash_string(ptr->name()), ptr);
+        _datatypes.emplace(lib::hash_string(ptr->name()), ptr);
     }
 
     // getters
@@ -28,15 +29,15 @@ namespace amasm::compiler {
         return it != _defined_tokens.end() ? it->second : default_token;
     }
     const Datatype& Context::get_datatype(const std::string& key) const {
-        constexpr auto void_hash = shared::ext::crc64(0, "void", 4);
-        const auto it = _datatypes.find(shared::hash_string(key));
+        constexpr auto void_hash = lib::ext::crc64(0, "void", 4);
+        const auto it = _datatypes.find(lib::hash_string(key));
         return *(it != _datatypes.end() ? it->second : _datatypes.at(void_hash));
     }
     const std::vector<TokenType>& Context::get_rule(const std::string& key) const {
         return _rules.at(key);
     }
     const inst_info& Context::get_inst(const std::string& key) {
-        return _instructions.at(shared::hash_string(key));
+        return _instructions.at(lib::hash_string(key));
     }
     const VariablesCollection& Context::global_variables() const {
         return _global_variables;
@@ -64,7 +65,7 @@ namespace amasm::compiler {
     }
     void Context::_init_datatypes() {
         static auto wrap = [](const DatatypePtr& ptr) {
-            return std::make_pair(shared::hash_string(ptr->name()), ptr);
+            return std::make_pair(lib::hash_string(ptr->name()), ptr);
         };
         _datatypes = {
             wrap(make_datatype("void", 0)),
@@ -102,7 +103,7 @@ namespace amasm::compiler {
         auto inst_collection = generate_isa_info();
 
         for (auto&& it : inst_collection) {
-            const auto key = shared::hash_string(it.name);
+            const auto key = lib::hash_string(it.name);
             _instructions.emplace(key, std::move(it));
         }
 
