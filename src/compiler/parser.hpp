@@ -1,0 +1,5 @@
+#pragma
+
+namespace amasm::compiler {
+
+}

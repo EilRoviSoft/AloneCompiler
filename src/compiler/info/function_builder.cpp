@@ -1,18 +1,9 @@
-#include "functions.hpp"
+#include "function_builder.hpp"
 
 //std
 #include <stdexcept>
 
 namespace amasm::compiler {
-    // Function
-
-    const Datatype& Function::return_type() { return *m_types.front(); }
-    const Datatype& Function::argument_type(size_t idx) { return *m_types[idx + 1]; }
-    const Layer& Function::scope() { return *m_scope; }
-    const InstDecl& Function::line(size_t idx) { return m_lines[idx]; }
-
-    // FunctionBuilder
-
     Function::Function() :
         IScopeElement(Type::Function) {
     }
@@ -35,15 +26,15 @@ namespace amasm::compiler {
         m_product->m_types.emplace_back(&datatype);
         return *this;
     }
-    FunctionBuilder& FunctionBuilder::scope(Layer& scope) {
-        m_product->m_scope = &scope;
+    FunctionBuilder& FunctionBuilder::scope_id(size_t scope_id) {
+        m_product->m_scope_id = scope_id;
         _status.scope = true;
         return *this;
     }
     FunctionBuilder& FunctionBuilder::add_to_scope(ScopeElement&& elem) {
         if (!_status.scope)
-            throw std::runtime_error("you have to specify scope first");
-        m_product->m_scope->add_ptr(std::move(elem));
+            throw std::runtime_error("you have to specify scope_id first");
+
         return *this;
     }
     FunctionBuilder& FunctionBuilder::add_line(InstDecl&& decl) {
@@ -53,7 +44,7 @@ namespace amasm::compiler {
 
     Function&& FunctionBuilder::build() {
         if (!_status.name || !_status.return_type || !_status.scope)
-            throw std::runtime_error("you have to specify name, return_type and scope");
+            throw std::runtime_error("you have to specify name, return_type and scope_id");
 
         return IBuilder::build();
     }

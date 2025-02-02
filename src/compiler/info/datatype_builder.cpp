@@ -1,4 +1,4 @@
-#include "datatypes.hpp"
+#include "datatype_builder.hpp"
 
 //std
 #include <stdexcept>
@@ -7,16 +7,6 @@
 #include "library/general_functions.hpp"
 
 namespace amasm::compiler {
-    //Datatype
-
-    size_t Datatype::size() const { return m_size; }
-    const Datatype::pole_info& Datatype::pole(const std::string& pole_name) const {
-        size_t hash = lib::hash_string(pole_name);
-        return m_poles_search.at(hash);
-    }
-
-    // DatatypeBuilder
-
     Datatype::Datatype() :
         IScopeElement(Type::Datatype) {
     }

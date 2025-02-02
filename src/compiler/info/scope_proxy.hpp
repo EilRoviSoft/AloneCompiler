@@ -5,45 +5,41 @@
 #include <ranges>
 
 //compiler_info
-#include "compiler/info/datatypes.hpp"
-#include "compiler/info/functions.hpp"
-#include "compiler/info/layers.hpp"
+#include "compiler/info/datatype.hpp"
+#include "compiler/info/function.hpp"
 #include "compiler/info/scope_element.hpp"
-#include "compiler/info/variables.hpp"
+#include "compiler/info/variable.hpp"
 
 namespace amasm::compiler {
     class ScopeProxy {
     public:
         ScopeProxy() = default;
-        explicit ScopeProxy(Scope& parent);
+        explicit ScopeProxy(ScopeContainer& parent);
 
-        void set_parent(Scope& parent);
-
-        // expanding in height
-        void alloc_new_layer();
-        // expanding in width
-        void alloc_new_scope();
-
-        void set_global_scope();
-
-        const std::unordered_map<size_t, const IScopeElement*>& get_layer();
+        void set_parent(ScopeContainer& parent);
 
         template<scope_element_t T>
-        void add_element(T&& elem) {
+        void add(T&& elem, size_t local_id = 0) {
             auto ptr = std::make_shared<IScopeElement>(std::forward<T>(elem));
-            add_ptr(std::move(ptr));
+            add(local_id, std::move(ptr));
         }
-        void add_ptr(ScopeElement&& elem);
+        void add_from_ptr(ScopeElement&& elem, size_t local_id);
 
-        std::list<const Datatype*> get_datatypes() const;
-        std::list<const Function*> get_functions() const;
-        std::list<const Variable*> get_variables() const;
+        const Datatype& get_datatype(const std::string& key, size_t local_id = 0) const;
+        const Function& get_function(const std::string& key, size_t local_id = 0) const;
+        const Variable& get_variable(const std::string& key, size_t local_id = 0) const;
+
+        std::list<const Datatype*> get_all_datatypes() const;
+        std::list<const Function*> get_all_functions() const;
+        std::list<const Variable*> get_all_variables() const;
 
     private:
-        Scope* _parent = nullptr;
-        layers_pos _pos = { .idx = 0, .idy = 0 };
+        ScopeContainer* _parent = nullptr;
 
-        template<scope_element_t T>
-        std::list<const T*> _get_by_type(IScopeElement::Type type) const;
+        template<scope_element_t TRet, IScopeElement::Type TType>
+        const TRet& _get_by_type(const std::string& key, size_t local_id) const;
+
+        template<scope_element_t TRet, IScopeElement::Type TType>
+        std::list<const TRet*> _get_all_by_type() const;
     };
 }

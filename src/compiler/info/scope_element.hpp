@@ -4,10 +4,11 @@
 #include <concepts>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace amasm::compiler {
     class IScopeElement {
-        friend class Scope;
+        friend class ScopeContainer;
         friend class ScopeProxy;
 
     public:
@@ -36,6 +37,8 @@ namespace amasm::compiler {
 
     template<typename T>
     concept scope_element_t = requires {
-        std::derived_from<T, IScopeElement>;
+        std::is_base_of_v<IScopeElement, T>;
     };
+
+    using layer = std::unordered_map<size_t, const IScopeElement&>;
 }

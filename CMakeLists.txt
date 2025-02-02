@@ -20,17 +20,18 @@ include_directories(src/vm)
 include_directories(src/library)
 
 add_executable(AloneCompiler
-	"src/compiler/info/datatypes.cpp"
-	"src/compiler/info/functions.cpp"
-	"src/compiler/info/instructions.cpp"
-	"src/compiler/info/scope.cpp"
+	"src/compiler/info/datatype_builder.cpp"
+	"src/compiler/info/function_builder.cpp"
+	"src/compiler/info/instruction_builder.cpp"
+	"src/compiler/info/instruction_factory.cpp"
+	"src/compiler/info/scope_element.cpp"
 	"src/compiler/info/scope_proxy.cpp"
 	"src/compiler/info/tokens.cpp"
-	"src/compiler/info/variables.cpp"
+	"src/compiler/info/variable_builder.cpp"
 	 
 	"src/compiler/context.cpp"
 	"src/compiler/lexer.cpp"
-	#"src/compiler/parser.cpp"
+	"src/compiler/parser.cpp"
 	"src/compiler/scanner.cpp"
 	#"src/compiler/translator.cpp"
 
@@ -43,7 +44,7 @@ add_executable(AloneCompiler
 	"src/library/literals.cpp"
 		
 	"src/main.cpp"
- "src/compiler/info/scope_element.cpp" "src/compiler/info/layers.cpp")
+)
 
 add_compile_definitions(DEBUG_STATUS)
 

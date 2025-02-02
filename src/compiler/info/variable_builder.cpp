@@ -1,16 +1,9 @@
-#include "variables.hpp"
+#include "variable_builder.hpp"
 
 //std
 #include <stdexcept>
 
 namespace amasm::compiler {
-    // Variable
-
-    lib::address Variable::address() const { return m_address; }
-    const Datatype& Variable::datatype() const { return *m_datatype; }
-
-    // VariableBuilder
-
     Variable::Variable() :
         IScopeElement(Type::Variable) {
     }
