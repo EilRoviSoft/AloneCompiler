@@ -15,16 +15,17 @@ set(CMAKE_CXX_STANDARD 23)
 
 include_directories(src)
 include_directories(src/compiler)
+include_directories(src/compiler/info)
 include_directories(src/vm)
 include_directories(src/library)
 
 add_executable(AloneCompiler
-	"src/compiler/context.cpp"
-	"src/compiler/datatypes.cpp"
-	"src/compiler/functions.cpp"
-	"src/compiler/instructions.cpp"
-	"src/compiler/tokens.cpp"
-	"src/compiler/variables.cpp" 
+	"src/compiler/info/datatypes.cpp"
+	"src/compiler/info/functions.cpp"
+	"src/compiler/info/instructions.cpp"
+	"src/compiler/info/scope.cpp"
+	"src/compiler/info/tokens.cpp"
+	 
 	"src/compiler/lexer.cpp"
 	"src/compiler/parser.cpp"
 	"src/compiler/scanner.cpp"
@@ -38,7 +39,7 @@ add_executable(AloneCompiler
 	"src/library/bytecode.cpp"
 	"src/library/literals.cpp"
 		
-	"src/main.cpp")
+	"src/main.cpp" "src/compiler/info/scope_info.cpp" "src/compiler/info/variables.cpp" "src/compiler/context.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 
@@ -47,6 +48,7 @@ add_compile_definitions(DEBUG_STATUS)
 target_include_directories(AloneCompiler PRIVATE
 		src
 		src/compiler
+		src/compiler/info
 		src/vm
 		src/library
 )

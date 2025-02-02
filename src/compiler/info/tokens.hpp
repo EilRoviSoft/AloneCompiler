@@ -3,6 +3,7 @@
 //std
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace amasm::compiler {
@@ -28,8 +29,10 @@ namespace amasm::compiler {
         token(const TokenType& type, std::string literal);
     };
 
-    token make_token(const Context& ctx, char ch);
-    token make_token(const Context& ctx, std::string str);
+    using TokenDict = std::unordered_map<std::string, TokenType>;
+
+    token make_token(const TokenDict& dict, char ch);
+    token make_token(const TokenDict& dict, std::string str);
 
     using token_vector = std::vector<token>;
 }
