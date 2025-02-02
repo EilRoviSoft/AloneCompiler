@@ -10,7 +10,7 @@ namespace amasm::lib {
         IFactory() : m_product(new T) {}
         virtual ~IFactory() = default;
 
-        virtual T&& make() { return *m_product; }
+        virtual T&& make() { return std::move(*m_product); }
 
     protected:
         std::unique_ptr<T> m_product;

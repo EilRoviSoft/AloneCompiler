@@ -1,5 +1,8 @@
 #include "variables.hpp"
 
+//std
+#include <stdexcept>
+
 namespace amasm::compiler {
     // Variable
 
@@ -7,6 +10,10 @@ namespace amasm::compiler {
     const Datatype& Variable::datatype() const { return *m_datatype; }
 
     // VariableBuilder
+
+    Variable::Variable() :
+        IScopeElement(Type::Variable) {
+    }
 
     VariableBuilder& VariableBuilder::name(std::string name) {
         m_product->m_name = std::move(name);

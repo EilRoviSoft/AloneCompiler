@@ -2,9 +2,8 @@
 
 //std
 #include <string>
-
-//compiler_info
-#include "compiler/info/scope_info.hpp"
+#include <list>
+#include <vector>
 
 //library
 #include "library/builder.hpp"
@@ -13,26 +12,21 @@
 
 namespace amasm::compiler {
     class InstInfo {
-        friend class ScopeProxy;
         friend class InstInfoBuilder;
 
     public:
-        InstInfo(const InstInfo&) = default;
-        InstInfo(InstInfo&&) = default;
-
         const std::string& name();
         lib::inst_code code() const;
         size_t min_args() const;
         size_t max_args() const;
         size_t bit_depth() const;
 
+        size_t hash() const;
+
     protected:
         std::string m_name;
         lib::inst_code m_code;
         size_t m_min_args, m_max_args, m_bit_depth;
-
-    private:
-        InstInfo() = default;
     };
 
     class InstInfoBuilder : public lib::IBuilder<InstInfo> {
@@ -66,9 +60,6 @@ namespace amasm::compiler {
         std::string m_name;
         ptrdiff_t m_value;
         ArgumentType m_type;
-
-    private:
-        ArgumentInfo() = default;
     };
 
     class ArgumentInfoBuilder : public lib::IBuilder<ArgumentInfo> {

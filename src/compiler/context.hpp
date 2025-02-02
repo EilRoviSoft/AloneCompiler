@@ -9,6 +9,7 @@
 //compiler_info
 #include "compiler/info/instructions.hpp"
 #include "compiler/info/scope.hpp"
+#include "compiler/info/scope_proxy.hpp"
 #include "compiler/info/tokens.hpp"
 
 namespace amasm::compiler {
@@ -16,14 +17,14 @@ namespace amasm::compiler {
     public:
         Context();
 
-        ScopeProxy create_proxy();
-
+        ScopeProxy& global_proxy();
         const std::unordered_map<std::string, TokenType>& get_defined_tokens() const;
-        const std::vector<TokenType>& get_rule() const;
+        const std::vector<TokenType>& get_rule(const std::string& key) const;
         const InstInfo& get_inst(const std::string& key);
 
     private:
         Scope _scope;
+        ScopeProxy _global_proxy;
         std::unordered_map<std::string, TokenType> _defined_tokens;
         std::unordered_map<std::string, std::vector<TokenType>> _rules;
         std::unordered_set<std::string> _surrounded_by_braces;

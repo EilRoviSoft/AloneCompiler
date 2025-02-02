@@ -24,12 +24,12 @@ namespace amasm::compiler {
             if (lib::is_alpha_numeric(c)) {
                 temp += c;
             } else if (!temp.empty()) {
-                result.emplace_back(make_token(_ctx, temp));
+                result.emplace_back(make_token(_ctx.get_defined_tokens(), temp));
                 temp.clear();
             }
 
             if (_singular_tokens.contains(c))
-                result.emplace_back(make_token(_ctx, c));
+                result.emplace_back(make_token(_ctx.get_defined_tokens(), c));
         }
 
         return result;

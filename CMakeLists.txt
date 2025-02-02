@@ -24,12 +24,15 @@ add_executable(AloneCompiler
 	"src/compiler/info/functions.cpp"
 	"src/compiler/info/instructions.cpp"
 	"src/compiler/info/scope.cpp"
+	"src/compiler/info/scope_proxy.cpp"
 	"src/compiler/info/tokens.cpp"
+	"src/compiler/info/variables.cpp"
 	 
+	"src/compiler/context.cpp"
 	"src/compiler/lexer.cpp"
-	"src/compiler/parser.cpp"
+	#"src/compiler/parser.cpp"
 	"src/compiler/scanner.cpp"
-	"src/compiler/translator.cpp"
+	#"src/compiler/translator.cpp"
 
 	"src/executor/context.cpp"
 	"src/executor/instructions.cpp"
@@ -39,7 +42,8 @@ add_executable(AloneCompiler
 	"src/library/bytecode.cpp"
 	"src/library/literals.cpp"
 		
-	"src/main.cpp" "src/compiler/info/scope_info.cpp" "src/compiler/info/variables.cpp" "src/compiler/context.cpp")
+	"src/main.cpp"
+ "src/compiler/info/scope_element.cpp" "src/compiler/info/layers.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 

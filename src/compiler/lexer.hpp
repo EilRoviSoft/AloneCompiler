@@ -5,7 +5,9 @@
 
 //compiler
 #include "compiler/context.hpp"
-#include "compiler/tokens.hpp"
+
+//compiler_info
+#include "compiler/info/tokens.hpp"
 
 namespace amasm::compiler {
     class Lexer {

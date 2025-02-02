@@ -6,14 +6,15 @@
 #include <unordered_map>
 
 //compiler_info
-#include "compiler/info/scope_info.hpp"
+#include "compiler/info/scope_element.hpp"
 
 //library
 #include "library/builder.hpp"
 
 namespace amasm::compiler {
 	class Datatype : public IScopeElement {
-		friend class ScopeProxy;
+		friend class Scope;
+		friend class IBuilder;
 		friend class DatatypeBuilder;
 
 		struct pole_info {
@@ -23,8 +24,7 @@ namespace amasm::compiler {
 		};
 
 	public:
-		Datatype(const Datatype&) = default;
-		Datatype(Datatype&&) = default;
+		Datatype();
 
 		size_t size() const;
 		const pole_info& pole(const std::string& pole_name) const;
@@ -33,9 +33,6 @@ namespace amasm::compiler {
 		size_t m_size;
 		std::list<pole_info> m_poles;
 		std::unordered_map<size_t, const pole_info&> m_poles_search;
-
-	private:
-		Datatype() = default;
 	};
 
 	class DatatypeBuilder : public lib::IBuilder<Datatype> {

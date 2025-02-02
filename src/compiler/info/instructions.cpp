@@ -3,6 +3,9 @@
 //std
 #include <stdexcept>
 
+//library
+#include "library/general_functions.hpp"
+
 namespace amasm::compiler {
     //InstInfo
 
@@ -11,6 +14,8 @@ namespace amasm::compiler {
     size_t InstInfo::min_args() const { return m_min_args; }
     size_t InstInfo::max_args() const { return m_max_args; }
     size_t InstInfo::bit_depth() const { return m_bit_depth; }
+
+    size_t InstInfo::hash() const { return lib::hash_string(m_name); }
 
     //InstInfoBuilder
 
