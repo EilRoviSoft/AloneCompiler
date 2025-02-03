@@ -4,10 +4,6 @@
 #include <stdexcept>
 
 namespace amasm::compiler {
-    Variable::Variable() :
-        IScopeElement(Type::Variable) {
-    }
-
     VariableBuilder& VariableBuilder::name(std::string name) {
         m_product->m_name = std::move(name);
         _status.name = true;

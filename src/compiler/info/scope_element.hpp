@@ -1,9 +1,9 @@
 #pragma once
 
 //std
-#include <concepts>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 namespace amasm::compiler {
@@ -15,23 +15,15 @@ namespace amasm::compiler {
         virtual ~IScopeElement() = default;
 
         const std::string& name() const;
+        size_t type_id() const;
 
         virtual size_t hash() const;
 
     protected:
+        size_t m_type_id;
         std::string m_name;
 
-        enum class Type : uint8_t {
-            None = 0,
-            Datatype,
-            Function,
-            Variable
-        };
-
-        explicit IScopeElement(Type type);
-
-    private:
-        Type _type;
+        explicit IScopeElement(size_t type);
     };
     using ScopeElement = std::shared_ptr<IScopeElement>;
 

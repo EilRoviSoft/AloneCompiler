@@ -22,7 +22,7 @@ namespace amasm::compiler {
 		};
 
 	public:
-		Datatype();
+		Datatype() : IScopeElement(1) {}
 
 		size_t size() const { return m_size; }
 		const pole_info& pole(const std::string& pole_name) const {

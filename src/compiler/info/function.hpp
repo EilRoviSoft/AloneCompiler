@@ -13,7 +13,7 @@ namespace amasm::compiler {
         friend class FunctionBuilder;
 
     public:
-        Function();
+        Function() : IScopeElement(2) {}
 
         const Datatype& return_type() { return *m_types.front(); }
         const Datatype& argument_type(size_t idx) { return *m_types[idx + 1]; }

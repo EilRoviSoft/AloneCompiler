@@ -7,10 +7,6 @@
 #include "library/general_functions.hpp"
 
 namespace amasm::compiler {
-    Datatype::Datatype() :
-        IScopeElement(Type::Datatype) {
-    }
-
     DatatypeBuilder& DatatypeBuilder::name(std::string name) {
         m_product->m_name = std::move(name);
         _status.name = true;

@@ -12,7 +12,7 @@ namespace amasm::compiler {
 		friend class VariableBuilder;
 
 	public:
-		Variable();
+		Variable() : IScopeElement(3) {}
 
 		lib::address address() const { return m_address; }
 		const Datatype& datatype() const { return *m_datatype; }

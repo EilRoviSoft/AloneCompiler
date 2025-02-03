@@ -4,10 +4,6 @@
 #include <stdexcept>
 
 namespace amasm::compiler {
-    Function::Function() :
-        IScopeElement(Type::Function) {
-    }
-
     FunctionBuilder::FunctionBuilder() {
         m_product->m_types.emplace_back(nullptr);
     }

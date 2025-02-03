@@ -3,8 +3,12 @@
 //std
 #include <list>
 #include <ranges>
+#include <tuple>
 
 //compiler_info
+#include <tuple>
+#include <tuple>
+
 #include "compiler/info/datatype.hpp"
 #include "compiler/info/function.hpp"
 #include "compiler/info/scope_element.hpp"
@@ -26,6 +30,8 @@ namespace amasm::compiler {
         }
         void add_from_ptr(ScopeElement&& elem, size_t local_id);
 
+        const IScopeElement& get_ptr(const std::string& key, size_t local_id = 0) const;
+
         const Datatype& get_datatype(const std::string& key, size_t local_id = 0) const;
         const Function& get_function(const std::string& key, size_t local_id = 0) const;
         const Variable& get_variable(const std::string& key, size_t local_id = 0) const;
@@ -37,10 +43,9 @@ namespace amasm::compiler {
     private:
         ScopeContainer* _parent = nullptr;
 
-        template<scope_element_t TRet>
-        const TRet* _get_by_type(const std::string& key, size_t local_id) const;
+        const IScopeElement* _get_ptr(const std::string& key, size_t local_id) const;
 
-        template<scope_element_t TRet, IScopeElement::Type TType>
+        template<scope_element_t TRet, size_t TypeId>
         std::list<const TRet*> _get_all_by_type() const;
     };
 }
