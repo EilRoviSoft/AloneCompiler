@@ -40,5 +40,5 @@ namespace amasm::compiler {
         std::is_base_of_v<IScopeElement, T>;
     };
 
-    using layer = std::unordered_map<size_t, const IScopeElement&>;
+    using layer = std::unordered_map<size_t, const IScopeElement*>;
 }

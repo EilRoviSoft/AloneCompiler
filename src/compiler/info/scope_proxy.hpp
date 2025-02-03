@@ -20,8 +20,9 @@ namespace amasm::compiler {
 
         template<scope_element_t T>
         void add(T&& elem, size_t local_id = 0) {
-            auto ptr = std::make_shared<IScopeElement>(std::forward<T>(elem));
-            add(local_id, std::move(ptr));
+            auto derived = std::make_shared<T>(std::forward<T>(elem));
+            auto base = std::static_pointer_cast<IScopeElement>(derived);
+            add_from_ptr(std::move(base), local_id);
         }
         void add_from_ptr(ScopeElement&& elem, size_t local_id);
 
@@ -36,8 +37,8 @@ namespace amasm::compiler {
     private:
         ScopeContainer* _parent = nullptr;
 
-        template<scope_element_t TRet, IScopeElement::Type TType>
-        const TRet& _get_by_type(const std::string& key, size_t local_id) const;
+        template<scope_element_t TRet>
+        const TRet* _get_by_type(const std::string& key, size_t local_id) const;
 
         template<scope_element_t TRet, IScopeElement::Type TType>
         std::list<const TRet*> _get_all_by_type() const;

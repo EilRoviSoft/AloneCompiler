@@ -12,6 +12,15 @@ endif()
 project("AloneCompiler")
 
 set(CMAKE_CXX_STANDARD 23)
+include(FetchContent)
+
+FetchContent_Declare(
+	FrozenLib
+	GIT_REPOSITORY https://github.com/serge-sans-paille/frozen
+	GIT_TAG master
+)
+
+FetchContent_MakeAvailable(FrozenLib)
 
 include_directories(src)
 include_directories(src/compiler)
@@ -47,6 +56,7 @@ add_executable(AloneCompiler
 )
 
 add_compile_definitions(DEBUG_STATUS)
+#add_compile_definitions(CONSTEXPR_COMPILE_DATA)
 
 # TODO: Add tests and install targets if needed.
 
@@ -57,5 +67,6 @@ target_include_directories(AloneCompiler PRIVATE
 		src/vm
 		src/library
 )
+target_link_libraries(AloneCompiler PRIVATE frozen-headers)
 
 set_property(TARGET AloneCompiler PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res")

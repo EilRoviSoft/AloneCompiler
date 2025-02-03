@@ -12,9 +12,14 @@ namespace amasm::compiler {
     class ScopeContainer {
         friend class ScopeProxy;
 
+    public:
+        ScopeContainer() {
+            _layers.emplace_back();
+        }
+
     private:
         std::list<ScopeElement> _container;
         std::vector<layer> _layers;
-        std::unordered_map<size_t, const IScopeElement&> _search;
+        std::unordered_map<size_t, const IScopeElement*> _search;
     };
 }

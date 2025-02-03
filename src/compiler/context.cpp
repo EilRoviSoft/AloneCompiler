@@ -1,5 +1,8 @@
 #include "context.hpp"
 
+//std
+#include <array>
+
 //library
 #include "library/general_functions.hpp"
 
@@ -14,6 +17,7 @@ namespace amasm::compiler {
 
     Context::Context() :
         _proxy(_scope) {
+        _init();
     }
 
     // getters
@@ -93,48 +97,25 @@ namespace amasm::compiler {
         }
     }
     void Context::_init_global_variables() {
-        auto make = [this](std::string&& name, lib::address address, const std::string& type_name) {
-            const auto& type = _proxy.get_datatype(type_name);
-            return VariableBuilder().name(std::move(name)).address(address).datatype(type).build();
+        const std::array vars = {
+            std::make_pair<std::string, std::vector<std::string>>("uint8",
+                { "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh" }),
+            std::make_pair<std::string, std::vector<std::string>>("uint16",
+                { "ax", "bx", "cx", "dx", "ipx", "bpx", "spx", "flags", "gpx" }),
+            std::make_pair<std::string, std::vector<std::string>>("uint32",
+                { "eax", "ebx", "ecx", "edx", "eip", "ebp", "esp", "eflags", "egp" }),
+            std::make_pair<std::string, std::vector<std::string>>("uint64",
+                { "rax", "rbx", "rcx", "rdx", "rip", "rbp", "rsp", "rflags", "rgp" }),
         };
-
-        _proxy.add(make("al", AL, "uint8"));
-        _proxy.add(make("ah", AH, "uint8"));
-        _proxy.add(make("bl", BL, "uint8"));
-        _proxy.add(make("bh", BH, "uint8"));
-        _proxy.add(make("cl", CL, "uint8"));
-        _proxy.add(make("ch", CH, "uint8"));
-        _proxy.add(make("dl", DL, "uint8"));
-        _proxy.add(make("dh", DH, "uint8"));
-
-        _proxy.add(make("ax", AX, "uint16"));
-        _proxy.add(make("bx", BX, "uint16"));
-        _proxy.add(make("cx", CX, "uint16"));
-        _proxy.add(make("dx", DX, "uint16"));
-        _proxy.add(make("ipx", IPX, "uint16"));
-        _proxy.add(make("bpx", BPX, "uint16"));
-        _proxy.add(make("spx", SPX, "uint16"));
-        _proxy.add(make("flags", FLAGS, "uint16"));
-        _proxy.add(make("gpx", GPX, "uint16"));
-
-        _proxy.add(make("eax", EAX, "uint32"));
-        _proxy.add(make("ebx", EBX, "uint32"));
-        _proxy.add(make("ecx", ECX, "uint32"));
-        _proxy.add(make("edx", EDX, "uint32"));
-        _proxy.add(make("eip", EIP, "uint32"));
-        _proxy.add(make("ebp", EBP, "uint32"));
-        _proxy.add(make("esp", ESP, "uint32"));
-        _proxy.add(make("eflags", EFLAGS, "uint32"));
-        _proxy.add(make("egp", EGP, "uint32"));
-
-        _proxy.add(make("rax", RAX, "uint64"));
-        _proxy.add(make("rbx", RBX, "uint64"));
-        _proxy.add(make("rcx", RCX, "uint64"));
-        _proxy.add(make("rdx", RDX, "uint64"));
-        _proxy.add(make("rip", RIP, "uint64"));
-        _proxy.add(make("rbp", RBP, "uint64"));
-        _proxy.add(make("rsp", RSP, "uint64"));
-        _proxy.add(make("rflags", RFLAGS, "uint64"));
-        _proxy.add(make("rgp", RGP, "uint64"));
+        for (const auto& [type_name, collection] : vars)
+            for (const auto& var_name : collection) {
+                const auto& type = _proxy.get_datatype(type_name);
+                auto var = VariableBuilder()
+                          .name(var_name)
+                          .address(lib::str_to_register(var_name))
+                          .datatype(type)
+                          .build();
+                _proxy.add(std::move(var));
+            }
     }
 }

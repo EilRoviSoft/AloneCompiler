@@ -4,6 +4,13 @@
 #include <functional>
 #include <string>
 
+//frozen
+#include "frozen/unordered_map.h"
+#include "frozen/string.h"
+
+//library
+#include "library/types.hpp"
+
 namespace amasm::lib::ext {
 #include "library/crc64.hpp"
 }
@@ -33,6 +40,50 @@ namespace amasm::lib {
     }
     constexpr bool is_whitespace(char c) {
         return c == ' ' || c == '\n' || c == '\t';
+    }
+
+    inline RegisterType cstr_to_register(const char* data, size_t size) {
+        constexpr frozen::unordered_map<frozen::string, RegisterType, 35> reference_dict = {
+            { "al", AL },
+            { "ah", AH },
+            { "bl", BL },
+            { "bh", BH },
+            { "cl", CL },
+            { "ch", CH },
+            { "dl", DL },
+            { "dh", DH },
+            { "ax", AX },
+            { "bx", BX },
+            { "cx", CX },
+            { "dx", DX },
+            { "ipx", IPX },
+            { "bpx", BPX },
+            { "spx", SPX },
+            { "flags", FLAGS },
+            { "gpx", GPX },
+            { "eax", EAX },
+            { "ebx", EBX },
+            { "ecx", ECX },
+            { "edx", EDX },
+            { "eip", EIP },
+            { "ebp", EBP },
+            { "esp", ESP },
+            { "eflags", EFLAGS },
+            { "egp", EGP },
+            { "rax", RAX },
+            { "rbx", RBX },
+            { "rcx", RCX },
+            { "rdx", RDX },
+            { "rip", RIP },
+            { "rbp", RBP },
+            { "rsp", RSP },
+            { "rflags", RFLAGS },
+            { "rgp", RGP }
+        };
+        return reference_dict.at(frozen::string(data, size));
+    }
+    inline RegisterType str_to_register(const std::string& str) {
+        return cstr_to_register(str.data(), str.size());
     }
 
     template<typename T, typename TBinaryOp, typename TRule>
