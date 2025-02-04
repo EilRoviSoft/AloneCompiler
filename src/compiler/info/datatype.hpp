@@ -31,12 +31,12 @@ namespace amasm::compiler {
 		}
 
 		ScopeElement clone() const override {
-			return std::make_shared<IScopeElement>(*this);
+			return std::make_shared<Datatype>(*this);
 		}
 
 	protected:
 		size_t m_size = 0;
 		std::list<pole_info> m_poles;
-		std::unordered_map<size_t, const pole_info&> m_poles_search;
+		std::unordered_map<size_t, const pole_info> m_poles_search;
 	};
 }

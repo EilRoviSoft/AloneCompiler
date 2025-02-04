@@ -18,7 +18,7 @@ namespace amasm::compiler {
 		const Datatype& datatype() const { return *m_datatype; }
 
 		ScopeElement clone() const override {
-			return std::make_shared<IScopeElement>(*this);
+			return std::make_shared<Variable>(*this);
 		}
 
 	protected:

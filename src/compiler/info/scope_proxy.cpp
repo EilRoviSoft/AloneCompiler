@@ -49,7 +49,7 @@ namespace amasm::compiler {
 
     const IScopeElement* ScopeProxy::_get_ptr(const std::string& key, size_t local_id) const {
         const IScopeElement* result;
-        size_t hashed_key = lib::hash_string(key);
+        auto hashed_key = lib::hash_string(key);
         const auto& local = _parent->_layers[local_id];
         const auto& global = _parent->_layers.front();
 

@@ -18,15 +18,15 @@ namespace amasm::compiler {
         return *this;
     }
     DatatypeBuilder& DatatypeBuilder::add_pole(std::string name, const Datatype& type) {
-        size_t hash = lib::hash_string(name);
-        bool contains = m_product->m_poles_search.contains(hash);
+        auto hashed_key = lib::hash_string(name);
 
-        if (!contains) {
-            bool has_poles = m_product->m_poles.empty();
-            ptrdiff_t offset = has_poles ? 0 : m_product->m_poles.back().offset + m_product->m_poles.back().type.m_size;
-            const auto& it = m_product->m_poles.emplace_back(std::move(name), type, offset);
-            m_product->m_poles_search.emplace(hash, it);
-        }
+        if (m_product->m_poles_search.contains(hashed_key))
+            return *this;
+
+        bool has_poles = m_product->m_poles.empty();
+        ptrdiff_t offset = has_poles ? 0 : m_product->m_poles.back().offset + m_product->m_poles.back().type.m_size;
+        const auto& it = m_product->m_poles.emplace_back(std::move(name), type, offset);
+        m_product->m_poles_search.emplace(hashed_key, it);
 
         return *this;
     }

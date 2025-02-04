@@ -32,12 +32,14 @@ namespace amasm::compiler {
         return _rules.at(key);
     }
     const InstInfo& Context::get_inst(const std::string& key) {
-        return _instructions.at(lib::hash_string(key));
+        auto hashed_key = lib::hash_string(key);
+        return _instructions.at(hashed_key);
     }
 
     // copy data
 
     ScopeContainer Context::clone_scope() const {
+        return _scope.clone();
     }
 
     // initializers
@@ -91,13 +93,13 @@ namespace amasm::compiler {
         };
     }
     void Context::_init_instructions() {
-        auto inst_collection = InstInfoFactory().generate_info().make();
+        auto inst_collection = InstInfoFactory().generate_info().get_product();
 
         for (const auto& v : inst_collection)
             _defined_tokens.emplace(v.name(), TokenType::InstName);
 
         for (auto&& it : inst_collection) {
-            size_t hashed_key = it.hash();
+            auto hashed_key = it.hash();
             _instructions.emplace(hashed_key, std::move(it));
         }
     }
@@ -119,7 +121,7 @@ namespace amasm::compiler {
                           .name(var_name)
                           .address(lib::str_to_register(var_name))
                           .datatype(type)
-                          .build();
+                          .get_product();
                 _proxy.add(std::move(var));
             }
     }

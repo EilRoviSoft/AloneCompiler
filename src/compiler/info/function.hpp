@@ -21,7 +21,7 @@ namespace amasm::compiler {
         const InstDecl& line(size_t idx) { return m_lines[idx]; }
 
         ScopeElement clone() const override {
-            return std::make_shared<IScopeElement>(*this);
+            return std::make_shared<Function>(*this);
         }
 
     protected:
