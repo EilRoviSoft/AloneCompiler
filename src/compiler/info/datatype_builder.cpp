@@ -31,10 +31,10 @@ namespace amasm::compiler {
         return *this;
     }
 
-    Datatype&& DatatypeBuilder::build() {
+    Datatype&& DatatypeBuilder::get_product() {
         if (!_status.name || !_status.size)
             throw std::runtime_error("you have to specify name and size of Datatype");
 
-        return IBuilder::build();
+        return IBuilder::get_product();
     }
 }

@@ -30,8 +30,12 @@ namespace amasm::compiler {
 			return m_poles_search.at(hash);
 		}
 
+		ScopeElement clone() const override {
+			return std::make_shared<IScopeElement>(*this);
+		}
+
 	protected:
-		size_t m_size;
+		size_t m_size = 0;
 		std::list<pole_info> m_poles;
 		std::unordered_map<size_t, const pole_info&> m_poles_search;
 	};

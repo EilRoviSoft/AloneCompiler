@@ -14,7 +14,7 @@ namespace amasm::compiler {
         VariableBuilder& address(lib::address address);
         VariableBuilder& datatype(const Datatype& datatype);
 
-        Variable&& build() override;
+        Variable&& get_product() override;
 
     private:
         struct {

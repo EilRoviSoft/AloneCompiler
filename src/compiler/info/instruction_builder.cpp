@@ -17,31 +17,25 @@ namespace amasm::compiler {
         return *this;
     }
     InstInfoBuilder& InstInfoBuilder::arguments_count(size_t count) {
-        m_product->m_min_args = m_product->m_max_args = count;
-        _status.arguments = true;
+        m_product->m_min_args = count;
+        m_product->m_max_args = count;
         return *this;
     }
     InstInfoBuilder& InstInfoBuilder::arguments_count(size_t min, size_t max) {
         m_product->m_min_args = min;
         m_product->m_max_args = max;
-        _status.arguments = true;
         return *this;
     }
     InstInfoBuilder& InstInfoBuilder::bit_depth(size_t bit_depth) {
         m_product->m_bit_depth = bit_depth;
-        _status.bit_depth = true;
         return *this;
     }
 
-    InstInfo&& InstInfoBuilder::build() {
+    InstInfo&& InstInfoBuilder::get_product() {
         if (!_status.name || !_status.code)
             throw std::runtime_error("you have to specify name and code of InstInfo");
-        if (!_status.arguments)
-            m_product->m_min_args = m_product->m_max_args = 0;
-        if (!_status.bit_depth)
-            m_product->m_bit_depth = 0;
 
-        return IBuilder::build();
+        return IBuilder::get_product();
     }
 
     // ArgumentInfoBuilder
@@ -63,7 +57,7 @@ namespace amasm::compiler {
         return *this;
     }
 
-    ArgumentInfo&& ArgumentInfoBuilder::build() {
+    ArgumentInfo&& ArgumentInfoBuilder::get_product() {
         if (!_status.name && !_status.value)
             throw std::runtime_error("you have to specify name or/and of ArgumentInfo");
         if (!_status.type) {
@@ -75,7 +69,7 @@ namespace amasm::compiler {
                 m_product->m_type = ArgumentType::IndirectWithDisplacement;
         }
 
-        return IBuilder::build();
+        return IBuilder::get_product();
     }
 
     // InstDeclBuilder
@@ -90,10 +84,10 @@ namespace amasm::compiler {
         return *this;
     }
 
-    InstDecl&& InstDeclBuilder::build() {
+    InstDecl&& InstDeclBuilder::get_product() {
         if (!_status.name)
             throw std::runtime_error("you have to specify name of InstDecl");
 
-        return IBuilder::build();
+        return IBuilder::get_product();
     }
 }

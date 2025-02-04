@@ -22,6 +22,8 @@ namespace amasm::compiler {
         const std::vector<TokenType>& get_rule(const std::string& key) const;
         const InstInfo& get_inst(const std::string& key);
 
+        ScopeContainer clone_scope() const;
+
     private:
         ScopeContainer _scope;
         ScopeProxy _proxy;

@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 namespace amasm::compiler {
+    using ScopeElement = std::shared_ptr<class IScopeElement>;
     class IScopeElement {
         friend class ScopeContainer;
         friend class ScopeProxy;
@@ -18,6 +19,7 @@ namespace amasm::compiler {
         size_t type_id() const;
 
         virtual size_t hash() const;
+        virtual ScopeElement clone() const = 0;
 
     protected:
         size_t m_type_id;
@@ -25,7 +27,6 @@ namespace amasm::compiler {
 
         explicit IScopeElement(size_t type);
     };
-    using ScopeElement = std::shared_ptr<IScopeElement>;
 
     template<typename T>
     concept scope_element_t = requires {

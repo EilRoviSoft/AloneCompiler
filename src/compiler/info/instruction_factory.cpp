@@ -9,15 +9,15 @@ namespace amasm::compiler {
       m_product->append_range(std::initializer_list {
          B().name("halt")
             .code(0x0)
-            .build(),
+            .get_product(),
          B().name("fcall")
             .code(0x2)
             .arguments_count(1)
-            .build(),
+            .get_product(),
          B().name("ret")
             .code(0x3)
             .arguments_count(0, 1)
-            .build()
+            .get_product()
       });
 
       return *this;
@@ -31,47 +31,47 @@ namespace amasm::compiler {
             .code(TOffset + 0x0)
             .arguments_count(2)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("push" + suffix)
             .code(TOffset + 0x1)
             .arguments_count(0, 1)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("pop" + suffix)
             .code(TOffset + 0x2)
             .arguments_count(0, 1)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("not" + suffix)
             .code(TOffset + 0x3)
             .arguments_count(0, 1)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("and" + suffix)
             .code(TOffset + 0x4)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("or" + suffix)
             .code(TOffset + 0x5)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("xor" + suffix)
             .code(TOffset + 0x6)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("shl" + suffix)
             .code(TOffset + 0x7)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("shr" + suffix)
             .code(TOffset + 0x8)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build()
+            .get_product()
       });
 
       return *this;
@@ -85,32 +85,32 @@ namespace amasm::compiler {
             .code(TOffset + 0x0)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("sub" + suffix)
             .code(TOffset + 0x1)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("mul" + suffix)
             .code(TOffset + 0x2)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("div" + suffix)
             .code(TOffset + 0x3)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("mod" + suffix)
             .code(TOffset + 0x4)
             .arguments_count(2, 3)
             .bit_depth(sizeof(T) * 8)
-            .build(),
+            .get_product(),
          B().name("cmp" + suffix)
             .code(TOffset + 0x5)
             .arguments_count(2)
             .bit_depth(sizeof(T) * 8)
-            .build()
+            .get_product()
       });
 
       return *this;
@@ -124,7 +124,7 @@ namespace amasm::compiler {
             .code(TOffset + 0x8)
             .arguments_count(1, 2)
             .bit_depth(sizeof(T) * 8)
-            .build()
+            .get_product()
       );
 
       return *this;

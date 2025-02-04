@@ -20,9 +20,10 @@ namespace amasm::compiler {
         return *this;
     }
 
-    Variable&& VariableBuilder::build() {
+    Variable&& VariableBuilder::get_product() {
         if (!_status.name || !_status.address || !_status.datatype)
             throw std::runtime_error("you have to specify name, address and datatype of Variable");
-        return IBuilder::build();
+
+        return IBuilder::get_product();
     }
 }

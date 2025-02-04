@@ -20,11 +20,15 @@ namespace amasm::compiler {
         size_t scope_id() { return m_scope_id; }
         const InstDecl& line(size_t idx) { return m_lines[idx]; }
 
+        ScopeElement clone() const override {
+            return std::make_shared<IScopeElement>(*this);
+        }
+
     protected:
         // [0] for return type
         // [1..size] for arguments' types
         std::vector<const Datatype*> m_types;
-        size_t m_scope_id;
+        size_t m_scope_id = 0;
         std::vector<InstDecl> m_lines;
     };
 }

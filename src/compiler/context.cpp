@@ -35,6 +35,11 @@ namespace amasm::compiler {
         return _instructions.at(lib::hash_string(key));
     }
 
+    // copy data
+
+    ScopeContainer Context::clone_scope() const {
+    }
+
     // initializers
 
     void Context::_init() {
@@ -57,15 +62,15 @@ namespace amasm::compiler {
         };
     }
     void Context::_init_datatypes() {
-        _proxy.add(DatatypeBuilder().name("void").size(0).build());
-        _proxy.add(DatatypeBuilder().name("uint8").size(1).build());
-        _proxy.add(DatatypeBuilder().name("uint16").size(2).build());
-        _proxy.add(DatatypeBuilder().name("uint32").size(4).build());
-        _proxy.add(DatatypeBuilder().name("uint64").size(8).build());
-        _proxy.add(DatatypeBuilder().name("int8").size(1).build());
-        _proxy.add(DatatypeBuilder().name("int16").size(2).build());
-        _proxy.add(DatatypeBuilder().name("int32").size(4).build());
-        _proxy.add(DatatypeBuilder().name("int64").size(8).build());
+        _proxy.add(DatatypeBuilder().name("void").size(0).get_product());
+        _proxy.add(DatatypeBuilder().name("uint8").size(1).get_product());
+        _proxy.add(DatatypeBuilder().name("uint16").size(2).get_product());
+        _proxy.add(DatatypeBuilder().name("uint32").size(4).get_product());
+        _proxy.add(DatatypeBuilder().name("uint64").size(8).get_product());
+        _proxy.add(DatatypeBuilder().name("int8").size(1).get_product());
+        _proxy.add(DatatypeBuilder().name("int16").size(2).get_product());
+        _proxy.add(DatatypeBuilder().name("int32").size(4).get_product());
+        _proxy.add(DatatypeBuilder().name("int64").size(8).get_product());
 
         for (const auto& v : _proxy.get_all_datatypes())
             _defined_tokens.emplace(v->name(), TokenType::Datatype);

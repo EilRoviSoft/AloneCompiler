@@ -10,7 +10,7 @@ namespace amasm::lib {
         IBuilder() : m_product(new T) {}
         virtual ~IBuilder() = default;
 
-        virtual T&& build() { return std::move(*m_product); }
+        virtual T&& get_product() { return std::move(*m_product); }
 
     protected:
         std::unique_ptr<T> m_product;

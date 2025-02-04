@@ -3,12 +3,8 @@
 //std
 #include <list>
 #include <ranges>
-#include <tuple>
 
 //compiler_info
-#include <tuple>
-#include <tuple>
-
 #include "compiler/info/datatype.hpp"
 #include "compiler/info/function.hpp"
 #include "compiler/info/scope_element.hpp"
@@ -18,7 +14,7 @@ namespace amasm::compiler {
     class ScopeProxy {
     public:
         ScopeProxy() = default;
-        explicit ScopeProxy(ScopeContainer& parent);
+        ScopeProxy(ScopeContainer& parent);
 
         void set_parent(ScopeContainer& parent);
 

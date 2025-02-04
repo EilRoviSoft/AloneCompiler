@@ -19,14 +19,12 @@ namespace amasm::compiler {
         InstInfoBuilder& arguments_count(size_t min, size_t max);
         InstInfoBuilder& bit_depth(size_t bit_depth);
 
-        InstInfo&& build() override;
+        InstInfo&& get_product() override;
 
     private:
         struct {
-            bool name      : 1 = false;
-            bool code      : 1 = false;
-            bool arguments : 1 = false;
-            bool bit_depth : 1 = false;
+            bool name : 1 = false;
+            bool code : 1 = false;
         } _status;
     };
 
@@ -36,7 +34,7 @@ namespace amasm::compiler {
         ArgumentInfoBuilder& value(ptrdiff_t value);
         ArgumentInfoBuilder& type(ArgumentType type);
 
-        ArgumentInfo&& build() override;
+        ArgumentInfo&& get_product() override;
 
     private:
         struct {
@@ -51,7 +49,7 @@ namespace amasm::compiler {
         InstDeclBuilder& name(std::string name);
         InstDeclBuilder& add_argument(ArgumentInfo&& arg);
 
-        InstDecl&& build() override;
+        InstDecl&& get_product() override;
 
     private:
         struct {

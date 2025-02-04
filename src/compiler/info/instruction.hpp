@@ -23,8 +23,8 @@ namespace amasm::compiler {
 
     protected:
         std::string m_name;
-        lib::inst_code m_code;
-        size_t m_min_args, m_max_args, m_bit_depth;
+        lib::inst_code m_code = 0;
+        size_t m_min_args = 0, m_max_args = 0, m_bit_depth = 0;
     };
 
     class ArgumentInfo {
@@ -37,7 +37,7 @@ namespace amasm::compiler {
 
     protected:
         std::string m_name;
-        ptrdiff_t m_value;
+        ptrdiff_t m_value = 0;
         ArgumentType m_type;
     };
 

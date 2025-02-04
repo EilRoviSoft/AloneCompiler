@@ -13,7 +13,7 @@ namespace amasm::compiler {
 		DatatypeBuilder& size(size_t size);
 		DatatypeBuilder& add_pole(std::string name, const Datatype& type);
 
-		Datatype&& build() override;
+		Datatype&& get_product() override;
 
 	private:
 		struct {
