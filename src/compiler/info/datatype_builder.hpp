@@ -19,6 +19,6 @@ namespace amasm::compiler {
 		struct {
 			bool name : 1 = false;
 			bool size : 1 = false;
-		} _status;
+		} _is_set;
 	};
 }

@@ -21,6 +21,6 @@ namespace amasm::compiler {
             bool name     : 1 = false;
             bool address  : 1 = false;
             bool datatype : 1 = false;
-        } _status;
+        } _is_set;
     };
 }

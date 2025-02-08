@@ -1,4 +1,4 @@
-#include "scope_element.hpp"
+#include "compiler/info/scope_element.hpp"
 
 //library
 #include "library/general_functions.hpp"

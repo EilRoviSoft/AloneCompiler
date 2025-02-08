@@ -1,4 +1,4 @@
-#include "datatype_builder.hpp"
+#include "compiler/info/datatype_builder.hpp"
 
 //std
 #include <stdexcept>
@@ -9,12 +9,12 @@
 namespace amasm::compiler {
     DatatypeBuilder& DatatypeBuilder::set_name(std::string name) {
         m_product->m_name = std::move(name);
-        _status.name = true;
+        _is_set.name = true;
         return *this;
     }
     DatatypeBuilder& DatatypeBuilder::set_size(size_t size) {
         m_product->m_size = size;
-        _status.size = true;
+        _is_set.size = true;
         return *this;
     }
     DatatypeBuilder& DatatypeBuilder::add_pole(std::string name, const Datatype& type) {
@@ -32,7 +32,7 @@ namespace amasm::compiler {
     }
 
     Datatype&& DatatypeBuilder::get_product() {
-        if (!_status.name || !_status.size)
+        if (!_is_set.name || !_is_set.size)
             throw std::runtime_error("you have to specify name and size of Datatype");
 
         return IBuilder::get_product();

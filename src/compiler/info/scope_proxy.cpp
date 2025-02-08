@@ -1,4 +1,4 @@
-#include "scope_proxy.hpp"
+#include "compiler/info/scope_proxy.hpp"
 
 //std
 #include <stdexcept>

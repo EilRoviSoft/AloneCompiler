@@ -1,4 +1,4 @@
-#include "scanner.hpp"
+#include "compiler/scanner.hpp"
 
 //std
 #include <ranges>

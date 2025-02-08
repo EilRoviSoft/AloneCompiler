@@ -1,4 +1,4 @@
-#include "instruction_builder.hpp"
+#include "compiler/info/instruction_builder.hpp"
 
 //std
 #include <stdexcept>
@@ -9,12 +9,12 @@ namespace amasm::compiler {
 
     InstInfoBuilder& InstInfoBuilder::set_name(std::string name) {
         m_product->m_name = std::move(name);
-        _status.name = true;
+        _is_set.name = true;
         return *this;
     }
     InstInfoBuilder& InstInfoBuilder::set_code(lib::inst_code code) {
         m_product->m_code = code;
-        _status.code = true;
+        _is_set.code = true;
         return *this;
     }
     InstInfoBuilder& InstInfoBuilder::set_arguments_count(size_t count) {
@@ -33,7 +33,7 @@ namespace amasm::compiler {
     }
 
     InstInfo&& InstInfoBuilder::get_product() {
-        if (!_status.name || !_status.code)
+        if (!_is_set.name || !_is_set.code)
             throw std::runtime_error("you have to specify name and code of InstInfo");
 
         return IBuilder::get_product();
@@ -43,7 +43,7 @@ namespace amasm::compiler {
 
     InstDeclBuilder& InstDeclBuilder::set_info(const InstInfo& info) {
         m_product->m_info = &info;
-        _status.name = true;
+        _is_set.name = true;
         return *this;
     }
     InstDeclBuilder& InstDeclBuilder::add_argument(argument_info&& arg) {
@@ -52,7 +52,7 @@ namespace amasm::compiler {
     }
 
     InstDecl&& InstDeclBuilder::get_product() {
-        if (!_status.name)
+        if (!_is_set.name)
             throw std::runtime_error("you have to specify name of InstDecl");
 
         return IBuilder::get_product();

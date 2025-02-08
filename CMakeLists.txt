@@ -32,7 +32,7 @@ add_executable(AloneCompiler
 	"src/compiler/info/datatype_builder.cpp"
 	"src/compiler/info/function_builder.cpp"
 	"src/compiler/info/instruction_builder.cpp"
-	"src/compiler/info/instruction_factory.cpp"
+	"src/compiler/info/inst_info_factory.cpp"
 	"src/compiler/info/scope_element.cpp"
 	"src/compiler/info/scope_proxy.cpp"
 	"src/compiler/info/tokens.cpp"
@@ -42,10 +42,11 @@ add_executable(AloneCompiler
 	"src/compiler/lexer.cpp"
 	"src/compiler/parser.cpp"
 	"src/compiler/scanner.cpp"
-	#"src/compiler/translator.cpp"
+	"src/compiler/translator.cpp"
 
 	"src/executor/context.cpp"
-	"src/executor/instructions.cpp"
+	"src/executor/instruction_builder.cpp"
+	"src/executor/isa_factory.cpp"
 	"src/executor/util.cpp"
 	"src/executor/virtual_machine.cpp"
 
@@ -53,7 +54,7 @@ add_executable(AloneCompiler
 	"src/library/literals.cpp"
 		
 	"src/main.cpp"
- "src/compiler/translator.cpp")
+)
 
 add_compile_definitions(DEBUG_STATUS)
 #add_compile_definitions(CONSTEXPR_COMPILE_DATA)

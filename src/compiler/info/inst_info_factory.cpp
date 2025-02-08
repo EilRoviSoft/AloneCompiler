@@ -1,7 +1,7 @@
-#include "instruction_factory.hpp"
+#include "compiler/info/inst_info_factory.hpp"
 
 //compiler_info
-#include "instruction_builder.hpp"
+#include "compiler/info/instruction_builder.hpp"
 
 namespace amasm::compiler {
    InstInfoFactory& InstInfoFactory::generate_system() {

@@ -13,7 +13,7 @@
 #include "executor/context.hpp"
 
 //isa
-#include "executor/isa.hpp"
+#include "executor/isa_funcs.hpp"
 
 namespace amasm::executor {
     // gisa stands for [g]enerate_[isa]
@@ -139,7 +139,7 @@ namespace amasm::executor {
         const auto [opcode, args_metadata] = decompose_instruction(inst_code);
         const auto& inst = _instructions.at(opcode);
 
-        if (ctx[SPX] + inst._memory_shift < _mframe.size())
+        if (ctx[SPX] + inst.m_memory_shift < _mframe.size())
             _alloc_more_memory();
 
         inst(ctx, args_metadata);

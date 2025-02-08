@@ -1,4 +1,4 @@
-#include "translator.hpp"
+#include "compiler/translator.hpp"
 
 //std
 #include <algorithm>

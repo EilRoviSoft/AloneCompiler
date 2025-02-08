@@ -1,4 +1,4 @@
-#include "context.hpp"
+#include "compiler/context.hpp"
 
 //std
 #include <array>
@@ -9,7 +9,7 @@
 //compiler_info
 #include "compiler/info/datatype_builder.hpp"
 #include "compiler/info/function_builder.hpp"
-#include "compiler/info/instruction_factory.hpp"
+#include "compiler/info/inst_info_factory.hpp"
 #include "compiler/info/variable_builder.hpp"
 
 namespace amasm::compiler {

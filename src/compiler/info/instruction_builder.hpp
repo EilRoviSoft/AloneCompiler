@@ -25,7 +25,7 @@ namespace amasm::compiler {
         struct {
             bool name : 1 = false;
             bool code : 1 = false;
-        } _status;
+        } _is_set;
     };
 
     class InstDeclBuilder : public lib::IBuilder<InstDecl> {
@@ -38,6 +38,6 @@ namespace amasm::compiler {
     private:
         struct {
             bool name : 1 = false;
-        } _status;
+        } _is_set;
     };
 }

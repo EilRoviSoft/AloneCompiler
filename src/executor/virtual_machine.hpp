@@ -9,7 +9,7 @@
 #include "library/types.hpp"
 
 //executor
-#include "executor/instructions.hpp"
+#include "executor/instruction.hpp"
 
 namespace amasm::executor {
     class Context;

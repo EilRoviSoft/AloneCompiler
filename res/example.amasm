@@ -1,10 +1,9 @@
 func @main() {
-    mov64 rbx, 
-    fcall @add6432(int64, int32);
+    # fcall @add6432(int64, int32);
     halt;
 }
 
 # TODO: print 
 func @add_and_print(int64, int64) {
-
+    ret;
 }
