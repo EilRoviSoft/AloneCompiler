@@ -29,9 +29,6 @@ namespace amasm::compiler {
     const std::unordered_map<std::string, TokenType>& Context::get_defined_tokens() const {
         return _defined_tokens;
     }
-    const std::vector<TokenType>& Context::get_rule(const std::string& key) const {
-        return _rules.at(key);
-    }
     const InstInfo& Context::get_inst_info(const std::string& key) const {
         auto hashed_key = lib::hash_string(key);
         return _instructions.at(hashed_key);
@@ -47,16 +44,6 @@ namespace amasm::compiler {
 
     // initializers
 
-    void Context::_init_rules() {
-        using enum TokenType;
-        _rules = {
-            { "struct_define", { KwStruct, Identifier, LBrace } },
-            { "pole_define", { KwVar, Percent, Identifier, Comma, Identifier } },
-            { "func_define", { KwFunc, At, Identifier, LParen } },
-            { "direct_argument", { Percent, Identifier } },
-            { "indirect_argument", { LBracket, Percent, Identifier } }
-        };
-    }
     void Context::_init_instructions() {
         auto inst_collection = InstInfoFactory().generate_info().get_product();
 
@@ -66,11 +53,6 @@ namespace amasm::compiler {
             auto hashed_key = item.hash();
             _instructions.emplace(hashed_key, std::move(item));
         }
-    }
-    void Context::_init_surrounded_by_braces() {
-        _surrounded_by_braces = {
-            "datatype_define", "function_define"
-        };
     }
     void Context::_init_defined_tokens() {
         _defined_tokens = {
@@ -86,9 +68,7 @@ namespace amasm::compiler {
             _defined_tokens.emplace(inst.name(), TokenType::InstName);
     }
     void Context::_init() {
-        _init_rules();
         _init_instructions();
-        _init_surrounded_by_braces();
         _init_defined_tokens();
     }
 

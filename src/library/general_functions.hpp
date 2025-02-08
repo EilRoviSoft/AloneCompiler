@@ -1,12 +1,11 @@
 #pragma once
 
 //std
-#include <functional>
 #include <string>
 
 //frozen
-#include "frozen/unordered_map.h"
 #include "frozen/string.h"
+#include "frozen/unordered_map.h"
 
 //library
 #include "library/types.hpp"

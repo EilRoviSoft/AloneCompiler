@@ -3,17 +3,27 @@
 //std
 #include <string>
 
+//frozen
+#include "frozen/unordered_set.h"
+
 //lib
 #include "library/general_functions.hpp"
 
 //compiler
 #include "compiler/context.hpp"
 
+namespace amasm::compiler::lexer {
+    constexpr frozen::unordered_set<char, 18> basic_characters = {
+        '(', ')', '[', ']', '{', '}',
+        '.', ',', ':', ';',
+        '@', '$', '%', '\"',
+        '+', '-', '*', '/'
+    };
+}
+
 namespace amasm::compiler {
     Lexer::Lexer(Context& ctx) :
         _ctx(ctx) {
-        for (char c : "()[]{}.,:;@$%\"+-*/")
-            _singular_tokens.insert(c);
     }
 
     token_vector Lexer::tokenize_code(const std::string& code) const {
@@ -29,7 +39,7 @@ namespace amasm::compiler {
                 temp.clear();
             }
 
-            if (_singular_tokens.contains(c))
+            if (lexer::basic_characters.contains(c))
                 result.emplace_back(make_token(defined_tokens, c));
         }
 

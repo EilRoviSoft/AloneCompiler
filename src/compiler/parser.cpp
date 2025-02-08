@@ -4,19 +4,30 @@
 #include <functional>
 #include <stdexcept>
 
+//frozen
+#include "frozen/string.h"
+#include "frozen/unordered_map.h"
+
 //compiler_info
 #include "compiler/info/instruction_builder.hpp"
 #include "compiler/info/variable_builder.hpp"
 
-#define RULE_STATEMENT(RULE_NAME, MESSAGE) if (!match(ctx.get_rule(RULE_NAME), tokens, i)) throw std::runtime_error(MESSAGE);
+namespace amasm::compiler::parser {
+    using enum TokenType;
 
-namespace amasm::compiler {
-    // service functions
+    constinit const frozen::unordered_map<frozen::string, std::array<TokenType, 6>, 5> rules = {
+        { "struct_define", { KwStruct, Identifier, LBrace, Max } },
+        { "pole_define", { KwVar, Percent, Identifier, Comma, Identifier, Max } },
+        { "func_define", { KwFunc, At, Identifier, LParen, Max } },
+        { "direct_argument", { Percent, Identifier, Max } },
+        { "indirect_argument", { LBracket, Percent, Identifier, Max } }
+    };
 
-    auto match(const std::vector<TokenType>& rule, const token_vector& tokens, size_t begin) {
+    auto match(const frozen::string& rule_name, const token_vector& tokens, size_t begin) {
         bool result = true;
+        const auto& rule = rules.at(rule_name);
 
-        for (size_t i = 0; result && i < rule.size(); i++)
+        for (size_t i = 0; result && rule[i] != Max; i++)
             result = rule[i] == tokens[i + begin].type;
 
         return result;
@@ -26,7 +37,7 @@ namespace amasm::compiler {
         ptrdiff_t offset = 0;
         size_t i = 0;
 
-        while (tokens[i + begin].type == TokenType::Dot) {
+        while (tokens[i + begin].type == Dot) {
             const auto& pole = curr_type->pole(tokens[i + begin + 2].literal);
             curr_type = pole.type;
             offset += pole.offset;
@@ -39,20 +50,20 @@ namespace amasm::compiler {
         return std::make_pair(type, std::move(pred));
     }
 
-    // parsing functions
-
-    size_t start_parse_datatype(Context& ctx, size_t i, const token_vector& tokens, parse_queue& queue) {
-        RULE_STATEMENT("struct_define", "wrong struct definition")
+    size_t start_parse_datatype(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
+        if (!match("struct_define", tokens, i))
+            throw std::runtime_error("wrong struct definition");
 
         queue.emplace(
-            "datatype_builder",
+            DatatypeDefinition,
             std::move(DatatypeBuilder().set_name(tokens[i + 1].literal))
         );
 
         return 3;
     }
-    size_t start_parse_function(Context& ctx, size_t i, const token_vector& tokens, parse_queue& queue) {
-        RULE_STATEMENT("func_define", "wrong func definition")
+    size_t start_parse_function(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
+        if (!match("func_define", tokens, i))
+            throw std::runtime_error("wrong func definition");
 
         size_t j, delta;
         FunctionBuilder builder;
@@ -62,18 +73,18 @@ namespace amasm::compiler {
                .set_scope(scopes, scopes.amount());
 
         // arguments dispatching up to rparen token
-        for (j = i + 4; tokens[j].type != TokenType::RParen; j++) {
+        for (j = i + 4; tokens[j].type != RParen; j++) {
             if ((j - i) % 2) {
-                if (tokens[j].type != TokenType::Comma)
+                if (tokens[j].type != Comma)
                     throw std::runtime_error("wrong func definition");
-            } else if (tokens[j].type == TokenType::Identifier) {
+            } else if (tokens[j].type == Identifier) {
                 builder.add_argument_type(scopes.get_datatype(tokens[j].literal));
             } else
                 throw std::runtime_error("wrong func definition");
         }
 
         // return-type detecting ('cause it's optional)
-        if (tokens[j + 1].type == TokenType::Colon) {
+        if (tokens[j + 1].type == Colon) {
             builder.set_return_type(scopes.get_datatype(tokens[j + 2].literal));
             delta = j - i + 4;
         } else {
@@ -81,17 +92,18 @@ namespace amasm::compiler {
             delta = j - i + 2;
         }
 
-        queue.emplace("function_builder", std::move(builder));
+        queue.emplace(FunctionDefinition, std::move(builder));
         return delta;
     }
-    size_t parse_variable(Context& ctx, size_t i, const token_vector& tokens, parse_queue& queue) {
-        RULE_STATEMENT("pole_define", "wrong pole definition")
+    size_t parse_variable(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
+        if (!match("pole_define", tokens, i))
+            throw std::runtime_error("wrong pole definition");
 
         size_t delta;
         auto& [name, data] = queue.front();
         auto scopes = ctx.get_proxy();
 
-        if (name == "datatype_builder") {
+        if (name == DatatypeDefinition) {
             auto& builder = std::get<DatatypeBuilder>(data);
             bool has_own_offset = tokens[i + 5].type == TokenType::Comma;
 
@@ -102,9 +114,9 @@ namespace amasm::compiler {
 
         return delta;
     }
-    size_t parse_instruction(Context& ctx, size_t i, const token_vector& tokens, parse_queue& queue) {
+    size_t parse_instruction(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
         auto& [name, data] = queue.front();
-        if (name != "function_builder")
+        if (name != FunctionDefinition)
             throw std::runtime_error("wrong instruction definition placement");
 
         size_t j = i + 1, di;
@@ -120,7 +132,7 @@ namespace amasm::compiler {
                 .value = 0,
                 .type = ArgumentType::JumpAddress
             };
-            while (tokens[j].type != TokenType::Semicolon) {
+            while (tokens[j].type != Semicolon) {
                 on_add.name += tokens[j].literal;
                 j++;
             }
@@ -129,13 +141,13 @@ namespace amasm::compiler {
             di = j - i + 1;
         } else {
             size_t args_n = 0;
-            bool flag = tokens[j].type != TokenType::Semicolon;
+            bool flag = tokens[j].type != Semicolon;
             const auto& inst_info = ctx.get_inst_info(tokens[i].literal);
 
             while (args_n < inst_info.max_args() && flag) {
                 argument_info on_add;
 
-                if (match(ctx.get_rule("direct_argument"), tokens, j)) {
+                if (match("direct_argument", tokens, j)) {
                     const auto& var = scopes.get_variable(tokens[j + 1].literal, scope_id);
                     auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 2);
                     on_add = {
@@ -144,14 +156,14 @@ namespace amasm::compiler {
                         .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct
                     };
                     j += dj + 2;
-                } else if (tokens[j].type == TokenType::Number) {
+                } else if (tokens[j].type == Number) {
                     on_add = {
                         .name = "",
                         .value = std::stoll(tokens[j].literal),
                         .type = ArgumentType::Immediate
                     };
                     j++;
-                } else if (match(ctx.get_rule("indirect_argument"), tokens, j)) {
+                } else if (match("indirect_argument", tokens, j)) {
                     const auto& var = scopes.get_variable(tokens[j + 2].literal, scope_id);
                     auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 3);
                     on_add = {
@@ -161,11 +173,11 @@ namespace amasm::compiler {
                     };
 
                     switch (tokens[j + dj + 3].type) {
-                    case TokenType::Plus:
+                    case Plus:
                         on_add.value += std::stoll(tokens[j + dj + 4].literal);
                         dj += 1;
                         break;
-                    case TokenType::Minus:
+                    case Minus:
                         on_add.value -= std::stoll(tokens[j + dj + 4].literal);
                         dj += 1;
                         break;
@@ -184,7 +196,7 @@ namespace amasm::compiler {
                 args_n++;
 
                 // to add colon to diff
-                if (tokens[j].type != TokenType::Semicolon)
+                if (tokens[j].type != Semicolon)
                     j++;
                 else
                     flag = false;
@@ -196,14 +208,14 @@ namespace amasm::compiler {
         func_builder.add_line(inst_builder.get_product());
         return di;
     }
-    size_t finish_parse(Context& ctx, size_t i, const token_vector& tokens, parse_queue& queue) {
+    size_t finish_parse(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
         auto& [name, variant] = queue.front();
         auto scopes = ctx.get_proxy();
 
-        if (name == "datatype_builder") {
+        if (name == DatatypeDefinition) {
             auto& builder = std::get<DatatypeBuilder>(variant);
             scopes.add(std::move(builder.get_product()));
-        } else if (name == "function_builder") {
+        } else if (name == FunctionDefinition) {
             auto& builder = std::get<FunctionBuilder>(variant);
             scopes.add(std::move(builder.get_product()));
         }
@@ -213,9 +225,7 @@ namespace amasm::compiler {
         return 1;
     }
 
-    size_t do_parse_logic(Context& ctx, size_t i, const token_vector& tokens, parse_queue& queue) {
-        using enum TokenType;
-
+    size_t do_parse_logic(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
         static const std::unordered_map logic = {
             std::make_pair(KwStruct, start_parse_datatype),
             std::make_pair(KwFunc, start_parse_function),
@@ -232,15 +242,15 @@ namespace amasm::compiler {
 
         return delta;
     }
+}
 
-    // Parser
-
+namespace amasm::compiler {
     Parser::Parser(Context& ctx) :
         _ctx(ctx) {
     }
 
     ScopeContainer Parser::parse(const token_vector& tokens) const {
-        parse_queue queue;
+        parser::queue queue;
 
         for (size_t i = 0, di; i < tokens.size(); i += di)
             di = do_parse_logic(_ctx, i, tokens, queue);

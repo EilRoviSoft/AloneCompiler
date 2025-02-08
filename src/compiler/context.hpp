@@ -19,7 +19,6 @@ namespace amasm::compiler {
 
         ScopeProxy get_proxy();
         const std::unordered_map<std::string, TokenType>& get_defined_tokens() const;
-        const std::vector<TokenType>& get_rule(const std::string& key) const;
         const InstInfo& get_inst_info(const std::string& key) const;
 
         ScopeContainer release_container();
@@ -28,13 +27,9 @@ namespace amasm::compiler {
         ScopeContainer _container;
         ScopeProxy _proxy;
         std::unordered_map<std::string, TokenType> _defined_tokens;
-        std::unordered_map<std::string, std::vector<TokenType>> _rules;
-        std::unordered_set<std::string> _surrounded_by_braces;
         std::unordered_map<size_t, InstInfo> _instructions;
 
-        void _init_rules();
         void _init_instructions();
-        void _init_surrounded_by_braces();
         void _init_defined_tokens();
         void _init();
         void _init_datatypes();

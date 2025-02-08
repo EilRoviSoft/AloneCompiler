@@ -2,7 +2,6 @@
 
 //std
 #include <queue>
-#include <string>
 #include <tuple>
 #include <variant>
 
@@ -14,10 +13,16 @@
 //compiler
 #include "compiler/context.hpp"
 
-namespace amasm::compiler {
-	using parse_unit = std::variant<DatatypeBuilder, FunctionBuilder>;
-	using parse_queue = std::queue<std::tuple<std::string, parse_unit>>;
+namespace amasm::compiler::parser {
+	enum QueryType : uint8_t {
+		DatatypeDefinition,
+		FunctionDefinition
+	};
+	using unit = std::variant<DatatypeBuilder, FunctionBuilder>;
+	using queue = std::queue<std::tuple<QueryType, unit>>;
+}
 
+namespace amasm::compiler {
 	class Parser {
 
 	public:
