@@ -28,7 +28,4 @@ namespace amasm::executor {
         Signature m_predicate;
         ptrdiff_t m_memory_shift = 0;
     };
-    using InstructionPair = std::pair<size_t, Instruction>;
-
-    InstructionPair make_instruction(lib::inst_code id, Instruction::Signature pred, ptrdiff_t memory_shift = 0);
 }

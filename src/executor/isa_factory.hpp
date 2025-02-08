@@ -12,6 +12,6 @@
 namespace amasm::executor {
 	class IsaFactory : public lib::IFactory<std::list<Instruction>> {
 	public:
-
+		IsaFactory& generate_isa();
 	};
 }
