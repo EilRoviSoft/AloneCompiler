@@ -6,8 +6,8 @@ func @main() {
 }
 
 func @add6432(int64, int32): int64 {
-    mov64 rcx, [rsp - 20];
-    mov32 rdx, [rsp - 12];
-    add64i rbx, rcx, rdx;
+    mov64 %rcx, [%rsp - 20];
+    mov32 %rdx, [%rsp - 12];
+    add64i %rbx, %rcx, %rdx;
     ret;
 }

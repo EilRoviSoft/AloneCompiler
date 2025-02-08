@@ -39,11 +39,13 @@ namespace amasm {
         BX    = BL,
         CX    = CL,
         DX    = DL,
-        IPX   = SYSTEM_MW_SIZE * 4,
-        BPX   = SYSTEM_MW_SIZE * 5,
-        SPX   = SYSTEM_MW_SIZE * 6,
-        FLAGS = SYSTEM_MW_SIZE * 7,
-        GPX   = SYSTEM_MW_SIZE * 8,
+        SI    = SYSTEM_MW_SIZE * 4,
+        DI    = SYSTEM_MW_SIZE * 5,
+        IP    = SYSTEM_MW_SIZE * 6,
+        BP    = SYSTEM_MW_SIZE * 7,
+        SP    = SYSTEM_MW_SIZE * 8,
+        FLAGS = SYSTEM_MW_SIZE * 9,
+        GP    = SYSTEM_MW_SIZE * 10,
 
         // 32-bit registers
 
@@ -51,11 +53,13 @@ namespace amasm {
         EBX    = BL,
         ECX    = CL,
         EDX    = DL,
-        EIP    = IPX,
-        EBP    = BPX,
-        ESP    = SPX,
+        ESI    = SI,
+        EDI    = DI,
+        EIP    = IP,
+        EBP    = BP,
+        ESP    = SP,
         EFLAGS = FLAGS,
-        EGP    = GPX,
+        EGP    = GP,
 
         // 64-bit registers
 
@@ -63,11 +67,13 @@ namespace amasm {
         RBX    = BL,
         RCX    = CL,
         RDX    = DL,
-        RIP    = IPX,
-        RBP    = BPX,
-        RSP    = SPX,
+        RSI    = SI,
+        RDI    = DI,
+        RIP    = IP,
+        RBP    = BP,
+        RSP    = SP,
         RFLAGS = FLAGS,
-        RGP    = GPX
+        RGP    = GP
     };
 
     enum FlagType : uint8_t {
@@ -92,6 +98,6 @@ namespace amasm::lib {
     constexpr size_t inst_size = sizeof(SYSTEM_INST_TYPE);
 
     constexpr size_t registers_size = 256;
-    constexpr size_t system_registers_size = registers_size - GPX;
+    constexpr size_t system_registers_size = registers_size - GP;
     constexpr size_t general_registers_size = registers_size - system_registers_size;
 }

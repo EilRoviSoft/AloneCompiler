@@ -31,14 +31,14 @@ namespace amasm::executor {
             _mframe[i + lib::registers_size] = program[i];
 
         ctx[RF] = true;
-        ctx[SPX] = ctx._program_size + lib::registers_size;
-        ctx[IPX] = *reinterpret_cast<const lib::machine_word*>(program.data()) + lib::registers_size;
+        ctx[SP] = ctx._program_size + lib::registers_size;
+        ctx[IP] = *reinterpret_cast<const lib::machine_word*>(program.data()) + lib::registers_size;
 
         const StepperSignature stepper = _min_size == _max_size
             ? &VirtualMachine::_do_step
             : &VirtualMachine::_do_step_with_check;
 
-        while (ctx[RF] && ctx[IPX] < ctx._program_size + lib::registers_size)
+        while (ctx[RF] && ctx[IP] < ctx._program_size + lib::registers_size)
             stepper(this, ctx);
     }
 
@@ -68,17 +68,17 @@ namespace amasm::executor {
     }
 
     void VirtualMachine::_do_step(const Context& ctx) {
-        const auto inst_code = *ctx.get<lib::inst_code>(ctx[IPX]);
+        const auto inst_code = *ctx.get<lib::inst_code>(ctx[IP]);
         const auto [opcode, args_metadata] = decompose_instruction(inst_code);
         const auto& inst = _instructions.at(opcode);
         inst(ctx, args_metadata);
     }
     void VirtualMachine::_do_step_with_check(const Context& ctx) {
-        const auto inst_code = *ctx.get<lib::inst_code>(ctx[IPX]);
+        const auto inst_code = *ctx.get<lib::inst_code>(ctx[IP]);
         const auto [opcode, args_metadata] = decompose_instruction(inst_code);
         const auto& inst = _instructions.at(opcode);
 
-        if (ctx[SPX] + inst.m_memory_shift < _mframe.size())
+        if (ctx[SP] + inst.m_memory_shift < _mframe.size())
             _alloc_more_memory();
 
         inst(ctx, args_metadata);

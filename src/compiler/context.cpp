@@ -51,18 +51,20 @@ namespace amasm::compiler {
         using enum TokenType;
         _rules = {
             { "struct_define", { KwStruct, Identifier, LBrace } },
-            { "pole_define", { KwVar, Identifier, Comma, Identifier } },
+            { "pole_define", { KwVar, Percent, Identifier, Comma, Identifier } },
             { "func_define", { KwFunc, At, Identifier, LParen } },
-            { "direct_argument", { Identifier } },
-            { "indirect_argument", { LBracket, Identifier } }
+            { "direct_argument", { Percent, Identifier } },
+            { "indirect_argument", { LBracket, Percent, Identifier } }
         };
     }
     void Context::_init_instructions() {
         auto inst_collection = InstInfoFactory().generate_info().get_product();
 
-        for (auto&& it : inst_collection) {
-            auto hashed_key = it.hash();
-            _instructions.emplace(hashed_key, std::move(it));
+        while (!inst_collection.empty()) {
+            auto item = std::move(inst_collection.front());
+            inst_collection.pop_front();
+            auto hashed_key = item.hash();
+            _instructions.emplace(hashed_key, std::move(item));
         }
     }
     void Context::_init_surrounded_by_braces() {
@@ -106,11 +108,11 @@ namespace amasm::compiler {
             std::make_pair<std::string, std::vector<std::string>>("uint8",
                 { "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh" }),
             std::make_pair<std::string, std::vector<std::string>>("uint16",
-                { "ax", "bx", "cx", "dx", "ipx", "bpx", "spx", "flags", "gpx" }),
+                { "ax", "bx", "cx", "dx", "si", "di", "ip", "bp", "sp", "flags", "gp" }),
             std::make_pair<std::string, std::vector<std::string>>("uint32",
-                { "eax", "ebx", "ecx", "edx", "eip", "ebp", "esp", "eflags", "egp" }),
+                { "eax", "ebx", "ecx", "edx", "esi", "edi", "eip", "ebp", "esp", "eflags", "egp" }),
             std::make_pair<std::string, std::vector<std::string>>("uint64",
-                { "rax", "rbx", "rcx", "rdx", "rip", "rbp", "rsp", "rflags", "rgp" }),
+                { "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "rip", "rbp", "rsp", "rflags", "rgp" }),
         };
         for (const auto& [type_name, collection] : vars)
             for (const auto& var_name : collection) {

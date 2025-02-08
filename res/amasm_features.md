@@ -61,25 +61,27 @@ str %msg [uint8 * 12], "Hello world\n";
 
 Registers are predefined as variables and can be accessed at any time using `%` operand.
 
-| 16-bit basic register name | Place | Definition          | Function                                                                                                                     |
-| -------------------------- | ----- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `ax`                       | 0x00  | Address             | Contains address of last allocated pointer on heap; also can be used to create new struct objects                            |
-| `bx`                       | 0x08  | Result              | Contains value of last evaluated math expression; can be used as general register for results of binary and unary operations |
-| `cx`                       | 0x10  | Left operand        | Can be used as general register for binary and unary operations                                                              |
-| `dx`                       | 0x18  | Right operand       | Can be used as general register for binary and unary operations                                                              |
-| `ipx`                      | 0x20  | Instruction pointer | Contains pointer to current executing instruction                                                                            |
-| `bpx`                      | 0x28  | Base pointer        | Contains pointer to the last function entry                                                                                  |
-| `spx`                      | 0x30  | Stack pointer       | Contains pointer to the top of the stack                                                                                     |
-| `flags`                    | 0x38  | Flags pointer       | Contains several flags for other instructions                                                                                |
-| `gpx`                      | 0x40  | General             | Start of general purpose registers; size is defined as `registers_size - 80` bytes                                           |
+| 16-bit basic register name | Place | Definition        | Function                                                                                 |
+| -------------------------- | ----- | ----------------- | ---------------------------------------------------------------------------------------- |
+| `%ax`                      | 0x00  | Accumulator       | It is used for I/O port access, arithmetic, interrupt calls                              |
+| `%bx`                      | 0x08  | Base              | It is used as a base pointer for memory access                                           |
+| `%cx`                      | 0x10  | Counter           | It is used as a loop counter and for shifts                                              |
+| `%dx`                      | 0x18  | Data              | It is used for I/O port access, arithmetic, some interrupt calls                         |
+| `%si`                      | 0x20  | Source Index      | Used for string, memory array copying and setting and for far pointer addressing with ES |
+| `%di`                      | 0x28  | Destination Index | Used for string and memory array copying                                                 |
+| `%ip`                      | 0x30  | Index Pointer     | Holds the offset of the next instruction                                                 |
+| `%bp`                      | 0x38  | Base Pointer      | Holds the base address of the stack                                                      |
+| `%sp`                      | 0x40  | Stack Pointer     | Holds the top address of the stack                                                       |
+| `%flags`                   | 0x48  | Flags Pointer     | Contains several flags for other instructions                                            |
+| `%gp`                      | 0x50  | General Purpose   | Start of general purpose registers; size is defined as `registers_size - 80` bytes       |
 
 ## Different bit modes
 
-If you need **8-bit** register, use `h` or `l` instead of `x` on the end to point on `high` or `low` part of register respectivly (`%ax` -> `%ah` as example).
+If you need **8-bit** register, use `h` or `l` instead of `x` on the end to point on `high` or `low` part of register respectivly (`%ax` -> `%ah`).
 
-If you need **32-bit** register, add `e` (shortcut from `extended`) at the start (`%ax` -> `%eax`) and subtruct `x` if it exists at the end of register.
+If you need **32-bit** register, add `e` (shortcut from `extended`) at the start (`%ax` -> `%eax`).
 
-If you need **64-bit** register, add `r` (shortcut for `register`) at the start (`%ax` -> `%rax`) and subtruct `x` if it exists at the end of register.
+If you need **64-bit** register, add `r` (shortcut for `register`) at the start (`%ax` -> `%rax`).
 
 If you need other parts of registers set, just use absolute adresses or make your own shortcuts inside functions.
 
@@ -97,7 +99,7 @@ Works directly with given part of memories without changing it
 mov32 %ecx, %edx
 ```
 
-This can be read as "moves contents of %ecx register to %edx register"
+This can be read as "moves contents of %ecx register to edx register"
 
 # Labels and branches
 

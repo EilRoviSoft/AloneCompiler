@@ -136,14 +136,14 @@ namespace amasm::compiler {
                 argument_info on_add;
 
                 if (match(ctx.get_rule("direct_argument"), tokens, j)) {
-                    const auto& var = scopes.get_variable(tokens[j].literal, scope_id);
-                    auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 1);
+                    const auto& var = scopes.get_variable(tokens[j + 1].literal, scope_id);
+                    auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 2);
                     on_add = {
-                        .name = tokens[j].literal,
+                        .name = tokens[j + 1].literal,
                         .value = var_offset,
                         .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct
                     };
-                    j += dj + 1;
+                    j += dj + 2;
                 } else if (tokens[j].type == TokenType::Number) {
                     on_add = {
                         .name = "",
@@ -152,28 +152,28 @@ namespace amasm::compiler {
                     };
                     j++;
                 } else if (match(ctx.get_rule("indirect_argument"), tokens, j)) {
-                    const auto& var = scopes.get_variable(tokens[j + 1].literal, scope_id);
-                    auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 2);
+                    const auto& var = scopes.get_variable(tokens[j + 2].literal, scope_id);
+                    auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 3);
                     on_add = {
-                        .name = tokens[j + 1].literal,
+                        .name = tokens[j + 2].literal,
                         .value = var_offset,
                         .type = ArgumentType::IndirectWithDisplacement
                     };
 
-                    switch (tokens[j + dj + 2].type) {
+                    switch (tokens[j + dj + 3].type) {
                     case TokenType::Plus:
-                        on_add.value += std::stoll(tokens[j + dj + 3].literal);
+                        on_add.value += std::stoll(tokens[j + dj + 4].literal);
                         dj += 1;
                         break;
                     case TokenType::Minus:
-                        on_add.value -= std::stoll(tokens[j + dj + 3].literal);
+                        on_add.value -= std::stoll(tokens[j + dj + 4].literal);
                         dj += 1;
                         break;
                     default:
                         break;
                     }
 
-                    j += dj + 3;
+                    j += dj + 4;
                 } else if (args_n >= inst_info.min_args()) {
                     j += 1;
                     break;

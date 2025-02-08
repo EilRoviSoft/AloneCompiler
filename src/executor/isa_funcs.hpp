@@ -14,29 +14,29 @@ namespace amasm::executor::isa {
 
     inline void halt(const Context& ctx, lib::args_data args) {
         ctx[RF] = false;
-        ctx[IPX] += lib::inst_size;
+        ctx[IP] += lib::inst_size;
     }
 
     inline void fcall(const Context& ctx, lib::args_data args) {
-        *ctx.get(ctx[SPX]) = ctx[BPX];
-        ctx[SPX] += lib::machine_word_size;
+        *ctx.get(ctx[SP]) = ctx[BP];
+        ctx[SP] += lib::machine_word_size;
 
-        ctx[BPX] = ctx[IPX] + lib::inst_size + lib::machine_word_size;
-        ctx[IPX] = *ctx.get(ctx[IPX] + lib::inst_size);
+        ctx[BP] = ctx[IP] + lib::inst_size + lib::machine_word_size;
+        ctx[IP] = *ctx.get(ctx[IP] + lib::inst_size);
     }
     inline void ret(const Context& ctx, lib::args_data args) {
-        auto func_start = *ctx.get(ctx[BPX] - lib::machine_word_size);
+        auto func_start = *ctx.get(ctx[BP] - lib::machine_word_size);
         auto args_size = *ctx.get(func_start - 16);
         auto ret_size = *ctx.get(func_start - 8);
-        auto data = ctx.get<std::byte>(ctx[IPX] + lib::inst_size);
-        auto result = ctx.get<std::byte>(ret_size <= 8 ? AX : GPX);
+        auto data = ctx.get<std::byte>(ctx[IP] + lib::inst_size);
+        auto result = ctx.get<std::byte>(ret_size <= 8 ? AX : GP);
 
         for (size_t i = 0; i < ret_size; i++)
             result[i] = data[i];
 
-        ctx[SPX] -= args_size + lib::machine_word_size;
-        ctx[IPX] = ctx[BPX];
-        ctx[BPX] = *ctx.get(ctx[SPX] + args_size);
+        ctx[SP] -= args_size + lib::machine_word_size;
+        ctx[IP] = ctx[BP];
+        ctx[BP] = *ctx.get(ctx[SP] + args_size);
     }
 
     // size related
@@ -49,11 +49,11 @@ namespace amasm::executor::isa {
 
         switch (args[0]) {
         case ArgumentType::Direct:
-            a0 = ctx.get_direct<T>(ctx[IPX] + offset);
+            a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a0 = ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         default:
@@ -62,15 +62,15 @@ namespace amasm::executor::isa {
 
         switch (args[1]) {
         case ArgumentType::Direct:
-            a1 = *ctx.get_direct<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a1 = *ctx.get<T>(ctx[IPX] + offset);
+            a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a1 = *ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         default:
@@ -78,7 +78,7 @@ namespace amasm::executor::isa {
         }
 
         *a0 = a1;
-        ctx[IPX] += offset;
+        ctx[IP] += offset;
     }
 
     template<typename T>
@@ -89,15 +89,15 @@ namespace amasm::executor::isa {
 
         switch (args[0]) {
         case ArgumentType::Direct:
-            a0 = *ctx.get_direct<T>(ctx[IPX] + offset);
+            a0 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a0 = *ctx.get<T>(ctx[IPX] + offset);
+            a0 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a0 = *ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a0 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
@@ -108,9 +108,9 @@ namespace amasm::executor::isa {
         }
 
         if (is_extended)
-            *ctx.get<T>(ctx[SPX]) = a0;
-        ctx[SPX] += sizeof(T);
-        ctx[IPX] += offset;
+            *ctx.get<T>(ctx[SP]) = a0;
+        ctx[SP] += sizeof(T);
+        ctx[IP] += offset;
     }
     template<typename T>
     void inst_pop(const Context& ctx, lib::args_data args) {
@@ -119,15 +119,15 @@ namespace amasm::executor::isa {
 
         switch (args[0]) {
         case ArgumentType::Direct:
-            a0 = ctx.get_direct<T>(ctx[IPX] + offset);
+            a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a0 = ctx.get<T>(ctx[IPX] + offset);
+            a0 = ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a0 = ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
@@ -137,9 +137,9 @@ namespace amasm::executor::isa {
             throw std::runtime_error("wrong args information");
         }
 
-        *a0 = *ctx.get_direct<T>(ctx[SPX] - sizeof(T));
-        ctx[SPX] -= sizeof(T);
-        ctx[IPX] += offset;
+        *a0 = *ctx.get_direct<T>(ctx[SP] - sizeof(T));
+        ctx[SP] -= sizeof(T);
+        ctx[IP] += offset;
     }
 
     // universal
@@ -154,11 +154,11 @@ namespace amasm::executor::isa {
 
         switch (args[0]) {
         case ArgumentType::Direct:
-            a0 = ctx.get_direct<T>(ctx[IPX] + offset);
+            a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a0 = ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         default:
@@ -167,15 +167,15 @@ namespace amasm::executor::isa {
 
         switch (args[1]) {
         case ArgumentType::Direct:
-            a1 = *ctx.get_direct<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a1 = *ctx.get<T>(ctx[IPX] + offset);
+            a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a1 = *ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         default:
@@ -184,15 +184,15 @@ namespace amasm::executor::isa {
 
         switch (args[2]) {
         case ArgumentType::Direct:
-            a2 = *ctx.get_direct<T>(ctx[IPX] + offset);
+            a2 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a2 = *ctx.get<T>(ctx[IPX] + offset);
+            a2 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a2 = *ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a2 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
@@ -203,7 +203,7 @@ namespace amasm::executor::isa {
         }
 
         *a0 = is_extended ? pred(a1, a2) : pred(*a0, a1);
-        ctx[IPX] += offset;
+        ctx[IP] += offset;
     }
     template<typename T, typename TPred>
     void inst_u12(const Context& ctx, lib::args_data args) {
@@ -215,11 +215,11 @@ namespace amasm::executor::isa {
 
         switch (args[0]) {
         case ArgumentType::Direct:
-            a0 = ctx.get_direct<T>(ctx[IPX] + offset);
+            a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a0 = ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         default:
@@ -228,15 +228,15 @@ namespace amasm::executor::isa {
 
         switch (args[1]) {
         case ArgumentType::Direct:
-            a1 = *ctx.get_direct<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a1 = *ctx.get<T>(ctx[IPX] + offset);
+            a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a1 = *ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         case ArgumentType::Empty:
@@ -247,7 +247,7 @@ namespace amasm::executor::isa {
         }
 
         *a0 = is_extended ? pred(a1) : pred(*a0);
-        ctx[IPX] += offset;
+        ctx[IP] += offset;
     }
 
     template<typename T>
@@ -257,15 +257,15 @@ namespace amasm::executor::isa {
 
         switch (args[0]) {
         case ArgumentType::Direct:
-            a0 = *ctx.get_direct<T>(ctx[IPX] + offset);
+            a0 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a0 = *ctx.get<T>(ctx[IPX] + offset);
+            a0 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a0 = *ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a0 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         default:
@@ -274,15 +274,15 @@ namespace amasm::executor::isa {
 
         switch (args[1]) {
         case ArgumentType::Direct:
-            a1 = *ctx.get_direct<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
         case ArgumentType::Immediate:
-            a1 = *ctx.get<T>(ctx[IPX] + offset);
+            a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
         case ArgumentType::IndirectWithDisplacement:
-            a1 = *ctx.get_with_displacement<T>(ctx[IPX] + offset);
+            a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
         default:
@@ -291,6 +291,6 @@ namespace amasm::executor::isa {
 
         ctx[ZF] = !(a0 - a1);
         ctx[SF] = (a0 - a1) >> (sizeof(T) * 8 - 1);
-        ctx[IPX] += offset;
+        ctx[IP] += offset;
     }
 }
