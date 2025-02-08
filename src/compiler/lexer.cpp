@@ -19,17 +19,18 @@ namespace amasm::compiler {
     token_vector Lexer::tokenize_code(const std::string& code) const {
         token_vector result;
         std::string temp;
+        const auto& defined_tokens = _ctx.get_defined_tokens();
 
         for (char c : code) {
             if (lib::is_alpha_numeric(c)) {
                 temp += c;
             } else if (!temp.empty()) {
-                result.emplace_back(make_token(_ctx.get_defined_tokens(), temp));
+                result.emplace_back(make_token(defined_tokens, temp));
                 temp.clear();
             }
 
             if (_singular_tokens.contains(c))
-                result.emplace_back(make_token(_ctx.get_defined_tokens(), c));
+                result.emplace_back(make_token(defined_tokens, c));
         }
 
         return result;

@@ -7,16 +7,16 @@ namespace amasm::compiler {
    InstInfoFactory& InstInfoFactory::generate_system() {
       using B = InstInfoBuilder;
       m_product->append_range(std::initializer_list {
-         B().name("halt")
-            .code(0x0)
+         B().set_name("halt")
+            .set_code(0x0)
             .get_product(),
-         B().name("fcall")
-            .code(0x2)
-            .arguments_count(1)
+         B().set_name("fcall")
+            .set_code(0x2)
+            .set_arguments_count(1)
             .get_product(),
-         B().name("ret")
-            .code(0x3)
-            .arguments_count(0, 1)
+         B().set_name("ret")
+            .set_code(0x3)
+            .set_arguments_count(0, 1)
             .get_product()
       });
 
@@ -27,50 +27,50 @@ namespace amasm::compiler {
       using B = InstInfoBuilder;
       const std::string suffix = std::to_string(sizeof(T) * 8);
       m_product->append_range(std::initializer_list {
-         B().name("mov" + suffix)
-            .code(TOffset + 0x0)
-            .arguments_count(2)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("mov" + suffix)
+            .set_code(TOffset + 0x0)
+            .set_arguments_count(2)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("push" + suffix)
-            .code(TOffset + 0x1)
-            .arguments_count(0, 1)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("push" + suffix)
+            .set_code(TOffset + 0x1)
+            .set_arguments_count(0, 1)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("pop" + suffix)
-            .code(TOffset + 0x2)
-            .arguments_count(0, 1)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("pop" + suffix)
+            .set_code(TOffset + 0x2)
+            .set_arguments_count(0, 1)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("not" + suffix)
-            .code(TOffset + 0x3)
-            .arguments_count(0, 1)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("not" + suffix)
+            .set_code(TOffset + 0x3)
+            .set_arguments_count(0, 1)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("and" + suffix)
-            .code(TOffset + 0x4)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("and" + suffix)
+            .set_code(TOffset + 0x4)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("or" + suffix)
-            .code(TOffset + 0x5)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("or" + suffix)
+            .set_code(TOffset + 0x5)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("xor" + suffix)
-            .code(TOffset + 0x6)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("xor" + suffix)
+            .set_code(TOffset + 0x6)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("shl" + suffix)
-            .code(TOffset + 0x7)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("shl" + suffix)
+            .set_code(TOffset + 0x7)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("shr" + suffix)
-            .code(TOffset + 0x8)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("shr" + suffix)
+            .set_code(TOffset + 0x8)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product()
       });
 
@@ -81,35 +81,35 @@ namespace amasm::compiler {
       using B = InstInfoBuilder;
       const std::string suffix = std::to_string(sizeof(T) * 8) + TPostfix;
       m_product->append_range(std::initializer_list {
-         B().name("add" + suffix)
-            .code(TOffset + 0x0)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("add" + suffix)
+            .set_code(TOffset + 0x0)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("sub" + suffix)
-            .code(TOffset + 0x1)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("sub" + suffix)
+            .set_code(TOffset + 0x1)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("mul" + suffix)
-            .code(TOffset + 0x2)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("mul" + suffix)
+            .set_code(TOffset + 0x2)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("div" + suffix)
-            .code(TOffset + 0x3)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("div" + suffix)
+            .set_code(TOffset + 0x3)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("mod" + suffix)
-            .code(TOffset + 0x4)
-            .arguments_count(2, 3)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("mod" + suffix)
+            .set_code(TOffset + 0x4)
+            .set_arguments_count(2, 3)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product(),
-         B().name("cmp" + suffix)
-            .code(TOffset + 0x5)
-            .arguments_count(2)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("cmp" + suffix)
+            .set_code(TOffset + 0x5)
+            .set_arguments_count(2)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product()
       });
 
@@ -120,10 +120,10 @@ namespace amasm::compiler {
       using B = InstInfoBuilder;
       m_product->append_range(generate_universal_type<T, TPostfix, TOffset>());
       m_product->emplace_back(
-         B().name("neg" + std::to_string(sizeof(T) * 8) + TPostfix)
-            .code(TOffset + 0x8)
-            .arguments_count(1, 2)
-            .bit_depth(sizeof(T) * 8)
+         B().set_name("neg" + std::to_string(sizeof(T) * 8) + TPostfix)
+            .set_code(TOffset + 0x8)
+            .set_arguments_count(1, 2)
+            .set_bit_depth(sizeof(T) * 8)
             .get_product()
       );
 

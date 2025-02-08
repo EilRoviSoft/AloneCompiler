@@ -27,18 +27,10 @@ namespace amasm::compiler {
         size_t m_min_args = 0, m_max_args = 0, m_bit_depth = 0;
     };
 
-    class ArgumentInfo {
-        friend class ArgumentInfoBuilder;
-
-    public:
-        const std::string& name() const { return m_name; }
-        ptrdiff_t value() const { return m_value; }
-        ArgumentType type() const { return m_type; }
-
-    protected:
-        std::string m_name;
-        ptrdiff_t m_value = 0;
-        ArgumentType m_type;
+    struct argument_info {
+        std::string name;
+        ptrdiff_t value = 0;
+        ArgumentType type = ArgumentType::Empty;
     };
 
     class InstDecl {
@@ -46,11 +38,11 @@ namespace amasm::compiler {
 
     public:
         const std::string& name() const { return m_name; }
-        const ArgumentInfo& argument(size_t idx) const { return m_arguments[idx]; }
+        const argument_info& argument(size_t idx) const { return m_arguments[idx]; }
 
     protected:
         std::string m_name;
-        std::vector<ArgumentInfo> m_arguments;
+        std::vector<argument_info> m_arguments;
     };
     using ComposedInst = std::tuple<size_t, InstDecl>;
 }

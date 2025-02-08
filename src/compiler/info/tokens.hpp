@@ -11,14 +11,13 @@ namespace amasm::compiler {
 
     enum class TokenType : uint8_t {
         None       = 0x0,
-        LParen     = '(', RParen   = ')', LBracket = '[', RBracket  = ']', LBrace = '{', RBrace = '}',
-        Dot        = '.', Comma    = ',', Colon    = ':', Semicolon = ';',
-        At         = '@', Dollar   = '$', Percent  = '%', Quote     = '\"',
-        Plus       = '+', Minus    = '-', Star     = '*', Slash     = '/',
-        Identifier = 0x80, Number  = 129,
-        Datatype   = 130, InstName = 131,
-        KwThis     = 132, KwVar    = 133, KwSection = 134, KwLabel = 135, KwFunc = 136, KwStruct = 137,
-        Max        = 0xFF
+        LParen     = '(', RParen = ')', LBracket  = '[', RBracket  = ']', LBrace = '{', RBrace = '}',
+        Dot        = '.', Comma  = ',', Colon     = ':', Semicolon = ';',
+        At         = '@', Dollar = '$', Percent   = '%', Quote     = '\"',
+        Plus       = '+', Minus  = '-', Star      = '*', Slash     = '/',
+        Identifier = 128, Number = 129, InstName  = 130,
+        KwThis     = 192, KwVar  = 193, KwSection = 194, KwLabel = 195, KwFunc = 196, KwStruct = 197,
+        Max        = 255
     };
 
     struct token {

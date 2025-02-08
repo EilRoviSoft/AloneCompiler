@@ -36,6 +36,9 @@ namespace amasm::compiler {
         std::list<const Function*> get_all_functions() const;
         std::list<const Variable*> get_all_variables() const;
 
+        size_t amount() const;
+        void resize_scopes(size_t nsize);
+
     private:
         ScopeContainer* _parent = nullptr;
 

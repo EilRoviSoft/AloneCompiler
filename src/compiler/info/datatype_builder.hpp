@@ -9,8 +9,8 @@
 namespace amasm::compiler {
 	class DatatypeBuilder : public lib::IBuilder<Datatype> {
 	public:
-		DatatypeBuilder& name(std::string name);
-		DatatypeBuilder& size(size_t size);
+		DatatypeBuilder& set_name(std::string name);
+		DatatypeBuilder& set_size(size_t size);
 		DatatypeBuilder& add_pole(std::string name, const Datatype& type);
 
 		Datatype&& get_product() override;

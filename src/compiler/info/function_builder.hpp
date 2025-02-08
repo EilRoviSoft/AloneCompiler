@@ -14,10 +14,10 @@ namespace amasm::compiler {
     public:
         FunctionBuilder();
 
-        FunctionBuilder& name(std::string name);
-        FunctionBuilder& return_type(const Datatype& datatype);
+        FunctionBuilder& set_name(std::string name);
+        FunctionBuilder& set_return_type(const Datatype& datatype);
         FunctionBuilder& add_argument_type(const Datatype& datatype);
-        FunctionBuilder& scope(ScopeProxy proxy, size_t scope_id);
+        FunctionBuilder& set_scope(ScopeProxy proxy, size_t scope_id);
         // firstly specify scope
         FunctionBuilder& add_to_scope(ScopeElement&& elem);
         FunctionBuilder& add_line(InstDecl&& decl);

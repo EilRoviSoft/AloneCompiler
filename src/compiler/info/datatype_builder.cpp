@@ -7,12 +7,12 @@
 #include "library/general_functions.hpp"
 
 namespace amasm::compiler {
-    DatatypeBuilder& DatatypeBuilder::name(std::string name) {
+    DatatypeBuilder& DatatypeBuilder::set_name(std::string name) {
         m_product->m_name = std::move(name);
         _status.name = true;
         return *this;
     }
-    DatatypeBuilder& DatatypeBuilder::size(size_t size) {
+    DatatypeBuilder& DatatypeBuilder::set_size(size_t size) {
         m_product->m_size = size;
         _status.size = true;
         return *this;

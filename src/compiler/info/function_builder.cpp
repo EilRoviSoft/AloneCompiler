@@ -8,12 +8,12 @@ namespace amasm::compiler {
         m_product->m_types.emplace_back(nullptr);
     }
 
-    FunctionBuilder& FunctionBuilder::name(std::string name) {
+    FunctionBuilder& FunctionBuilder::set_name(std::string name) {
         m_product->m_name = std::move(name);
         _status.name = true;
         return *this;
     }
-    FunctionBuilder& FunctionBuilder::return_type(const Datatype& datatype) {
+    FunctionBuilder& FunctionBuilder::set_return_type(const Datatype& datatype) {
         m_product->m_types.front() = &datatype;
         _status.return_type = true;
         return *this;
@@ -22,9 +22,13 @@ namespace amasm::compiler {
         m_product->m_types.emplace_back(&datatype);
         return *this;
     }
-    FunctionBuilder& FunctionBuilder::scope(ScopeProxy proxy, size_t scope_id) {
+    FunctionBuilder& FunctionBuilder::set_scope(ScopeProxy proxy, size_t scope_id) {
         _proxy = proxy;
         m_product->m_scope_id = scope_id;
+
+        if (scope_id >= proxy.amount())
+            proxy.resize_scopes(scope_id + 1);
+
         _status.scope = true;
         return *this;
     }

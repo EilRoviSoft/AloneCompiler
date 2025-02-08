@@ -47,6 +47,13 @@ namespace amasm::compiler {
         return _get_all_by_type<Variable, 3>();
     }
 
+    size_t ScopeProxy::amount() const {
+        return _parent->_layers.size();
+    }
+    void ScopeProxy::resize_scopes(size_t nsize) {
+        _parent->_layers.resize(nsize);
+    }
+
     const IScopeElement* ScopeProxy::_get_ptr(const std::string& key, size_t local_id) const {
         const IScopeElement* result;
         auto hashed_key = lib::hash_string(key);
@@ -55,7 +62,7 @@ namespace amasm::compiler {
 
         if (auto it = local.find(hashed_key); it != local.end())
             result = it->second;
-        else if (auto jt = global.find(hashed_key); jt != local.end())
+        else if (auto jt = global.find(hashed_key); jt != global.end())
             result = jt->second;
         else
             throw std::runtime_error(key + " doesn't exist");

@@ -16,13 +16,14 @@ namespace amasm::compiler {
     // constructors
 
     Context::Context() :
-        _proxy(_scope) {
+        _proxy(_container) {
         _init();
+        _reset();
     }
 
     // getters
 
-    ScopeProxy& Context::global_proxy() {
+    ScopeProxy Context::get_proxy() {
         return _proxy;
     }
     const std::unordered_map<std::string, TokenType>& Context::get_defined_tokens() const {
@@ -38,21 +39,37 @@ namespace amasm::compiler {
 
     // copy data
 
-    ScopeContainer Context::clone_scope() const {
-        return _scope.clone();
+    ScopeContainer Context::release_container() {
+        auto result = _container.clone();
+        _reset();
+        return result;
     }
 
     // initializers
 
-    void Context::_init() {
-        _init_defined_tokens();
-        _init_datatypes();
-        _init_rules();
-        _init_surrounded_by_braces();
-        _init_instructions();
-        _init_global_variables();
+    void Context::_init_rules() {
+        using enum TokenType;
+        _rules = {
+            { "struct_define", { KwStruct, Identifier, LBrace } },
+            { "pole_define", { KwVar, Identifier, Comma, Identifier } },
+            { "func_define", { KwFunc, At, Identifier, LParen } },
+            { "direct_argument", { Identifier } },
+            { "indirect_argument", { LBracket, Identifier } }
+        };
     }
+    void Context::_init_instructions() {
+        auto inst_collection = InstInfoFactory().generate_info().get_product();
 
+        for (auto&& it : inst_collection) {
+            auto hashed_key = it.hash();
+            _instructions.emplace(hashed_key, std::move(it));
+        }
+    }
+    void Context::_init_surrounded_by_braces() {
+        _surrounded_by_braces = {
+            "datatype_define", "function_define"
+        };
+    }
     void Context::_init_defined_tokens() {
         _defined_tokens = {
             { "this", TokenType::KwThis },
@@ -62,46 +79,27 @@ namespace amasm::compiler {
             { "func", TokenType::KwFunc },
             { "struct", TokenType::KwStruct },
         };
+
+        for (const auto& inst : _instructions | std::views::values)
+            _defined_tokens.emplace(inst.name(), TokenType::InstName);
     }
+    void Context::_init() {
+        _init_rules();
+        _init_instructions();
+        _init_surrounded_by_braces();
+        _init_defined_tokens();
+    }
+
     void Context::_init_datatypes() {
-        _proxy.add(DatatypeBuilder().name("void").size(0).get_product());
-        _proxy.add(DatatypeBuilder().name("uint8").size(1).get_product());
-        _proxy.add(DatatypeBuilder().name("uint16").size(2).get_product());
-        _proxy.add(DatatypeBuilder().name("uint32").size(4).get_product());
-        _proxy.add(DatatypeBuilder().name("uint64").size(8).get_product());
-        _proxy.add(DatatypeBuilder().name("int8").size(1).get_product());
-        _proxy.add(DatatypeBuilder().name("int16").size(2).get_product());
-        _proxy.add(DatatypeBuilder().name("int32").size(4).get_product());
-        _proxy.add(DatatypeBuilder().name("int64").size(8).get_product());
-
-        for (const auto& v : _proxy.get_all_datatypes())
-            _defined_tokens.emplace(v->name(), TokenType::Datatype);
-    }
-    void Context::_init_rules() {
-        using enum TokenType;
-        _rules = {
-            { "struct_define", { KwStruct, Identifier, LBrace } },
-            { "pole_define", { KwVar, Identifier, Comma, Datatype } },
-            { "func_define", { KwFunc, At, Identifier, LParen } },
-            { "direct_argument", { Identifier } },
-            { "indirect_argument", { LBracket, Identifier } }
-        };
-    }
-    void Context::_init_surrounded_by_braces() {
-        _surrounded_by_braces = {
-            "struct_define", "func_define"
-        };
-    }
-    void Context::_init_instructions() {
-        auto inst_collection = InstInfoFactory().generate_info().get_product();
-
-        for (const auto& v : inst_collection)
-            _defined_tokens.emplace(v.name(), TokenType::InstName);
-
-        for (auto&& it : inst_collection) {
-            auto hashed_key = it.hash();
-            _instructions.emplace(hashed_key, std::move(it));
-        }
+        _proxy.add(DatatypeBuilder().set_name("void").set_size(0).get_product());
+        _proxy.add(DatatypeBuilder().set_name("uint8").set_size(1).get_product());
+        _proxy.add(DatatypeBuilder().set_name("uint16").set_size(2).get_product());
+        _proxy.add(DatatypeBuilder().set_name("uint32").set_size(4).get_product());
+        _proxy.add(DatatypeBuilder().set_name("uint64").set_size(8).get_product());
+        _proxy.add(DatatypeBuilder().set_name("int8").set_size(1).get_product());
+        _proxy.add(DatatypeBuilder().set_name("int16").set_size(2).get_product());
+        _proxy.add(DatatypeBuilder().set_name("int32").set_size(4).get_product());
+        _proxy.add(DatatypeBuilder().set_name("int64").set_size(8).get_product());
     }
     void Context::_init_global_variables() {
         const std::array vars = {
@@ -118,11 +116,16 @@ namespace amasm::compiler {
             for (const auto& var_name : collection) {
                 const auto& type = _proxy.get_datatype(type_name);
                 auto var = VariableBuilder()
-                          .name(var_name)
-                          .address(lib::str_to_register(var_name))
-                          .datatype(type)
+                          .set_name(var_name)
+                          .set_address(lib::str_to_register(var_name))
+                          .set_datatype(type)
                           .get_product();
                 _proxy.add(std::move(var));
             }
+    }
+    void Context::_reset() {
+        _container = ScopeContainer();
+        _init_datatypes();
+        _init_global_variables();
     }
 }

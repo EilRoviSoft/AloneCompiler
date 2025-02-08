@@ -24,9 +24,9 @@ namespace unit_tests {
         const auto parser = compiler::Parser(compiler_ctx);
         //const auto translator = compiler::Translator(compiler_ctx);
 
-        //const auto text = scanner.scan_from_file("example.amasm");
-        //const auto tokens = lexer.tokenize_code(text);
-        //const auto composed = parser.parse(tokens);
+        const auto text = scanner.scan_from_file("example.amasm");
+        const auto tokens = lexer.tokenize_code(text);
+        const auto scope = parser.parse(tokens);
         //const auto bytecode = translator.translate(composed);
 
         //auto vm = executor::VirtualMachine();
@@ -34,17 +34,10 @@ namespace unit_tests {
         //vm.init();
         //vm.exec(bytecode);
     }
-    void f1() {
-        using namespace amasm;
-
-        auto compiler_ctx = CompilerContext();
-        auto copy = compiler_ctx.clone_scope();
-    }
 
     void test() {
         const std::array container = {
-            std::make_tuple(0, 1, std::function(f0)),
-            std::make_tuple(1, 0, std::function(f1))
+            std::make_tuple(0, 1, std::function(f0))
         };
 
         auto filter = [](const std::tuple<int, int, std::function<void()>>& elem) { return std::get<1>(elem); };
