@@ -53,7 +53,7 @@ add_executable(AloneCompiler
 	"src/library/literals.cpp"
 		
 	"src/main.cpp"
-)
+ "src/compiler/translator.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 #add_compile_definitions(CONSTEXPR_COMPILE_DATA)

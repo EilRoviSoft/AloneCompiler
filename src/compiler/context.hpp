@@ -20,7 +20,7 @@ namespace amasm::compiler {
         ScopeProxy get_proxy();
         const std::unordered_map<std::string, TokenType>& get_defined_tokens() const;
         const std::vector<TokenType>& get_rule(const std::string& key) const;
-        const InstInfo& get_inst(const std::string& key);
+        const InstInfo& get_inst_info(const std::string& key) const;
 
         ScopeContainer release_container();
 

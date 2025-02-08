@@ -32,7 +32,7 @@ namespace amasm::compiler {
     const std::vector<TokenType>& Context::get_rule(const std::string& key) const {
         return _rules.at(key);
     }
-    const InstInfo& Context::get_inst(const std::string& key) {
+    const InstInfo& Context::get_inst_info(const std::string& key) const {
         auto hashed_key = lib::hash_string(key);
         return _instructions.at(hashed_key);
     }

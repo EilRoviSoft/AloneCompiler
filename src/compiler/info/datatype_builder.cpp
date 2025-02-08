@@ -24,8 +24,8 @@ namespace amasm::compiler {
             return *this;
 
         bool has_poles = m_product->m_poles.empty();
-        ptrdiff_t offset = has_poles ? 0 : m_product->m_poles.back().offset + m_product->m_poles.back().type.m_size;
-        const auto& it = m_product->m_poles.emplace_back(std::move(name), type, offset);
+        ptrdiff_t offset = has_poles ? 0 : m_product->m_poles.back().offset + m_product->m_poles.back().type->m_size;
+        const auto& it = m_product->m_poles.emplace_back(std::move(name), &type, offset);
         m_product->m_poles_search.emplace(hashed_key, it);
 
         return *this;

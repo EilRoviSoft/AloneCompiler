@@ -10,6 +10,7 @@
 namespace amasm::compiler {
 	class Variable : public IScopeElement {
 		friend class VariableBuilder;
+		friend class ScopeContainer;
 
 	public:
 		Variable() : IScopeElement(3) {}

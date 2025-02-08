@@ -2,6 +2,7 @@
 
 //std
 #include <stdexcept>
+#include <utility>
 
 namespace amasm::compiler {
     //InstInfoBuilder
@@ -40,8 +41,8 @@ namespace amasm::compiler {
 
     // InstDeclBuilder
 
-    InstDeclBuilder& InstDeclBuilder::set_name(std::string name) {
-        m_product->m_name = std::move(name);
+    InstDeclBuilder& InstDeclBuilder::set_info(const InstInfo& info) {
+        m_product->m_info = &info;
         _status.name = true;
         return *this;
     }

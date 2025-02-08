@@ -28,7 +28,7 @@ namespace amasm::compiler {
 
         while (tokens[i + begin].type == TokenType::Dot) {
             const auto& pole = curr_type->pole(tokens[i + begin + 2].literal);
-            curr_type = &pole.type;
+            curr_type = pole.type;
             offset += pole.offset;
             i += 2;
         }
@@ -56,10 +56,10 @@ namespace amasm::compiler {
 
         size_t j, delta;
         FunctionBuilder builder;
-        auto scope = ctx.get_proxy();
+        auto scopes = ctx.get_proxy();
 
         builder.set_name(tokens[i + 2].literal)
-               .set_scope(scope, scope.amount());
+               .set_scope(scopes, scopes.amount());
 
         // arguments dispatching up to rparen token
         for (j = i + 4; tokens[j].type != TokenType::RParen; j++) {
@@ -67,17 +67,17 @@ namespace amasm::compiler {
                 if (tokens[j].type != TokenType::Comma)
                     throw std::runtime_error("wrong func definition");
             } else if (tokens[j].type == TokenType::Identifier) {
-                builder.add_argument_type(scope.get_datatype(tokens[j].literal));
+                builder.add_argument_type(scopes.get_datatype(tokens[j].literal));
             } else
                 throw std::runtime_error("wrong func definition");
         }
 
         // return-type detecting ('cause it's optional)
         if (tokens[j + 1].type == TokenType::Colon) {
-            builder.set_return_type(scope.get_datatype(tokens[j + 2].literal));
+            builder.set_return_type(scopes.get_datatype(tokens[j + 2].literal));
             delta = j - i + 4;
         } else {
-            builder.set_return_type(scope.get_datatype("void"));
+            builder.set_return_type(scopes.get_datatype("void"));
             delta = j - i + 2;
         }
 
@@ -89,13 +89,13 @@ namespace amasm::compiler {
 
         size_t delta;
         auto& [name, data] = queue.front();
-        auto scope = ctx.get_proxy();
+        auto scopes = ctx.get_proxy();
 
         if (name == "datatype_builder") {
             auto& builder = std::get<DatatypeBuilder>(data);
             bool has_own_offset = tokens[i + 5].type == TokenType::Comma;
 
-            builder.add_pole(tokens[i + 2].literal, scope.get_datatype(tokens[i + 4].literal));
+            builder.add_pole(tokens[i + 2].literal, scopes.get_datatype(tokens[i + 4].literal));
             delta = has_own_offset ? 13 : 6;
         } else
             throw std::runtime_error("isn't done yet");
@@ -109,11 +109,11 @@ namespace amasm::compiler {
 
         size_t j = i + 1, di;
         auto& func_builder = std::get<FunctionBuilder>(data);
-        auto scope = ctx.get_proxy();
-        auto scope_id = scope.amount() - 1;
+        auto scopes = ctx.get_proxy();
+        auto scope_id = scopes.amount() - 1;
         InstDeclBuilder inst_builder;
 
-        inst_builder.set_name(tokens[i].literal);
+        inst_builder.set_info(ctx.get_inst_info(tokens[i].literal));
         if (tokens[i].literal == "fcall") {
             argument_info on_add = {
                 .name = "",
@@ -130,13 +130,13 @@ namespace amasm::compiler {
         } else {
             size_t args_n = 0;
             bool flag = tokens[j].type != TokenType::Semicolon;
-            const auto& inst_info = ctx.get_inst(tokens[i].literal);
+            const auto& inst_info = ctx.get_inst_info(tokens[i].literal);
 
             while (args_n < inst_info.max_args() && flag) {
                 argument_info on_add;
 
                 if (match(ctx.get_rule("direct_argument"), tokens, j)) {
-                    const auto& var = scope.get_variable(tokens[j].literal, scope_id);
+                    const auto& var = scopes.get_variable(tokens[j].literal, scope_id);
                     auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 1);
                     on_add = {
                         .name = tokens[j].literal,
@@ -152,7 +152,7 @@ namespace amasm::compiler {
                     };
                     j++;
                 } else if (match(ctx.get_rule("indirect_argument"), tokens, j)) {
-                    const auto& var = scope.get_variable(tokens[j + 1].literal, scope_id);
+                    const auto& var = scopes.get_variable(tokens[j + 1].literal, scope_id);
                     auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 2);
                     on_add = {
                         .name = tokens[j + 1].literal,
@@ -198,14 +198,14 @@ namespace amasm::compiler {
     }
     size_t finish_parse(Context& ctx, size_t i, const token_vector& tokens, parse_queue& queue) {
         auto& [name, variant] = queue.front();
-        auto scope = ctx.get_proxy();
+        auto scopes = ctx.get_proxy();
 
         if (name == "datatype_builder") {
             auto& builder = std::get<DatatypeBuilder>(variant);
-            scope.add(std::move(builder.get_product()));
+            scopes.add(std::move(builder.get_product()));
         } else if (name == "function_builder") {
             auto& builder = std::get<FunctionBuilder>(variant);
-            scope.add(std::move(builder.get_product()));
+            scopes.add(std::move(builder.get_product()));
         }
 
         queue.pop();

@@ -12,31 +12,32 @@
 #include "compiler/info/scope_element.hpp"
 
 namespace amasm::compiler {
-	class Datatype : public IScopeElement {
-		friend class DatatypeBuilder;
+    class Datatype : public IScopeElement {
+        friend class DatatypeBuilder;
+        friend class ScopeContainer;
 
-		struct pole_info {
-			std::string name;
-			const Datatype& type;
-			ptrdiff_t offset;
-		};
+        struct pole_info {
+            std::string name;
+            const Datatype* type;
+            ptrdiff_t offset;
+        };
 
-	public:
-		Datatype() : IScopeElement(1) {}
+    public:
+        Datatype() : IScopeElement(1) {}
 
-		size_t size() const { return m_size; }
-		const pole_info& pole(const std::string& pole_name) const {
-			size_t hash = lib::hash_string(pole_name);
-			return m_poles_search.at(hash);
-		}
+        size_t size() const { return m_size; }
+        const pole_info& pole(const std::string& pole_name) const {
+            size_t hash = lib::hash_string(pole_name);
+            return m_poles_search.at(hash);
+        }
 
-		ScopeElement clone() const override {
-			return std::make_shared<Datatype>(*this);
-		}
+        ScopeElement clone() const override {
+            return std::make_shared<Datatype>(*this);
+        }
 
-	protected:
-		size_t m_size = 0;
-		std::list<pole_info> m_poles;
-		std::unordered_map<size_t, const pole_info> m_poles_search;
-	};
+    protected:
+        size_t m_size = 0;
+        std::list<pole_info> m_poles;
+        std::unordered_map<size_t, pole_info> m_poles_search;
+    };
 }

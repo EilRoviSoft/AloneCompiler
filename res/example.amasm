@@ -1,13 +1,10 @@
 func @main() {
-    push64 10;
-    push32 20;
+    mov64 rbx, 
     fcall @add6432(int64, int32);
     halt;
 }
 
-func @add6432(int64, int32): int64 { # arguments push left-to-right
-    mov64 rcx, [rsp - 20];
-    mov32 rdx, [rsp - 12];
-    add64i rbx, rcx, rdx;
-    ret;
+# TODO: print 
+func @add_and_print(int64, int64) {
+
 }

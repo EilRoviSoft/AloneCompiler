@@ -33,15 +33,17 @@ namespace amasm::compiler {
         ArgumentType type = ArgumentType::Empty;
     };
 
+    // you have to guarantee that InstInfo instance exists for whole duration of InstDecl object
     class InstDecl {
         friend class InstDeclBuilder;
 
     public:
-        const std::string& name() const { return m_name; }
+        const InstInfo& info() const { return *m_info; }
         const argument_info& argument(size_t idx) const { return m_arguments[idx]; }
+        size_t arguments_count() const { return m_arguments.size(); }
 
     protected:
-        std::string m_name;
+        const InstInfo* m_info;
         std::vector<argument_info> m_arguments;
     };
     using ComposedInst = std::tuple<size_t, InstDecl>;
