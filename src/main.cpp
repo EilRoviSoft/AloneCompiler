@@ -1,3 +1,7 @@
+//std
+#include <functional>
+#include <vector>
+
 //compiler
 #include "compiler/context.hpp"
 #include "compiler/lexer.hpp"
@@ -6,7 +10,6 @@
 #include "compiler/translator.hpp"
 
 //executor
-#include "executor/context.hpp"
 #include "executor/virtual_machine.hpp"
 
 namespace unit_tests {
@@ -14,15 +17,15 @@ namespace unit_tests {
         using namespace amasm;
 
         auto compiler_ctx = CompilerContext();
-        const auto scanner = compiler::Scanner(compiler_ctx);
-        const auto lexer = compiler::Lexer(compiler_ctx);
-        const auto parser = compiler::Parser(compiler_ctx);
-        const auto translator = compiler::Translator(compiler_ctx);
+        auto scanner = compiler::Scanner(compiler_ctx);
+        auto lexer = compiler::Lexer(compiler_ctx);
+        auto parser = compiler::Parser(compiler_ctx);
+        auto translator = compiler::Translator(compiler_ctx);
 
-        const auto text = scanner.scan_from_file("example.amasm");
-        const auto tokens = lexer.tokenize_code(text);
-        const auto composed = parser.parse(tokens);
-        const auto bytecode = translator.translate(composed);
+        auto text = scanner.scan_from_file("example.amasm");
+        auto tokens = lexer.tokenize_code(text);
+        auto container = parser.parse(tokens);
+        auto bytecode = translator.translate(container);
 
         auto vm = executor::VirtualMachine();
 
@@ -31,12 +34,13 @@ namespace unit_tests {
     }
 
     void test() {
-        static const std::vector container = {
-            std::make_tuple(0, true, std::function(f0))
+        const std::array container = {
+            std::make_tuple(0, 1, std::function(f0))
         };
 
-        for (const auto& [id, status, f] : container)
-            f();
+        auto filter = [](const std::tuple<int, int, std::function<void()>>& elem) { return std::get<1>(elem); };
+        for (const auto& [id, status, func] : container | std::views::filter(filter))
+            func();
     }
 }
 

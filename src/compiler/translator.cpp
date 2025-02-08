@@ -1,87 +1,43 @@
 #include "translator.hpp"
 
 //std
-#ifdef DEBUG_STATUS
-#include <iostream>
-#endif
+#include <algorithm>
 #include <list>
-#include <numeric>
 #include <tuple>
-#include <unordered_map>
 
-//lib
-#include "library/general_functions.hpp"
-#include "library/types.hpp"
+//compiler_info
+#include "compiler/info/function.hpp"
+#include "compiler/info/instruction.hpp"
+#include "compiler/info/scope_container.hpp"
 
 namespace amasm::compiler {
-    Translator::Translator(Context& ctx) :
-        _ctx(ctx) {
-    }
-
-    lib::Bytecode Translator::translate(funcs_queue composed) const {
-        lib::Bytecode result;
-        std::unordered_map<std::string, size_t> labels;
-        std::list<hint> hints;
-
-        // adds total size of program to the front of the code
-        result.append_value<lib::machine_word>(0);
-        while (!composed.empty()) {
-            const auto func = std::move(composed.front());
-            composed.pop();
-
-            result.append_value<lib::machine_word>(lib::for_each_by_rule(
-                func.args,
-                0,
-                std::plus {},
-                [](const Datatype* datatype) { return datatype->size(); }
-            ));
-            result.append_value<lib::machine_word>(func.return_type->size());
-            labels.emplace(generate_func_full_name(func), result.size());
-
-            for (const auto& inst : func.lines) {
-                auto [new_bytecode, new_hints] = _decompose_instruction(func, inst);
-                for (auto& it : new_hints)
-                    it.offset += result.size();
-                hints.append_range(new_hints);
-                result.append_sequence(new_bytecode);
-            }
-        }
-
-        result.set(labels.at("@main()"), 0);
-        for (const auto& it : hints)
-            result.set(labels[it.name] + lib::registers_size, it.offset);
-
-        return result;
-    }
-
-    std::tuple<lib::Bytecode, std::list<Translator::hint>> Translator::_decompose_instruction(
-        const func_info& scope,
-        const inst_decl& inst) const {
+    std::tuple<lib::Bytecode, std::list<std::tuple<size_t, std::string>>> generate_inst_bytecode(
+        const ScopeProxy& scope,
+        const InstDecl& inst) {
         lib::Bytecode bytecode;
         lib::inst_code mask = 0;
-        std::list<hint> hints;
-        size_t start = bytecode.size();
-        const auto& info = _ctx.get_inst(inst.name);
+        std::list<std::tuple<size_t, std::string>> hints;
 
-        bytecode.append_value(info.code);
-        if (inst.name == "fcall") {
-            hints.emplace_back(bytecode.size(), inst.args.front().name);
+        bytecode.append_value(inst.info().code());
+        if (inst.info().name() == "fcall") {
+            hints.emplace_back(bytecode.size(), inst.argument(0).name);
             bytecode.append_value<lib::machine_word>(0);
         } else {
             size_t arg_idx = 0;
-            for (const auto& arg : inst.args) {
+            for (size_t i = 0; i < inst.arguments_count(); i++) {
+                const auto& arg = inst.argument(i);
                 mask |= (size_t) arg.type << arg_idx * 2;
                 arg_idx++;
 
                 switch (arg.type) {
                 case ArgumentType::Direct:
-                    bytecode.append_value(scope.variables.get_variable(arg.name).address);
+                    bytecode.append_value(scope.get_variable(arg.name).address());
                     break;
                 case ArgumentType::Immediate:
-                    bytecode.append_value(arg.value, info.bid_depth / 8);
+                    bytecode.append_value(arg.value, inst.info().bit_depth() / 8);
                     break;
                 case ArgumentType::IndirectWithDisplacement:
-                    bytecode.append_value(scope.variables.get_variable(arg.name).address);
+                    bytecode.append_value(scope.get_variable(arg.name).address());
                     bytecode.append_value(arg.value, lib::machine_word_size);
                     break;
                 default:
@@ -90,37 +46,50 @@ namespace amasm::compiler {
             }
         }
 
-        bytecode[start + 3] |= std::byte(mask);
+        bytecode[3] |= std::byte(mask);
 
-        // TODO: place this in debugger
-#ifdef DEBUG_STATUS
-        std::cout /*<< bytecode.size() << ' '*/ << inst.name << ' ';
-        for (const auto& arg : inst.args) {
-            switch (arg.type) {
-            case ArgumentType::Direct:
-            case ArgumentType::JumpAddress:
-                std::cout << arg.name;
-                break;
-            case ArgumentType::Immediate:
-                std::cout << arg.value;
-                break;
-            case ArgumentType::IndirectWithDisplacement:
-                std::cout << arg.name << (arg.value > 0 ? '+' : '-') << std::abs(arg.value);
-                break;
-            default:
-                break;
+        return { std::move(bytecode), std::move(hints) };
+    }
+
+    // Translator
+
+    Translator::Translator(Context& ctx) :
+        _ctx(ctx) {
+    }
+
+    lib::Bytecode Translator::translate(ScopeContainer container) const {
+        lib::Bytecode result;
+        std::unordered_map<std::string, size_t> labels;
+        std::list<std::tuple<size_t, std::string>> hints;
+        ScopeProxy scopes = container;
+        std::vector<Function> functions;
+
+        auto temp_container = scopes.get_all_functions();
+        functions.reserve(temp_container.size());
+        for (auto&& it : temp_container)
+            functions.emplace_back(*it);
+
+        std::ranges::sort(functions, std::ranges::less(), &Function::scope_id);
+
+        // adds total size of program to the front of the code
+        for (const auto& it : functions) {
+            result.append_value<lib::machine_word>(it.arguments_size());
+            result.append_value<lib::machine_word>(it.return_type().size());
+            labels.emplace(it.fullname(), result.size());
+
+            for (size_t i = 0; i < it.lines_size(); i++) {
+                auto [new_bytecode, new_hints] = generate_inst_bytecode(scopes, it.line(i));
+                for (auto& [offset, name] : new_hints)
+                    offset += result.size();
+                hints.append_range(new_hints);
+                result.append_sequence(new_bytecode);
             }
-            std::cout << ' ';
         }
-        std::cout << '\n';
 
-        const auto inst_full_data = *reinterpret_cast<const lib::inst_code*>(bytecode.data());
-        std::cout << (inst_full_data & 0xFFFF) << ' ';
-        for (size_t i = lib::inst_size; i < bytecode.size(); i++)
-            std::cout << (int) bytecode[i] << ' ';
-        std::cout << '\n';
-#endif
+        result.set(labels.at("@main()"), 0);
+        for (const auto& [offset, name] : hints)
+            result.set(labels[name] + lib::registers_size, offset);
 
-        return { bytecode, hints };
+        return result;
     }
 }
