@@ -4,30 +4,29 @@
 #include <functional>
 #include <stdexcept>
 
-//frozen
-#include "frozen/string.h"
-#include "frozen/unordered_map.h"
-
 //compiler_info
 #include "compiler/info/instruction_builder.hpp"
 #include "compiler/info/variable_builder.hpp"
 
 namespace amasm::compiler::parser {
     using enum TokenType;
+    using inst_parser_result = std::tuple<size_t, InstDecl>;
+    using inst_parser = std::function<inst_parser_result(Context& ctx,
+        const InstInfo& inst_info, size_t i, const token_vector& tokens)>;
 
-    constinit const frozen::unordered_map<frozen::string, std::array<TokenType, 6>, 5> rules = {
-        { "struct_define", { KwStruct, Identifier, LBrace, Max } },
-        { "pole_define", { KwVar, Percent, Identifier, Comma, Identifier, Max } },
-        { "func_define", { KwFunc, At, Identifier, LParen, Max } },
-        { "direct_argument", { Percent, Identifier, Max } },
-        { "indirect_argument", { LBracket, Percent, Identifier, Max } }
+    static const std::unordered_map<std::string, std::vector<TokenType>> rules = {
+        { "struct_define", { KwStruct, Identifier, LBrace } },
+        { "pole_define", { KwVar, Percent, Identifier, Comma, Identifier } },
+        { "func_define", { KwFunc, At, Identifier, LParen } },
+        { "direct_argument", { Percent, Identifier } },
+        { "indirect_argument", { LBracket, Percent, Identifier } }
     };
 
-    auto match(const frozen::string& rule_name, const token_vector& tokens, size_t begin) {
+    auto match(const std::string& rule_name, const token_vector& tokens, size_t begin) {
         bool result = true;
         const auto& rule = rules.at(rule_name);
 
-        for (size_t i = 0; result && rule[i] != Max; i++)
+        for (size_t i = 0; result && i < rule.size(); i++)
             result = rule[i] == tokens[i + begin].type;
 
         return result;
@@ -50,6 +49,138 @@ namespace amasm::compiler::parser {
         return std::make_pair(type, std::move(pred));
     }
 
+    inst_parser_result parse_fcall(
+        Context& ctx,
+        const InstInfo& inst_info,
+        size_t i,
+        const token_vector& tokens) {
+        size_t j = i + 1;
+        InstDeclBuilder builder;
+        argument_info on_add;
+
+        builder.set_info(inst_info);
+        while (tokens[j].type != Semicolon) {
+            on_add.name += tokens[j].literal;
+            j++;
+        }
+        on_add.type = ArgumentType::JumpAddress;
+        builder.add_argument(std::move(on_add));
+
+        return {
+            j - i + 1,
+            builder.get_product()
+        };
+    }
+    inst_parser_result parse_inst(
+        Context& ctx,
+        const InstInfo& inst_info,
+        size_t i,
+        const token_vector& tokens) {
+        size_t j = i + 1, args_n = 0;
+        bool flag = tokens[j].type != Semicolon;
+        InstDeclBuilder builder;
+        auto scopes = ctx.get_proxy();
+        auto scope_id = scopes.amount() - 1;
+
+        builder.set_info(inst_info);
+        while (args_n < inst_info.max_args() && flag) {
+            argument_info on_add;
+
+            if (match("direct_argument", tokens, j)) {
+                const auto& var = scopes.get_variable(tokens[j + 1].literal, scope_id);
+                auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 2);
+                on_add = {
+                    .name = tokens[j + 1].literal,
+                    .value = var_offset,
+                    .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct
+                };
+                j += dj + 2;
+            } else if (tokens[j].type == Number) {
+                on_add = {
+                    .name = "",
+                    .value = std::stoll(tokens[j].literal),
+                    .type = ArgumentType::Immediate
+                };
+                j++;
+            } else if (match("indirect_argument", tokens, j)) {
+                const auto& var = scopes.get_variable(tokens[j + 2].literal, scope_id);
+                auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 3);
+                on_add = {
+                    .name = tokens[j + 2].literal,
+                    .value = var_offset,
+                    .type = ArgumentType::IndirectWithDisplacement
+                };
+
+                switch (tokens[j + dj + 3].type) {
+                case Plus:
+                    on_add.value += std::stoll(tokens[j + dj + 4].literal);
+                    dj += 1;
+                    break;
+                case Minus:
+                    on_add.value -= std::stoll(tokens[j + dj + 4].literal);
+                    dj += 1;
+                    break;
+                default:
+                    break;
+                }
+
+                j += dj + 4;
+            } else if (args_n >= inst_info.min_args()) {
+                j += 1;
+                break;
+            } else
+                throw std::runtime_error("wrong instruction definition");
+
+            builder.add_argument(std::move(on_add));
+            args_n++;
+
+            // to add colon to diff
+            if (tokens[j].type != Semicolon)
+                j++;
+            else
+                flag = false;
+        }
+
+        return {
+            j - i + 1,
+            builder.get_product()
+        };
+    }
+
+    size_t parse_instruction(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
+        static const std::unordered_map special_instructions = {
+            std::make_pair(std::string("fcall"), parse_fcall)
+        };
+
+        auto& [name, data] = queue.front();
+        if (name != FunctionDefinition)
+            throw std::runtime_error("wrong instruction definition placement");
+
+        auto& builder = std::get<FunctionBuilder>(data);
+        auto it = special_instructions.find(tokens[i].literal);
+        inst_parser parser = it != special_instructions.end() ? it->second : parse_inst;
+        auto [delta, product] = parser(ctx, ctx.get_inst_info(tokens[i].literal), i, tokens);
+        builder.add_line(std::move(product));
+
+        return delta;
+    }
+
+    size_t finish_parse(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
+        auto& [name, variant] = queue.front();
+        auto scopes = ctx.get_proxy();
+
+        if (name == DatatypeDefinition) {
+            auto& builder = std::get<DatatypeBuilder>(variant);
+            scopes.add(std::move(builder.get_product()));
+        } else if (name == FunctionDefinition) {
+            auto& builder = std::get<FunctionBuilder>(variant);
+            scopes.add(std::move(builder.get_product()));
+        }
+
+        queue.pop();
+
+        return 1;
+    }
     size_t start_parse_datatype(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
         if (!match("struct_define", tokens, i))
             throw std::runtime_error("wrong struct definition");
@@ -70,7 +201,7 @@ namespace amasm::compiler::parser {
         auto scopes = ctx.get_proxy();
 
         builder.set_name(tokens[i + 2].literal)
-               .set_scope(scopes, scopes.amount());
+            .set_scope(scopes, scopes.amount());
 
         // arguments dispatching up to rparen token
         for (j = i + 4; tokens[j].type != RParen; j++) {
@@ -114,123 +245,13 @@ namespace amasm::compiler::parser {
 
         return delta;
     }
-    size_t parse_instruction(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
-        auto& [name, data] = queue.front();
-        if (name != FunctionDefinition)
-            throw std::runtime_error("wrong instruction definition placement");
-
-        size_t j = i + 1, di;
-        auto& func_builder = std::get<FunctionBuilder>(data);
-        auto scopes = ctx.get_proxy();
-        auto scope_id = scopes.amount() - 1;
-        InstDeclBuilder inst_builder;
-
-        inst_builder.set_info(ctx.get_inst_info(tokens[i].literal));
-        if (tokens[i].literal == "fcall") {
-            argument_info on_add = {
-                .name = "",
-                .value = 0,
-                .type = ArgumentType::JumpAddress
-            };
-            while (tokens[j].type != Semicolon) {
-                on_add.name += tokens[j].literal;
-                j++;
-            }
-
-            inst_builder.add_argument(std::move(on_add));
-            di = j - i + 1;
-        } else {
-            size_t args_n = 0;
-            bool flag = tokens[j].type != Semicolon;
-            const auto& inst_info = ctx.get_inst_info(tokens[i].literal);
-
-            while (args_n < inst_info.max_args() && flag) {
-                argument_info on_add;
-
-                if (match("direct_argument", tokens, j)) {
-                    const auto& var = scopes.get_variable(tokens[j + 1].literal, scope_id);
-                    auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 2);
-                    on_add = {
-                        .name = tokens[j + 1].literal,
-                        .value = var_offset,
-                        .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct
-                    };
-                    j += dj + 2;
-                } else if (tokens[j].type == Number) {
-                    on_add = {
-                        .name = "",
-                        .value = std::stoll(tokens[j].literal),
-                        .type = ArgumentType::Immediate
-                    };
-                    j++;
-                } else if (match("indirect_argument", tokens, j)) {
-                    const auto& var = scopes.get_variable(tokens[j + 2].literal, scope_id);
-                    auto [var_offset, dj] = calc_offset(var.datatype(), tokens, j + 3);
-                    on_add = {
-                        .name = tokens[j + 2].literal,
-                        .value = var_offset,
-                        .type = ArgumentType::IndirectWithDisplacement
-                    };
-
-                    switch (tokens[j + dj + 3].type) {
-                    case Plus:
-                        on_add.value += std::stoll(tokens[j + dj + 4].literal);
-                        dj += 1;
-                        break;
-                    case Minus:
-                        on_add.value -= std::stoll(tokens[j + dj + 4].literal);
-                        dj += 1;
-                        break;
-                    default:
-                        break;
-                    }
-
-                    j += dj + 4;
-                } else if (args_n >= inst_info.min_args()) {
-                    j += 1;
-                    break;
-                } else
-                    throw std::runtime_error("wrong instruction definition");
-
-                inst_builder.add_argument(std::move(on_add));
-                args_n++;
-
-                // to add colon to diff
-                if (tokens[j].type != Semicolon)
-                    j++;
-                else
-                    flag = false;
-            }
-
-            di = j - i + 1;
-        }
-
-        func_builder.add_line(inst_builder.get_product());
-        return di;
-    }
-    size_t finish_parse(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
-        auto& [name, variant] = queue.front();
-        auto scopes = ctx.get_proxy();
-
-        if (name == DatatypeDefinition) {
-            auto& builder = std::get<DatatypeBuilder>(variant);
-            scopes.add(std::move(builder.get_product()));
-        } else if (name == FunctionDefinition) {
-            auto& builder = std::get<FunctionBuilder>(variant);
-            scopes.add(std::move(builder.get_product()));
-        }
-
-        queue.pop();
-
-        return 1;
-    }
 
     size_t do_parse_logic(Context& ctx, size_t i, const token_vector& tokens, queue& queue) {
         static const std::unordered_map logic = {
+            std::make_pair(InstName, parse_instruction),
             std::make_pair(KwStruct, start_parse_datatype),
             std::make_pair(KwFunc, start_parse_function),
             std::make_pair(KwVar, parse_variable),
-            std::make_pair(InstName, parse_instruction),
             std::make_pair(RBrace, finish_parse)
         };
 

@@ -37,7 +37,7 @@ namespace amasm::compiler {
 
     private:
         struct {
-            bool name : 1 = false;
+            bool info : 1 = false;
         } _is_set;
     };
 }

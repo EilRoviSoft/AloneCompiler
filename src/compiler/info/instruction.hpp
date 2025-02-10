@@ -43,7 +43,7 @@ namespace amasm::compiler {
         size_t arguments_count() const { return m_arguments.size(); }
 
     protected:
-        const InstInfo* m_info;
+        const InstInfo* m_info = nullptr;
         std::vector<argument_info> m_arguments;
     };
     using ComposedInst = std::tuple<size_t, InstDecl>;

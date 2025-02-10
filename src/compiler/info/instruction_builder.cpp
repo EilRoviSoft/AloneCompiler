@@ -43,7 +43,7 @@ namespace amasm::compiler {
 
     InstDeclBuilder& InstDeclBuilder::set_info(const InstInfo& info) {
         m_product->m_info = &info;
-        _is_set.name = true;
+        _is_set.info = true;
         return *this;
     }
     InstDeclBuilder& InstDeclBuilder::add_argument(argument_info&& arg) {
@@ -52,7 +52,7 @@ namespace amasm::compiler {
     }
 
     InstDecl&& InstDeclBuilder::get_product() {
-        if (!_is_set.name)
+        if (!_is_set.info)
             throw std::runtime_error("you have to specify name of InstDecl");
 
         return IBuilder::get_product();

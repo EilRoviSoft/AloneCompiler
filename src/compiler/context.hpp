@@ -3,8 +3,6 @@
 //std
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
-#include <vector>
 
 //compiler_info
 #include "compiler/info/instruction.hpp"
