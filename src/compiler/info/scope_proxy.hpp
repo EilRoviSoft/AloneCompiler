@@ -47,4 +47,32 @@ namespace amasm::compiler {
         template<scope_element_t TRet, size_t TypeId>
         std::list<const TRet*> _get_all_by_type() const;
     };
+
+    class ConstScopeProxy {
+    public:
+        ConstScopeProxy() = default;
+        ConstScopeProxy(const ScopeContainer& parent);
+
+        void set_parent(const ScopeContainer& parent);
+
+        const IScopeElement& get_ptr(const std::string& key, size_t local_id = 0) const;
+
+        const Datatype& get_datatype(const std::string& key, size_t local_id = 0) const;
+        const Function& get_function(const std::string& key, size_t local_id = 0) const;
+        const Variable& get_variable(const std::string& key, size_t local_id = 0) const;
+
+        std::list<const Datatype*> get_all_datatypes() const;
+        std::list<const Function*> get_all_functions() const;
+        std::list<const Variable*> get_all_variables() const;
+
+        size_t amount() const;
+
+    private:
+        const ScopeContainer* _parent = nullptr;
+
+        const IScopeElement* _get_ptr(const std::string& key, size_t local_id) const;
+
+        template<scope_element_t TRet, size_t TypeId>
+        std::list<const TRet*> _get_all_by_type() const;
+    };
 }

@@ -17,6 +17,7 @@
 namespace amasm::compiler {
     class ScopeContainer {
         friend class ScopeProxy;
+        friend class ConstScopeProxy;
 
     public:
         ScopeContainer() {

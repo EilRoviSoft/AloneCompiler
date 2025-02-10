@@ -17,10 +17,10 @@ namespace unit_tests {
         using namespace amasm;
 
         auto compiler_ctx = CompilerContext();
-        auto scanner = compiler::Scanner(compiler_ctx);
-        auto lexer = compiler::Lexer(compiler_ctx);
+        auto scanner = compiler::Scanner();
+        auto lexer = compiler::Lexer();
         auto parser = compiler::Parser(compiler_ctx);
-        auto translator = compiler::Translator(compiler_ctx);
+        auto translator = compiler::Translator();
 
         auto text = scanner.scan_from_file("example.amasm");
         auto tokens = lexer.tokenize_code(text);

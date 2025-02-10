@@ -11,6 +11,7 @@ namespace amasm::compiler {
     class IScopeElement {
         friend class ScopeContainer;
         friend class ScopeProxy;
+        friend class ConstScopeProxy;
 
     public:
         virtual ~IScopeElement() = default;

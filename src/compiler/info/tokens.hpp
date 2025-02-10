@@ -30,8 +30,8 @@ namespace amasm::compiler {
 
     using TokenDict = std::unordered_map<std::string, TokenType>;
 
-    token make_token(const TokenDict& dict, char ch);
-    token make_token(const TokenDict& dict, std::string str);
+    token make_token(char ch);
+    token make_token(std::string str);
 
     using token_vector = std::vector<token>;
 }

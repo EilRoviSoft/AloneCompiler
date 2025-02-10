@@ -45,7 +45,7 @@ You can define names for memory regions from stack and heap.
 This only affects compilation time.
 
 ```asm
-var %a, uint64, [%rsp - 8];
+var %a: uint64, [%rsp - 8];
 ```
 
 ## Predefined data aka Constants
@@ -53,8 +53,8 @@ var %a, uint64, [%rsp - 8];
 Also allocate data before main program as constants.
 
 ```asm
-const %arr [int32 * 3], [18, 24, 34];
-str %msg [uint8 * 12], "Hello world\n";
+const %arr: [int32 * 3], [18, 24, 34];
+str %msg: "Hello world\n";
 ```
 
 ## Registers set
@@ -128,10 +128,10 @@ func @add6432(int64, int32): int64 { # arguments pushes right-to-left
 
 ```asm
 struct some_t {                     # you can define rules for struct align
-    var %a, int64, [%this + 8];     # and create struct members
-    var %b, int32, [%this + 8];     # members will be placed in order of defining
-    var %c, int8, [%this + 12];
-    var %d, int8, [%this + 16];
+    var %a: int64, [%this + 8];     # and create struct members
+    var %b: int32, [%this + 8];     # members will be placed in order of defining
+    var %c: int8, [%this + 12];
+    var %d: int8, [%this + 16];
 }
 
 func @main() {

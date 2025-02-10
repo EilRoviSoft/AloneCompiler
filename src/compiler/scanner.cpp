@@ -5,11 +5,7 @@
 #include <vector>
 
 namespace amasm::compiler {
-    Scanner::Scanner(Context& ctx) :
-        _ctx(ctx) {
-    }
-
-    std::string Scanner::scan_from_file(std::fstream& file) const {
+    std::string Scanner::scan_from_file(std::fstream& file) {
         std::string temp, buffer;
 
         while (!file.eof()) {
@@ -19,7 +15,7 @@ namespace amasm::compiler {
 
         return scan_from_string(temp);
     }
-    std::string Scanner::scan_from_file(const std::string& filename) const {
+    std::string Scanner::scan_from_file(const std::string& filename) {
         std::string temp, buffer;
 
         std::fstream file(filename);
@@ -32,7 +28,7 @@ namespace amasm::compiler {
         return scan_from_string(temp);
     }
 
-    std::string Scanner::scan_from_string(const std::string& input) const {
+    std::string Scanner::scan_from_string(const std::string& input) {
         std::string result;
         std::vector<std::pair<size_t, size_t>> ranges;
         size_t line_start_pos = 0;

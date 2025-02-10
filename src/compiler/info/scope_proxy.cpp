@@ -10,6 +10,8 @@
 #include "compiler/info/scope_container.hpp"
 
 namespace amasm::compiler {
+    // ScopeProxy
+
     ScopeProxy::ScopeProxy(ScopeContainer& parent) :
         _parent(&parent) {
     }
@@ -71,6 +73,72 @@ namespace amasm::compiler {
     }
     template<scope_element_t TRet, size_t TypeId>
     std::list<const TRet*> ScopeProxy::_get_all_by_type() const {
+        std::list<const TRet*> result;
+        for (const auto& it : _parent->_container) {
+            if (it->m_type_id == TypeId) {
+                auto original = it.get();
+                auto ptr = dynamic_cast<TRet*>(original);
+                result.emplace_back(ptr);
+            }
+        }
+        return result;
+    }
+
+    // ConstScopeProxy
+
+    ConstScopeProxy::ConstScopeProxy(const ScopeContainer& parent) :
+        _parent(&parent) {
+    }
+
+    void ConstScopeProxy::set_parent(const ScopeContainer& parent) {
+        _parent = &parent;
+    }
+
+    const IScopeElement& ConstScopeProxy::get_ptr(const std::string& key, size_t local_id) const {
+        return *_get_ptr(key, local_id);
+    }
+
+    const Datatype& ConstScopeProxy::get_datatype(const std::string& key, size_t local_id) const {
+        return *dynamic_cast<const Datatype*>(_get_ptr(key, local_id));
+    }
+    const Function& ConstScopeProxy::get_function(const std::string& key, size_t local_id) const {
+        return *dynamic_cast<const Function*>(_get_ptr(key, local_id));
+    }
+    const Variable& ConstScopeProxy::get_variable(const std::string& key, size_t local_id) const {
+        return *dynamic_cast<const Variable*>(_get_ptr(key, local_id));
+    }
+
+    std::list<const Datatype*> ConstScopeProxy::get_all_datatypes() const {
+        return _get_all_by_type<Datatype, 1>();
+    }
+    std::list<const Function*> ConstScopeProxy::get_all_functions() const {
+        return _get_all_by_type<Function, 2>();
+    }
+    std::list<const Variable*> ConstScopeProxy::get_all_variables() const {
+        return _get_all_by_type<Variable, 3>();
+    }
+
+    size_t ConstScopeProxy::amount() const {
+        return _parent->_layers.size();
+    }
+
+    const IScopeElement* ConstScopeProxy::_get_ptr(const std::string& key, size_t local_id) const {
+        const IScopeElement* result;
+        auto hashed_key = lib::hash_string(key);
+        const auto& local = _parent->_layers[local_id];
+        const auto& global = _parent->_layers.front();
+
+        if (auto it = local.find(hashed_key); it != local.end())
+            result = it->second;
+        else if (auto jt = global.find(hashed_key); jt != global.end())
+            result = jt->second;
+        else
+            throw std::runtime_error(key + " doesn't exist");
+
+        return result;
+    }
+    template<scope_element_t TRet, size_t TypeId>
+    std::list<const TRet*> ConstScopeProxy::_get_all_by_type() const {
         std::list<const TRet*> result;
         for (const auto& it : _parent->_container) {
             if (it->m_type_id == TypeId) {

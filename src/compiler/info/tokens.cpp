@@ -3,10 +3,23 @@
 //std
 #include <stdexcept>
 
+//frozen
+#include "frozen/unordered_map.h"
+#include "frozen/string.h"
+
 //lib
 #include "library/literals.hpp"
 
 namespace amasm::compiler {
+    static constexpr frozen::unordered_map<frozen::string, TokenType, 6> defined_tokens = {
+        { "this", TokenType::KwThis },
+        { "var", TokenType::KwVar },
+        { "section", TokenType::KwSection },
+        { "label", TokenType::KwLabel },
+        { "func", TokenType::KwFunc },
+        { "struct", TokenType::KwStruct },
+    };
+
     token::token() :
         type(TokenType::None) {
     }
@@ -15,18 +28,19 @@ namespace amasm::compiler {
         literal(std::move(literal)) {
     }
 
-    token make_token(const TokenDict& dict, char ch) {
+    token make_token(char ch) {
         return { (TokenType) ch, std::string(1, ch) };
     }
 
-    token make_token(const TokenDict& dict, std::string str) {
+    token make_token(std::string str) {
         TokenType type;
 
         switch (lib::check_literal_type(str)) {
         case lib::LiteralType::Word:
             type = [&] {
-                const auto it = dict.find(str);
-                return it != dict.end() ? it->second : TokenType::Identifier;
+                auto key = frozen::string(str.c_str(), str.size());
+                auto it = defined_tokens.find(key);
+                return it != defined_tokens.end() ? it->second : TokenType::Identifier;
             }();
             break;
 

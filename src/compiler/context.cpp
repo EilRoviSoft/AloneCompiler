@@ -17,7 +17,7 @@ namespace amasm::compiler {
 
     Context::Context() :
         _proxy(_container) {
-        _init();
+        _init_instructions();
         _reset();
     }
 
@@ -26,12 +26,16 @@ namespace amasm::compiler {
     ScopeProxy Context::get_proxy() {
         return _proxy;
     }
-    const std::unordered_map<std::string, TokenType>& Context::get_defined_tokens() const {
-        return _defined_tokens;
-    }
-    const InstInfo& Context::get_inst_info(const std::string& key) const {
+    const InstInfo& Context::get_inst(const std::string& key) const {
         auto hashed_key = lib::hash_string(key);
         return _instructions.at(hashed_key);
+    }
+
+    // lookup
+
+    bool Context::has_inst(const std::string& key) const {
+        auto hashed_key = lib::hash_string(key);
+        return _instructions.contains(hashed_key);
     }
 
     // copy data
@@ -53,23 +57,6 @@ namespace amasm::compiler {
             auto hashed_key = item.hash();
             _instructions.emplace(hashed_key, std::move(item));
         }
-    }
-    void Context::_init_defined_tokens() {
-        _defined_tokens = {
-            { "this", TokenType::KwThis },
-            { "var", TokenType::KwVar },
-            { "section", TokenType::KwSection },
-            { "label", TokenType::KwLabel },
-            { "func", TokenType::KwFunc },
-            { "struct", TokenType::KwStruct },
-        };
-
-        for (const auto& inst : _instructions | std::views::values)
-            _defined_tokens.emplace(inst.name(), TokenType::InstName);
-    }
-    void Context::_init() {
-        _init_instructions();
-        _init_defined_tokens();
     }
 
     void Context::_init_datatypes() {
