@@ -11,7 +11,8 @@ namespace amasm::compiler {
     class VariableBuilder : public lib::IBuilder<Variable> {
     public:
         VariableBuilder& set_name(std::string name);
-        VariableBuilder& set_address(lib::address address);
+        VariableBuilder& set_fixed_address(lib::address address);
+        VariableBuilder& set_relative_address(std::string variable_name, lib::address address);
         VariableBuilder& set_datatype(const Datatype& datatype);
 
         Variable&& get_product() override;

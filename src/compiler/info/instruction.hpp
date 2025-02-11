@@ -8,6 +8,9 @@
 #include "library/general_functions.hpp"
 #include "library/types.hpp"
 
+//compiler_info
+#include "compiler/info/address.hpp"
+
 namespace amasm::compiler {
     class InstInfo {
         friend class InstInfoBuilder;
@@ -27,24 +30,18 @@ namespace amasm::compiler {
         size_t m_min_args = 0, m_max_args = 0, m_bit_depth = 0;
     };
 
-    struct argument_info {
-        std::string name;
-        ptrdiff_t value = 0;
-        ArgumentType type = ArgumentType::Empty;
-    };
-
     // you have to guarantee that InstInfo instance exists for whole duration of InstDecl object
     class InstDecl {
         friend class InstDeclBuilder;
 
     public:
         const InstInfo& info() const { return *m_info; }
-        const argument_info& argument(size_t idx) const { return m_arguments[idx]; }
+        const address_info& argument(size_t idx) const { return m_arguments[idx]; }
         size_t arguments_count() const { return m_arguments.size(); }
 
     protected:
         const InstInfo* m_info = nullptr;
-        std::vector<argument_info> m_arguments;
+        std::vector<address_info> m_arguments;
     };
     using ComposedInst = std::tuple<size_t, InstDecl>;
 }

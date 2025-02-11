@@ -21,6 +21,8 @@ namespace amasm::compiler {
         for (auto&& it : temp_container)
             functions.emplace_back(*it);
 
+        // TODO: we have to transform every dependent code variable into fixed
+
         std::ranges::sort(functions, std::ranges::less(), &Function::scope_id);
 
         // adds total size of program to the front of the code
@@ -62,14 +64,14 @@ namespace amasm::compiler {
                 arg_idx++;
 
                 switch (arg.type) {
-                case ArgumentType::Direct:
-                    bytecode.append_value(_scopes.get_variable(arg.name).address());
+                case AddressType::Relative:
+                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name).address().value);
                     break;
-                case ArgumentType::Immediate:
-                    bytecode.append_value(arg.value, inst.info().bit_depth() / 8);
+                case AddressType::Fixed:
+                    bytecode.append_value((lib::address) arg.value, inst.info().bit_depth() / 8);
                     break;
-                case ArgumentType::IndirectWithDisplacement:
-                    bytecode.append_value(_scopes.get_variable(arg.name).address());
+                case AddressType::RelativeWithDiff:
+                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name).address().value);
                     bytecode.append_value(arg.value, lib::machine_word_size);
                     break;
                 default:

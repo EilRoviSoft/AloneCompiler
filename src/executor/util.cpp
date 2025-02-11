@@ -12,10 +12,10 @@ namespace amasm::executor {
         return std::make_tuple(
             inst & 0x00FFFFFF,
             lib::args_data {
-                ArgumentType((args_metadata & 0b00000011) >> 0),
-                ArgumentType((args_metadata & 0b00001100) >> 2),
-                ArgumentType((args_metadata & 0b00110000) >> 4),
-                ArgumentType((args_metadata & 0b11000000) >> 6)
+                AddressType((args_metadata & 0b00000011) >> 0),
+                AddressType((args_metadata & 0b00001100) >> 2),
+                AddressType((args_metadata & 0b00110000) >> 4),
+                AddressType((args_metadata & 0b11000000) >> 6)
             }
         );
     }

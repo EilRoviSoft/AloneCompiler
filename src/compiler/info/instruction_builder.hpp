@@ -31,7 +31,7 @@ namespace amasm::compiler {
     class InstDeclBuilder : public lib::IBuilder<InstDecl> {
     public:
         InstDeclBuilder& set_info(const InstInfo& info);
-        InstDeclBuilder& add_argument(argument_info&& arg);
+        InstDeclBuilder& add_argument(address_info&& arg);
 
         InstDecl&& get_product() override;
 

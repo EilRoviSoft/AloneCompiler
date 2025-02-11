@@ -46,7 +46,7 @@ namespace amasm::compiler {
         _is_set.info = true;
         return *this;
     }
-    InstDeclBuilder& InstDeclBuilder::add_argument(argument_info&& arg) {
+    InstDeclBuilder& InstDeclBuilder::add_argument(address_info&& arg) {
         m_product->m_arguments.emplace_back(std::move(arg));
         return *this;
     }

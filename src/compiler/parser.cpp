@@ -14,8 +14,8 @@ namespace amasm::compiler::parser {
     using enum TokenType;
 
     static const std::unordered_map<std::string, std::vector<TokenType>> rules = {
-        { "struct_define", { KwStruct, Identifier, LBrace, Colon, Identifier } },
-        { "pole_define", { KwVar, Percent, Identifier, Comma, Identifier } },
+        { "struct_define", { KwStruct, Identifier, LBrace } },
+        { "var_define", { KwVar, Percent, Identifier, Colon, Identifier } },
         { "func_define", { KwFunc, At, Identifier, LParen } },
         { "direct_argument", { Percent, Identifier } },
         { "indirect_argument", { LBracket, Percent, Identifier } }
@@ -37,8 +37,8 @@ namespace amasm::compiler::parser {
 
         while (tokens[i + begin].type == Dot) {
             const auto& pole = curr_type->pole(tokens[i + begin + 2].literal);
-            curr_type = pole.type;
-            offset += pole.offset;
+            curr_type = &pole.datatype();
+            offset += pole.offset();
             i += 2;
         }
 
@@ -81,15 +81,23 @@ namespace amasm::compiler {
         }
     }
 
-    // TODO
     size_t Parser::_parse_datatype(size_t i) {
         if (!parser::match("struct_define", _tokens, i))
             throw std::runtime_error("wrong struct definition");
 
+        size_t j = i + 3;
         auto builder = DatatypeBuilder();
-        builder.set_name(_tokens[i + 1].literal);
 
-        return 3;
+        builder.set_name(_tokens[i + 1].literal);
+        while (_tokens[j].type != TokenType::RBrace) {
+            auto [pole, delta] = _parse_pole_decl(j);
+            builder.add_pole(std::move(pole));
+            j += delta;
+        }
+
+        _scopes.add(builder.get_product());
+
+        return j - i + 1;
     }
 
     size_t Parser::_parse_function(size_t i) {
@@ -128,7 +136,7 @@ namespace amasm::compiler {
             InstDecl decl;
             const InstInfo& info = _ctx.get_inst(_tokens[j].literal);
 
-            if (_tokens[j].literal == "fcall")
+            if (info.name() == "fcall")
                 std::tie(decl, delta) = _parse_fcall(j, info);
             else
                 std::tie(decl, delta) = _parse_inst(j, info);
@@ -145,14 +153,14 @@ namespace amasm::compiler {
     std::tuple<InstDecl, size_t> Parser::_parse_fcall(size_t i, const InstInfo& info) {
         size_t j = i + 1;
         InstDeclBuilder builder;
-        argument_info on_add;
+        address_info on_add;
 
         builder.set_info(info);
         while (_tokens[j].type != TokenType::Semicolon) {
             on_add.name += _tokens[j].literal;
             j++;
         }
-        on_add.type = ArgumentType::JumpAddress;
+        on_add.type = AddressType::Fixed;
         builder.add_argument(std::move(on_add));
 
         return {
@@ -167,7 +175,7 @@ namespace amasm::compiler {
 
         builder.set_info(info);
         while (args_n < info.max_args() && flag) {
-            argument_info on_add;
+            address_info on_add;
 
             if (parser::match("direct_argument", _tokens, j)) {
                 const auto& var = _scopes.get_variable(_tokens[j + 1].literal, local_id);
@@ -175,14 +183,14 @@ namespace amasm::compiler {
                 on_add = {
                     .name = _tokens[j + 1].literal,
                     .value = var_offset,
-                    .type = var_offset ? ArgumentType::IndirectWithDisplacement : ArgumentType::Direct
+                    .type = var_offset ? AddressType::RelativeWithDiff : AddressType::Relative
                 };
                 j += dj + 2;
             } else if (_tokens[j].type == TokenType::Number) {
                 on_add = {
                     .name = "",
                     .value = std::stoll(_tokens[j].literal),
-                    .type = ArgumentType::Immediate
+                    .type = AddressType::Fixed
                 };
                 j++;
             } else if (parser::match("indirect_argument", _tokens, j)) {
@@ -191,7 +199,7 @@ namespace amasm::compiler {
                 on_add = {
                     .name = _tokens[j + 2].literal,
                     .value = var_offset,
-                    .type = ArgumentType::IndirectWithDisplacement
+                    .type = AddressType::RelativeWithDiff
                 };
 
                 switch (_tokens[j + dj + 3].type) {
@@ -230,18 +238,35 @@ namespace amasm::compiler {
         };
     }
 
-    std::tuple<Datatype, size_t> Parser::_parse_variable(size_t i) {
-        if (!parser::match("pole_define", _tokens, i))
+    // TODO: custom offset
+    std::tuple<PoleDecl, size_t> Parser::_parse_pole_decl(size_t i) {
+        if (!parser::match("var_define", _tokens, i))
             throw std::runtime_error("wrong pole definition");
 
-        DatatypeBuilder builder;
         bool has_own_offset = _tokens[i + 5].type == TokenType::Comma;
 
-        builder.add_pole(_tokens[i + 2].literal, _scopes.get_datatype(_tokens[i + 4].literal));
+        return {
+            PoleDeclBuilder()
+            .set_name(_tokens[i + 2].literal)
+            .set_datatype(_scopes.get_datatype(_tokens[i + 4].literal))
+            .get_product(),
+            has_own_offset ? 13 : 6
+        };
+    }
+    std::tuple<Variable, size_t> Parser::_parse_variable(size_t i) {
+        if (!parser::match("var_define", _tokens, i))
+            throw std::runtime_error("wrong variable definition");
+
+        VariableBuilder builder;
+
+        bool has_own_offset = _tokens[i + 5].type == TokenType::Comma;
+        if (_tokens[i + 5].type == TokenType::Comma) {
+            if (!parser::match("indirect_argument", _tokens, i))
+                throw std::runtime_error("wrong variable offset definition");
+        }
 
         return {
-            builder.get_product(),
-            has_own_offset ? 13 : 6
+
         };
     }
 }

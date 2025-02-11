@@ -1,3 +1,8 @@
+struct vector2 {
+    var %x: uint64;
+    var %y: uint64;
+}
+
 func @main() {
     push64 10;
     push32 20;

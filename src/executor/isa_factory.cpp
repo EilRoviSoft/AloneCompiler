@@ -17,51 +17,63 @@ namespace amasm::executor {
 
     std::list<Instruction> gisa_system() {
         return {
-            B().set_id(0x0)
-               .set_predicate(isa::halt)
-               .get_product(),
-            B().set_id(0x2)
-               .set_predicate(isa::fcall)
-               .set_memory_shift(8)
-               .get_product(),
-            B().set_id(0x3)
-               .set_predicate(isa::ret)
-               .set_memory_shift(-8)
-               .get_product()
+            InstructionBuilder()
+            .set_id(0x0)
+            .set_predicate(isa::halt)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(0x2)
+            .set_predicate(isa::fcall)
+            .set_memory_shift(8)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(0x3)
+            .set_predicate(isa::ret)
+            .set_memory_shift(-8)
+            .get_product()
         };
     }
     template<typename T, size_t Offset>
     std::list<Instruction> gisa_generic_size_related() {
         return {
-            B().set_id(Offset + 0x0)
-               .set_predicate(isa::inst_mov<T>)
-               .get_product(),
-            B().set_id(Offset + 0x1)
-               .set_predicate(isa::inst_push<T>)
-               .set_memory_shift(sizeof(T))
-               .get_product(),
-            B().set_id(Offset + 0x2)
-               .set_predicate(isa::inst_pop<T>)
-               .set_memory_shift(-sizeof(T))
-               .get_product(),
-            B().set_id(Offset + 0x3)
-               .set_predicate(isa::inst_u12<T, std::bit_not<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x4)
-               .set_predicate(isa::inst_b23<T, std::bit_and<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x5)
-               .set_predicate(isa::inst_b23<T, std::bit_or<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x6)
-               .set_predicate(isa::inst_b23<T, std::bit_xor<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x7)
-               .set_predicate(isa::inst_b23<T, lib::bit_shl<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x8)
-               .set_predicate(isa::inst_b23<T, lib::bit_shr<T>>)
-               .get_product()
+            InstructionBuilder()
+            .set_id(Offset + 0x0)
+            .set_predicate(isa::inst_mov<T>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x1)
+            .set_predicate(isa::inst_push<T>)
+            .set_memory_shift(sizeof(T))
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x2)
+            .set_predicate(isa::inst_pop<T>)
+            .set_memory_shift(-sizeof(T))
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x3)
+            .set_predicate(isa::inst_u12<T, std::bit_not<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x4)
+            .set_predicate(isa::inst_b23<T, std::bit_and<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x5)
+            .set_predicate(isa::inst_b23<T, std::bit_or<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x6)
+            .set_predicate(isa::inst_b23<T, std::bit_xor<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x7)
+            .set_predicate(isa::inst_b23<T, lib::bit_shl<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x8)
+            .set_predicate(isa::inst_b23<T, lib::bit_shr<T>>)
+            .get_product()
         };
     }
     std::list<Instruction> gisa_size_related() {
@@ -77,24 +89,30 @@ namespace amasm::executor {
     template<typename T, size_t Offset>
     std::list<Instruction> gisa_generic_type_related() {
         return {
-            B().set_id(Offset + 0x0)
-               .set_predicate(isa::inst_b23<T, std::plus<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x1)
-               .set_predicate(isa::inst_b23<T, std::minus<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x2)
-               .set_predicate(isa::inst_b23<T, std::multiplies<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x3)
-               .set_predicate(isa::inst_b23<T, std::divides<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x4)
-               .set_predicate(isa::inst_b23<T, std::modulus<T>>)
-               .get_product(),
-            B().set_id(Offset + 0x5)
-               .set_predicate(isa::inst_cmp<T>)
-               .get_product()
+            InstructionBuilder()
+            .set_id(Offset + 0x0)
+            .set_predicate(isa::inst_b23<T, std::plus<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x1)
+            .set_predicate(isa::inst_b23<T, std::minus<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x2)
+            .set_predicate(isa::inst_b23<T, std::multiplies<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x3)
+            .set_predicate(isa::inst_b23<T, std::divides<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x4)
+            .set_predicate(isa::inst_b23<T, std::modulus<T>>)
+            .get_product(),
+            InstructionBuilder()
+            .set_id(Offset + 0x5)
+            .set_predicate(isa::inst_cmp<T>)
+            .get_product()
         };
     }
     template<typename T, size_t Offset>
@@ -103,9 +121,9 @@ namespace amasm::executor {
 
         result.append_range(gisa_generic_type_related<T, Offset>());
         result.emplace_back(
-            B().set_id(Offset + 0x6)
-               .set_predicate(isa::inst_u12<T, std::negate<T>>)
-               .get_product()
+            InstructionBuilder().set_id(Offset + 0x6)
+            .set_predicate(isa::inst_u12<T, std::negate<T>>)
+            .get_product()
         );
 
         return result;

@@ -50,14 +50,14 @@ namespace amasm::compiler {
                 if (it->type_id() == 1) {
                     auto datatype = std::dynamic_pointer_cast<Datatype>(it);
                     for (auto& pole : datatype->m_poles)
-                        pole.type = &proxy.get_datatype(pole.name);
+                        pole.m_datatype = &proxy.get_datatype(pole.datatype().name());
                 } else if (it->type_id() == 2) {
                     auto function = std::dynamic_pointer_cast<Function>(it);
                     for (auto& type : function->m_types)
                         type = &proxy.get_datatype(type->name());
                 } else if (it->type_id() == 3) {
                     auto variable = std::dynamic_pointer_cast<Variable>(it);
-                    variable->m_datatype = &proxy.get_datatype(variable->m_datatype->name());
+                    variable->m_datatype = &proxy.get_datatype(variable->datatype().name());
                 }
             }
 

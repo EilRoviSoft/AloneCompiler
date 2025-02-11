@@ -48,11 +48,11 @@ namespace amasm::executor::isa {
         T a1;
 
         switch (args[0]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
@@ -61,15 +61,15 @@ namespace amasm::executor::isa {
         }
 
         switch (args[1]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
@@ -88,23 +88,21 @@ namespace amasm::executor::isa {
         T a0;
 
         switch (args[0]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a0 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a0 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a0 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
-        case ArgumentType::Empty:
+        case AddressType::Empty:
             is_extended = false;
             break;
-        default:
-            throw std::runtime_error("wrong args information");
         }
 
         if (is_extended)
@@ -118,23 +116,21 @@ namespace amasm::executor::isa {
         T* a0;
 
         switch (args[0]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a0 = ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
-        case ArgumentType::Empty:
+        case AddressType::Empty:
             a0 = reinterpret_cast<T*>(&ctx[AX]);
             break;
-        default:
-            throw std::runtime_error("wrong args information");
         }
 
         *a0 = *ctx.get_direct<T>(ctx[SP] - sizeof(T));
@@ -153,11 +149,11 @@ namespace amasm::executor::isa {
         T a1, a2;
 
         switch (args[0]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
@@ -166,15 +162,15 @@ namespace amasm::executor::isa {
         }
 
         switch (args[1]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
@@ -183,23 +179,21 @@ namespace amasm::executor::isa {
         }
 
         switch (args[2]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a2 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a2 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a2 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
-        case ArgumentType::Empty:
+        case AddressType::Empty:
             is_extended = false;
             break;
-        default:
-            throw std::runtime_error("wrong args information");
         }
 
         *a0 = is_extended ? pred(a1, a2) : pred(*a0, a1);
@@ -214,11 +208,11 @@ namespace amasm::executor::isa {
         T a1;
 
         switch (args[0]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a0 = ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a0 = ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
@@ -227,23 +221,21 @@ namespace amasm::executor::isa {
         }
 
         switch (args[1]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
-        case ArgumentType::Empty:
+        case AddressType::Empty:
             is_extended = false;
             break;
-        default:
-            throw std::runtime_error("wrong args information");
         }
 
         *a0 = is_extended ? pred(a1) : pred(*a0);
@@ -256,15 +248,15 @@ namespace amasm::executor::isa {
         T a0, a1;
 
         switch (args[0]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a0 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a0 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a0 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;
@@ -273,15 +265,15 @@ namespace amasm::executor::isa {
         }
 
         switch (args[1]) {
-        case ArgumentType::Direct:
+        case AddressType::Relative:
             a1 = *ctx.get_direct<T>(ctx[IP] + offset);
             offset += lib::machine_word_size;
             break;
-        case ArgumentType::Immediate:
+        case AddressType::Fixed:
             a1 = *ctx.get<T>(ctx[IP] + offset);
             offset += sizeof(T);
             break;
-        case ArgumentType::IndirectWithDisplacement:
+        case AddressType::RelativeWithDiff:
             a1 = *ctx.get_with_displacement<T>(ctx[IP] + offset);
             offset += lib::machine_word_size * 2;
             break;

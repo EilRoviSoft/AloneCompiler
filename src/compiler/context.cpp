@@ -60,7 +60,7 @@ namespace amasm::compiler {
     }
 
     void Context::_init_datatypes() {
-        _proxy.add(DatatypeBuilder().set_name("void").set_size(0).get_product());
+        _proxy.add(DatatypeBuilder().set_name("void").get_product());
         _proxy.add(DatatypeBuilder().set_name("uint8").set_size(1).get_product());
         _proxy.add(DatatypeBuilder().set_name("uint16").set_size(2).get_product());
         _proxy.add(DatatypeBuilder().set_name("uint32").set_size(4).get_product());
@@ -85,10 +85,10 @@ namespace amasm::compiler {
             for (const auto& var_name : collection) {
                 const auto& type = _proxy.get_datatype(type_name);
                 auto var = VariableBuilder()
-                          .set_name(var_name)
-                          .set_address(lib::str_to_register(var_name))
-                          .set_datatype(type)
-                          .get_product();
+                    .set_name(var_name)
+                    .set_fixed_address(lib::str_to_register(var_name))
+                    .set_datatype(type)
+                    .get_product();
                 _proxy.add(std::move(var));
             }
     }

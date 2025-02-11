@@ -32,6 +32,7 @@ namespace amasm::compiler {
         std::tuple<InstDecl, size_t> _parse_fcall(size_t i, const InstInfo& info);
         std::tuple<InstDecl, size_t> _parse_inst(size_t i, const InstInfo& info);
 
-        std::tuple<Datatype, size_t> _parse_variable(size_t i);
+        std::tuple<PoleDecl, size_t> _parse_pole_decl(size_t i);
+        std::tuple<Variable, size_t> _parse_variable(size_t i);
     };
 }

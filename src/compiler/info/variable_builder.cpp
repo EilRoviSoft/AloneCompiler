@@ -9,8 +9,21 @@ namespace amasm::compiler {
         _is_set.name = true;
         return *this;
     }
-    VariableBuilder& VariableBuilder::set_address(lib::address address) {
-        m_product->m_address = address;
+    VariableBuilder& VariableBuilder::set_fixed_address(lib::address address) {
+        m_product->m_address_info = {
+            .name = "",
+            .value = (ptrdiff_t) address,
+            .type = AddressType::Fixed
+        };
+        _is_set.address = true;
+        return *this;
+    }
+    VariableBuilder& VariableBuilder::set_relative_address(std::string variable_name, lib::address address) {
+        m_product->m_address_info = {
+            .name = std::move(variable_name),
+            .value = (ptrdiff_t) address,
+            .type = AddressType::RelativeWithDiff
+        };
         _is_set.address = true;
         return *this;
     }

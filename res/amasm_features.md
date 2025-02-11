@@ -113,6 +113,8 @@ label main__l0a:  # this branch is generated for loop purposes
 
 This function adds int64 and int32 from stack; removes these arguments from stack; pushes result on stack
 
+Also you can call labels only inside current function
+
 ```asm
 func @add6432(int64, int32): int64 { # arguments pushes right-to-left
     mov64 %rcx, [%rsp - 12];
@@ -141,7 +143,7 @@ func @main() {
     push64 %sizes.a;
     push32 %sizes.b;
     fcall @add6432(int64, int32);  # pascal-call automatically cleares stack from arguments
-    ncall @print64u; 	           # if you want to create custom functions from C++, make wraper for it
+    ncall @print64u; 	             # if you want to create custom functions from C++, make wraper for it
 }
 ```
 

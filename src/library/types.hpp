@@ -13,12 +13,11 @@
 #define SYSTEM_BIT_DEPTH 64
 
 namespace amasm {
-    enum class ArgumentType : uint8_t {
-        Empty = 0,                // none
-        Direct,                   // idk how to define it now
-        IndirectWithDisplacement, // name + value
-        Immediate,                // value
-        JumpAddress               // value
+    enum class AddressType : uint8_t {
+        Empty = 0,        // none
+        Relative,         // idk how to define it now
+        RelativeWithDiff, // name + value
+        Fixed             // value
     };
 
     enum RegisterType : uint8_t {
@@ -91,7 +90,7 @@ namespace amasm::lib {
     using address = SYSTEM_MW_TYPE;
     using inst_code = SYSTEM_INST_TYPE;
     using flags = std::bitset<SYSTEM_BIT_DEPTH>;
-    using args_data = std::array<ArgumentType, 4>;
+    using args_data = std::array<AddressType, 4>;
 
     constexpr size_t machine_word_size = sizeof(SYSTEM_MW_TYPE);
     constexpr size_t address_size = sizeof(SYSTEM_MW_TYPE);

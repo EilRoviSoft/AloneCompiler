@@ -38,8 +38,8 @@ namespace unit_tests {
             std::make_tuple(0, 1, std::function(f0))
         };
 
-        auto filter = [](const std::tuple<int, int, std::function<void()>>& elem) { return std::get<1>(elem); };
-        for (const auto& [id, status, func] : container | std::views::filter(filter))
+        auto is_active = [](const std::tuple<int, int, std::function<void()>>& elem) { return std::get<1>(elem); };
+        for (const auto& [id, status, func] : container | std::views::filter(is_active))
             func();
     }
 }
