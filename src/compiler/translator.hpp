@@ -9,6 +9,9 @@
 #include "library/bytecode.hpp"
 
 //compiler_info
+#include <tuple>
+#include <tuple>
+
 #include "compiler/info/scope_container.hpp"
 
 namespace amasm::compiler {
@@ -23,6 +26,6 @@ namespace amasm::compiler {
 	private:
 		ConstScopeProxy _scopes;
 
-		std::tuple<lib::Bytecode, std::list<hint>> _generate_inst_bytecode(const InstDecl& inst);
+		std::tuple<lib::Bytecode, std::list<hint>> _generate_inst_bytecode(const InstDecl& inst, size_t scope_id);
 	};
 }

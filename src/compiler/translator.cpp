@@ -21,8 +21,6 @@ namespace amasm::compiler {
         for (auto&& it : temp_container)
             functions.emplace_back(*it);
 
-        // TODO: we have to transform every dependent code variable into fixed
-
         std::ranges::sort(functions, std::ranges::less(), &Function::scope_id);
 
         // adds total size of program to the front of the code
@@ -32,7 +30,7 @@ namespace amasm::compiler {
             labels.emplace(it.fullname(), result.size());
 
             for (size_t i = 0; i < it.lines_size(); i++) {
-                auto [new_bytecode, new_hints] = _generate_inst_bytecode(it.line(i));
+                auto [new_bytecode, new_hints] = _generate_inst_bytecode(it.line(i), it.scope_id());
                 for (auto& hint : new_hints)
                     hint.offset += result.size();
                 hints.append_range(new_hints);
@@ -47,7 +45,9 @@ namespace amasm::compiler {
         return result;
     }
 
-    std::tuple<lib::Bytecode, std::list<Translator::hint>> Translator::_generate_inst_bytecode(const InstDecl& inst) {
+    std::tuple<lib::Bytecode, std::list<Translator::hint>> Translator::_generate_inst_bytecode(
+        const InstDecl& inst,
+        size_t scope_id) {
         lib::Bytecode bytecode;
         lib::inst_code mask = 0;
         std::list<hint> hints;
@@ -65,13 +65,13 @@ namespace amasm::compiler {
 
                 switch (arg.type) {
                 case AddressType::Relative:
-                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name).address().value);
+                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name, scope_id).address().value);
                     break;
                 case AddressType::Fixed:
                     bytecode.append_value((lib::address) arg.value, inst.info().bit_depth() / 8);
                     break;
                 case AddressType::RelativeWithDiff:
-                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name).address().value);
+                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name, scope_id).address().value);
                     bytecode.append_value(arg.value, lib::machine_word_size);
                     break;
                 default:

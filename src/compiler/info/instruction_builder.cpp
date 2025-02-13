@@ -32,14 +32,15 @@ namespace amasm::compiler {
         return *this;
     }
 
-    InstInfo&& InstInfoBuilder::get_product() {
-        if (!_is_set.name || !_is_set.code)
-            throw std::runtime_error("you have to specify name and code of InstInfo");
-
-        return IBuilder::get_product();
+    bool InstInfoBuilder::is_built() const {
+        return _is_set.name && _is_set.code;
     }
 
     // InstDeclBuilder
+
+    const char* InstInfoBuilder::get_error_message() const {
+        return "you have to specify name and code of InstInfo";
+    }
 
     InstDeclBuilder& InstDeclBuilder::set_info(const InstInfo& info) {
         m_product->m_info = &info;
@@ -51,10 +52,11 @@ namespace amasm::compiler {
         return *this;
     }
 
-    InstDecl&& InstDeclBuilder::get_product() {
-        if (!_is_set.info)
-            throw std::runtime_error("you have to specify name of InstDecl");
+    bool InstDeclBuilder::is_built() const {
+        return _is_set.info;
+    }
 
-        return IBuilder::get_product();
+    const char* InstDeclBuilder::get_error_message() const {
+        return "you have to specify info of InstDecl";
     }
 }

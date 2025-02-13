@@ -36,6 +36,7 @@ namespace amasm::compiler {
 
     public:
         const InstInfo& info() const { return *m_info; }
+
         const address_info& argument(size_t idx) const { return m_arguments[idx]; }
         size_t arguments_count() const { return m_arguments.size(); }
 

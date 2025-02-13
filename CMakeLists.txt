@@ -49,10 +49,7 @@ add_executable(AloneCompiler
 	"src/executor/isa_factory.cpp"
 	"src/executor/util.cpp"
 	"src/executor/virtual_machine.cpp"
-
-	"src/library/bytecode.cpp"
-	"src/library/literals.cpp"
-		
+	
 	"src/main.cpp"
 )
 

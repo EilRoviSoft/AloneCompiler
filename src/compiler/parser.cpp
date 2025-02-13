@@ -7,6 +7,7 @@
 
 //compiler_info
 #include "compiler/info/datatype_builder.hpp"
+#include "compiler/info/function_builder.hpp"
 #include "compiler/info/instruction_builder.hpp"
 #include "compiler/info/variable_builder.hpp"
 
@@ -90,7 +91,7 @@ namespace amasm::compiler {
 
         builder.set_name(_tokens[i + 1].literal);
         while (_tokens[j].type != TokenType::RBrace) {
-            auto [pole, delta] = _parse_pole_decl(j);
+            auto [delta, pole] = _parse_pole_decl(j);
             builder.add_pole(std::move(pole));
             j += delta;
         }
@@ -106,9 +107,10 @@ namespace amasm::compiler {
 
         size_t j;
         FunctionBuilder builder;
+        _current_scope_id = _scopes.amount();
 
         builder.set_name(_tokens[i + 2].literal)
-            .set_scope(_scopes, _scopes.amount());
+            .set_scope(_scopes, _current_scope_id);
 
         // arguments dispatching up to rparen token
         for (j = i + 4; _tokens[j].type != TokenType::RParen; j++) {
@@ -133,24 +135,40 @@ namespace amasm::compiler {
         // dispatching lines
         while (_tokens[j].type != TokenType::RBrace) {
             size_t delta;
-            InstDecl decl;
-            const InstInfo& info = _ctx.get_inst(_tokens[j].literal);
 
-            if (info.name() == "fcall")
-                std::tie(decl, delta) = _parse_fcall(j, info);
-            else
-                std::tie(decl, delta) = _parse_inst(j, info);
+            if (_ctx.has_inst(_tokens[j].literal)) {
+                InstDecl decl;
+                const InstInfo& info = _ctx.get_inst(_tokens[j].literal);
 
-            builder.add_line(std::move(decl));
+                if (info.name() == "fcall")
+                    std::tie(delta, decl) = _parse_fcall(j, info);
+                else
+                    std::tie(delta, decl) = _parse_inst(j, info);
+
+                builder.add_line(std::move(decl));
+            } else if (_tokens[j].type == TokenType::KwVar) {
+                Variable var;
+                std::optional<InstDecl> opt_decl;
+
+                std::tie(delta, var, opt_decl) = _parse_variable(j);
+
+                _scopes.add(std::move(var), _current_scope_id);
+                if (opt_decl.has_value())
+                    builder.add_line(std::move(opt_decl.value()));
+            } else
+                throw std::invalid_argument("expected instruction or variable");
+
             j += delta;
         }
 
         _scopes.add(builder.get_product());
+        // change current scope to global if variable or const data will be occured
+        _current_scope_id = 0;
 
         return j - i + 1;
     }
 
-    std::tuple<InstDecl, size_t> Parser::_parse_fcall(size_t i, const InstInfo& info) {
+    std::tuple<size_t, InstDecl> Parser::_parse_fcall(size_t i, const InstInfo& info) {
         size_t j = i + 1;
         InstDeclBuilder builder;
         address_info on_add;
@@ -164,12 +182,12 @@ namespace amasm::compiler {
         builder.add_argument(std::move(on_add));
 
         return {
-            builder.get_product(),
-            j - i + 1
+            j - i + 1,
+            builder.get_product()
         };
     }
-    std::tuple<InstDecl, size_t> Parser::_parse_inst(size_t i, const InstInfo& info) {
-        size_t j = i + 1, args_n = 0, local_id = _scopes.amount() - 1;
+    std::tuple<size_t, InstDecl> Parser::_parse_inst(size_t i, const InstInfo& info) {
+        size_t j = i + 1, args_n = 0;
         bool flag = _tokens[j].type != TokenType::Semicolon;
         InstDeclBuilder builder;
 
@@ -178,10 +196,18 @@ namespace amasm::compiler {
             address_info on_add;
 
             if (parser::match("direct_argument", _tokens, j)) {
-                const auto& var = _scopes.get_variable(_tokens[j + 1].literal, local_id);
+                const auto& var = _scopes.get_variable(_tokens[j + 1].literal, _current_scope_id);
+                std::string true_var_name;
                 auto [var_offset, dj] = parser::calc_offset(var.datatype(), _tokens, j + 2);
+
+                if (var.address().type == AddressType::RelativeWithDiff) {
+                    true_var_name = var.address().name;
+                    var_offset += var.address().value;
+                } else
+                    true_var_name = _tokens[j + 1].literal;
+
                 on_add = {
-                    .name = _tokens[j + 1].literal,
+                    .name = std::move(true_var_name),
                     .value = var_offset,
                     .type = var_offset ? AddressType::RelativeWithDiff : AddressType::Relative
                 };
@@ -194,10 +220,18 @@ namespace amasm::compiler {
                 };
                 j++;
             } else if (parser::match("indirect_argument", _tokens, j)) {
-                const auto& var = _scopes.get_variable(_tokens[j + 2].literal, local_id);
+                const auto& var = _scopes.get_variable(_tokens[j + 2].literal, _current_scope_id);
+                std::string true_var_name;
                 auto [var_offset, dj] = parser::calc_offset(var.datatype(), _tokens, j + 3);
+
+                if (var.address().type == AddressType::RelativeWithDiff) {
+                    true_var_name = var.address().name;
+                    var_offset += var.address().value;
+                } else
+                    true_var_name = _tokens[j + 2].literal;
+
                 on_add = {
-                    .name = _tokens[j + 2].literal,
+                    .name = std::move(true_var_name),
                     .value = var_offset,
                     .type = AddressType::RelativeWithDiff
                 };
@@ -233,40 +267,56 @@ namespace amasm::compiler {
         }
 
         return {
-            builder.get_product(),
-            j - i + 1
+            j - i + 1,
+            builder.get_product()
         };
     }
 
     // TODO: custom offset
-    std::tuple<PoleDecl, size_t> Parser::_parse_pole_decl(size_t i) {
+    std::tuple<size_t, Pole> Parser::_parse_pole_decl(size_t i) {
         if (!parser::match("var_define", _tokens, i))
             throw std::runtime_error("wrong pole definition");
 
-        bool has_own_offset = _tokens[i + 5].type == TokenType::Comma;
-
         return {
-            PoleDeclBuilder()
+            6,
+            PoleBuilder()
             .set_name(_tokens[i + 2].literal)
             .set_datatype(_scopes.get_datatype(_tokens[i + 4].literal))
-            .get_product(),
-            has_own_offset ? 13 : 6
+            .get_product()
         };
     }
-    std::tuple<Variable, size_t> Parser::_parse_variable(size_t i) {
+    std::tuple<size_t, Variable, std::optional<InstDecl>> Parser::_parse_variable(size_t i) {
         if (!parser::match("var_define", _tokens, i))
             throw std::runtime_error("wrong variable definition");
 
-        VariableBuilder builder;
+        size_t delta = 6;
+        VariableBuilder var_builder;
+        InstDeclBuilder inst_builder;
+        const Datatype& datatype = _scopes.get_datatype(_tokens[i + 4].literal);
 
-        bool has_own_offset = _tokens[i + 5].type == TokenType::Comma;
+        var_builder.set_name(_tokens[i + 2].literal)
+            .set_datatype(datatype);
         if (_tokens[i + 5].type == TokenType::Comma) {
-            if (!parser::match("indirect_argument", _tokens, i))
+            if (!parser::match("indirect_argument", _tokens, i + 6))
                 throw std::runtime_error("wrong variable offset definition");
-        }
+
+            ptrdiff_t offset = std::stoull(_tokens[i + 10].literal);
+            if (_tokens[i + 9].type == TokenType::Minus)
+                offset *= -1;
+
+            var_builder.set_relative_address(_tokens[i + 8].literal, offset);
+
+            delta += 7;
+        } else if (_current_scope_id != 0) {
+            inst_builder.set_info(_ctx.get_inst("push" + std::to_string(datatype.size() * 8)));
+            var_builder.set_relative_address(_tokens[i + 8].literal, -datatype.size());
+        } else
+            throw std::runtime_error("you cannot allocate variable inside global scope");
 
         return {
-
+            delta,
+            var_builder.get_product(),
+            inst_builder.is_built() ? std::optional(inst_builder.get_product()) : std::nullopt
         };
     }
 }

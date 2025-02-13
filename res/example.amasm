@@ -11,8 +11,10 @@ func @main() {
 }
 
 func @add6432(int64, int32): int64 {
-    mov64 %rcx, [%rsp - 20];
-    mov32 %rdx, [%rsp - 12];
-    add64i %rbx, %rcx, %rdx;
+    var %arg0: uint64, [%rsp - 20];
+    var %arg1: uint32, [%rsp - 12];
+    mov64 %rcx, %arg0;
+    mov32 %rdx, %arg1;
+    add64i %rax, %rcx, %rdx;
     ret;
 }

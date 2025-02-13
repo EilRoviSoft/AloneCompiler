@@ -1,4 +1,5 @@
 //std
+#include <fstream>
 #include <functional>
 #include <vector>
 
@@ -12,10 +13,13 @@
 //executor
 #include "executor/virtual_machine.hpp"
 
+//library
+#include "library/logger.hpp"
+
+using namespace amasm;
+
 namespace unit_tests {
     void f0() {
-        using namespace amasm;
-
         auto compiler_ctx = CompilerContext();
         auto scanner = compiler::Scanner();
         auto lexer = compiler::Lexer();
@@ -44,8 +48,15 @@ namespace unit_tests {
     }
 }
 
+std::ostream* lib::Logger::_out = nullptr;
+
 int main() {
+    std::fstream log_file("log.txt", std::ios::out | std::ios::trunc);
+    lib::Logger::init(log_file);
+
     unit_tests::test();
+
+    log_file.close();
 
     return 0;
 }

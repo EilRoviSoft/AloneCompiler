@@ -13,12 +13,14 @@ namespace amasm::executor {
 		InstructionBuilder& set_predicate(Instruction::Signature predicate);
 		InstructionBuilder& set_memory_shift(ptrdiff_t memory_shift);
 
-		Instruction&& get_product() override;
+		bool is_built() const override;
 
 	private:
 		struct {
 			bool id        : 1 = false;
 			bool predicate : 1 = false;
 		} _is_set;
+
+		const char* get_error_message() const override;
 	};
 }

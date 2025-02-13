@@ -19,10 +19,11 @@ namespace amasm::executor {
         return *this;
     }
 
-    Instruction&& InstructionBuilder::get_product() {
-        if (!_is_set.id || !_is_set.predicate)
-            throw std::runtime_error("you have to specify id and predicate of Instruction");
+    bool InstructionBuilder::is_built() const {
+        return _is_set.id && _is_set.predicate;
+    }
 
-        return IBuilder::get_product();
+    const char* InstructionBuilder::get_error_message() const {
+        return "you have to specify id and predicate of Instruction";
     }
 }

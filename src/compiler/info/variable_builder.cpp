@@ -10,7 +10,7 @@ namespace amasm::compiler {
         return *this;
     }
     VariableBuilder& VariableBuilder::set_fixed_address(lib::address address) {
-        m_product->m_address_info = {
+        m_product->m_address = {
             .name = "",
             .value = (ptrdiff_t) address,
             .type = AddressType::Fixed
@@ -18,10 +18,10 @@ namespace amasm::compiler {
         _is_set.address = true;
         return *this;
     }
-    VariableBuilder& VariableBuilder::set_relative_address(std::string variable_name, lib::address address) {
-        m_product->m_address_info = {
+    VariableBuilder& VariableBuilder::set_relative_address(std::string variable_name, lib::address offset) {
+        m_product->m_address = {
             .name = std::move(variable_name),
-            .value = (ptrdiff_t) address,
+            .value = (ptrdiff_t) offset,
             .type = AddressType::RelativeWithDiff
         };
         _is_set.address = true;
@@ -33,10 +33,11 @@ namespace amasm::compiler {
         return *this;
     }
 
-    Variable&& VariableBuilder::get_product() {
-        if (!_is_set.name || !_is_set.address || !_is_set.datatype)
-            throw std::runtime_error("you have to specify name, address and datatype of Variable");
+    bool VariableBuilder::is_built() const {
+        return _is_set.name && _is_set.address && _is_set.datatype;
+    }
 
-        return IBuilder::get_product();
+    const char* VariableBuilder::get_error_message() const {
+        return "you have to specify name, address and datatype of Variable";
     }
 }

@@ -19,13 +19,15 @@ namespace amasm::compiler {
         InstInfoBuilder& set_arguments_count(size_t min, size_t max);
         InstInfoBuilder& set_bit_depth(size_t bit_depth);
 
-        InstInfo&& get_product() override;
+        bool is_built() const override;
 
     private:
         struct {
             bool name : 1 = false;
             bool code : 1 = false;
         } _is_set;
+
+        const char* get_error_message() const override;
     };
 
     class InstDeclBuilder : public lib::IBuilder<InstDecl> {
@@ -33,11 +35,13 @@ namespace amasm::compiler {
         InstDeclBuilder& set_info(const InstInfo& info);
         InstDeclBuilder& add_argument(address_info&& arg);
 
-        InstDecl&& get_product() override;
+        bool is_built() const override;
 
     private:
         struct {
             bool info : 1 = false;
         } _is_set;
+
+        const char* get_error_message() const override;
     };
 }

@@ -7,33 +7,35 @@
 #include "compiler/info/datatype.hpp"
 
 namespace amasm::compiler {
-    class PoleDeclBuilder : public lib::IBuilder<PoleDecl> {
+    class PoleBuilder : public lib::IBuilder<Pole> {
     public:
-        PoleDeclBuilder& set_name(std::string name);
-        PoleDeclBuilder& set_datatype(const Datatype& type);
-        PoleDeclBuilder& set_offset(ptrdiff_t offset);
+        PoleBuilder& set_name(std::string name);
+        PoleBuilder& set_datatype(const Datatype& datatype);
 
-        PoleDecl&& get_product() override;
+        bool is_built() const override;
 
     private:
         struct {
-            bool name : 1 = false;
-            bool type : 1 = false;
+            bool name     : 1 = false;
+            bool datatype : 1 = false;
         } _is_set;
+
+        const char* get_error_message() const override;
     };
 
     class DatatypeBuilder : public lib::IBuilder<Datatype> {
     public:
         DatatypeBuilder& set_name(std::string name);
         DatatypeBuilder& set_size(size_t size);
-        DatatypeBuilder& add_pole(std::string name, const Datatype& type);
-        DatatypeBuilder& add_pole(PoleDecl&& pole);
+        DatatypeBuilder& add_pole(Pole&& pole);
 
-        Datatype&& get_product() override;
+        bool is_built() const override;
 
     private:
         struct {
             bool name : 1 = false;
         } _is_set;
+
+        const char* get_error_message() const override;
     };
 }

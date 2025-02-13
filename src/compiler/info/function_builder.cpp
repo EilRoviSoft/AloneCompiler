@@ -44,10 +44,11 @@ namespace amasm::compiler {
         return *this;
     }
 
-    Function&& FunctionBuilder::get_product() {
-        if (!_is_set.name || !_is_set.return_type || !_is_set.scope)
-            throw std::runtime_error("you have to specify name, return_type and scope_id");
+    bool FunctionBuilder::is_built() const {
+        return _is_set.name && _is_set.return_type && _is_set.scope;
+    }
 
-        return IBuilder::get_product();
+    const char* FunctionBuilder::get_error_message() const {
+        return "you have to specify name, return_type and scope_id";
     }
 }

@@ -3,6 +3,10 @@
 //std
 #include <array>
 
+//frozen
+#include "frozen/string.h"
+#include "frozen/unordered_map.h"
+
 //library
 #include "library/general_functions.hpp"
 
@@ -11,6 +15,30 @@
 #include "compiler/info/function_builder.hpp"
 #include "compiler/info/inst_info_factory.hpp"
 #include "compiler/info/variable_builder.hpp"
+
+namespace amasm::compiler::parser {
+    static constexpr frozen::unordered_map<frozen::string, size_t, 9> predefined_datatypes = {
+        { "void", 0 },
+        { "uint8", 1 },
+        { "uint16", 2 },
+        { "uint32", 4 },
+        { "uint64", 8 },
+        { "int8", 1 },
+        { "int16", 2 },
+        { "int32", 4 },
+        { "int64", 8 }
+    };
+    static const std::array predefined_vars = {
+        std::make_pair<std::string, std::vector<std::string>>("uint8",
+            { "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh" }),
+        std::make_pair<std::string, std::vector<std::string>>("uint16",
+            { "ax", "bx", "cx", "dx", "si", "di", "ip", "bp", "sp", "flags", "gp" }),
+        std::make_pair<std::string, std::vector<std::string>>("uint32",
+            { "eax", "ebx", "ecx", "edx", "esi", "edi", "eip", "ebp", "esp", "eflags", "egp" }),
+        std::make_pair<std::string, std::vector<std::string>>("uint64",
+            { "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "rip", "rbp", "rsp", "rflags", "rgp" })
+    };
+}
 
 namespace amasm::compiler {
     // constructors
@@ -60,28 +88,16 @@ namespace amasm::compiler {
     }
 
     void Context::_init_datatypes() {
-        _proxy.add(DatatypeBuilder().set_name("void").get_product());
-        _proxy.add(DatatypeBuilder().set_name("uint8").set_size(1).get_product());
-        _proxy.add(DatatypeBuilder().set_name("uint16").set_size(2).get_product());
-        _proxy.add(DatatypeBuilder().set_name("uint32").set_size(4).get_product());
-        _proxy.add(DatatypeBuilder().set_name("uint64").set_size(8).get_product());
-        _proxy.add(DatatypeBuilder().set_name("int8").set_size(1).get_product());
-        _proxy.add(DatatypeBuilder().set_name("int16").set_size(2).get_product());
-        _proxy.add(DatatypeBuilder().set_name("int32").set_size(4).get_product());
-        _proxy.add(DatatypeBuilder().set_name("int64").set_size(8).get_product());
+        for (const auto& [name, size] : parser::predefined_datatypes) {
+            auto datatype = DatatypeBuilder()
+                .set_name(name.data())
+                .set_size(size)
+                .get_product();
+            _proxy.add(std::move(datatype));
+        }
     }
     void Context::_init_global_variables() {
-        const std::array vars = {
-            std::make_pair<std::string, std::vector<std::string>>("uint8",
-                { "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh" }),
-            std::make_pair<std::string, std::vector<std::string>>("uint16",
-                { "ax", "bx", "cx", "dx", "si", "di", "ip", "bp", "sp", "flags", "gp" }),
-            std::make_pair<std::string, std::vector<std::string>>("uint32",
-                { "eax", "ebx", "ecx", "edx", "esi", "edi", "eip", "ebp", "esp", "eflags", "egp" }),
-            std::make_pair<std::string, std::vector<std::string>>("uint64",
-                { "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "rip", "rbp", "rsp", "rflags", "rgp" }),
-        };
-        for (const auto& [type_name, collection] : vars)
+        for (const auto& [type_name, collection] : parser::predefined_vars)
             for (const auto& var_name : collection) {
                 const auto& type = _proxy.get_datatype(type_name);
                 auto var = VariableBuilder()

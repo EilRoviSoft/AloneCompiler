@@ -45,7 +45,15 @@ You can define names for memory regions from stack and heap.
 This only affects compilation time.
 
 ```asm
-var %a: uint64, [%rsp - 8];
+var %a: uint64, [%rsp - 8];   # will not be replaced with anything
+```
+
+If you write variable definition without indicating her adress, 
+line will be automatically replaced with `push`.
+It affects compile time.
+
+```asm
+var %b: uint64;               # in bytecode will be replaced with `push64`
 ```
 
 ## Predefined data aka Constants
@@ -89,17 +97,17 @@ If you need other parts of registers set, just use absolute adresses or make you
 
 # Addressing modes
 
-There are 4 types of addressing modes for several binary functions
+There are 4 types of addressing modes for several binary functions.
 
 ## Direct operands
 
-Works directly with given part of memories without changing it
+Works directly with given part of memories without changing it.
 
 ```asm
 mov32 %ecx, %edx
 ```
 
-This can be read as "moves contents of %ecx register to edx register"
+This can be read as "moves contents of %ecx register to edx register".
 
 # Labels and branches
 
@@ -111,9 +119,8 @@ label main__l0a:  # this branch is generated for loop purposes
 
 # Functions
 
-This function adds int64 and int32 from stack; removes these arguments from stack; pushes result on stack
-
-Also you can call labels only inside current function
+This function adds int64 and int32 from stack; removes these arguments from stack; pushes result on stack.
+Also you can call labels only inside current function.
 
 ```asm
 func @add6432(int64, int32): int64 { # arguments pushes right-to-left
@@ -129,11 +136,11 @@ func @add6432(int64, int32): int64 { # arguments pushes right-to-left
 # Struct
 
 ```asm
-struct some_t {                     # you can define rules for struct align
-    var %a: int64, [%this + 8];     # and create struct members
-    var %b: int32, [%this + 8];     # members will be placed in order of defining
-    var %c: int8, [%this + 12];
-    var %d: int8, [%this + 16];
+struct some_t {                    # members will be placed in order of defining
+    var %a: int64;
+    var %b: int32;
+    var %c: int8;
+    var %d: int8;
 }
 
 func @main() {
@@ -147,6 +154,6 @@ func @main() {
 }
 ```
 
-This program adds 10 and 20, after that writes "30" in console
+This program adds 10 and 20, after that writes "30" in console.
 
 ---

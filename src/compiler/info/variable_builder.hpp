@@ -12,10 +12,10 @@ namespace amasm::compiler {
     public:
         VariableBuilder& set_name(std::string name);
         VariableBuilder& set_fixed_address(lib::address address);
-        VariableBuilder& set_relative_address(std::string variable_name, lib::address address);
+        VariableBuilder& set_relative_address(std::string variable_name, lib::address offset);
         VariableBuilder& set_datatype(const Datatype& datatype);
 
-        Variable&& get_product() override;
+        bool is_built() const override;
 
     private:
         struct {
@@ -23,5 +23,7 @@ namespace amasm::compiler {
             bool address  : 1 = false;
             bool datatype : 1 = false;
         } _is_set;
+
+        const char* get_error_message() const override;
     };
 }
