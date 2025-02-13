@@ -14,14 +14,11 @@
 
 namespace amasm::compiler {
     class Parser {
-
     public:
-        explicit Parser(Context& ctx);
-
-        ScopeContainer parse(token_vector tokens);
+        ScopeContainer parse(Context& ctx, const token_vector& tokens);
 
     private:
-        Context& _ctx;
+        Context* _ctx = nullptr;
         size_t _current_scope_id = 0;
         ScopeProxy _scopes;
         token_vector _tokens;

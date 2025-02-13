@@ -13,7 +13,7 @@ namespace amasm::compiler {
             temp += buffer + '\n';
         }
 
-        return scan_from_string(temp);
+        return format_string(temp);
     }
     std::string Scanner::scan_from_file(const std::string& filename) {
         std::string temp, buffer;
@@ -25,10 +25,10 @@ namespace amasm::compiler {
         }
         file.close();
 
-        return scan_from_string(temp);
+        return format_string(temp);
     }
 
-    std::string Scanner::scan_from_string(const std::string& input) {
+    std::string Scanner::format_string(const std::string& input) {
         std::string result;
         std::vector<std::pair<size_t, size_t>> ranges;
         size_t line_start_pos = 0;

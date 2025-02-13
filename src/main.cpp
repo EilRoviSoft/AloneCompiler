@@ -1,17 +1,12 @@
 //std
-#include <fstream>
+#include <array>
 #include <functional>
-#include <vector>
 
 //library
 #include "library/logger.hpp"
 
 //compiler
-#include "compiler/context.hpp"
-#include "compiler/lexer.hpp"
-#include "compiler/parser.hpp"
-#include "compiler/scanner.hpp"
-#include "compiler/translator.hpp"
+#include "compiler/include.hpp"
 
 //executor
 #include "executor/context.hpp"
@@ -28,17 +23,7 @@ namespace natives {
 
 namespace unit_tests {
     void f0() {
-        auto compiler_ctx = CompilerContext();
-        auto scanner = compiler::Scanner();
-        auto lexer = compiler::Lexer();
-        auto parser = compiler::Parser(compiler_ctx);
-        auto translator = compiler::Translator();
-
-        auto text = scanner.scan_from_file("example.amasm");
-        auto tokens = lexer.tokenize_code(text);
-        auto container = parser.parse(tokens);
-        auto bytecode = translator.translate(container);
-
+        auto bytecode = Compiler::compile_from("example.amasm");
         auto vm = executor::VirtualMachine();
 
         vm.init();
@@ -61,12 +46,10 @@ namespace unit_tests {
 }
 
 int main() {
-    std::fstream log_file("log.txt", std::ios::out | std::ios::trunc);
     lib::Logger::init();
+    Compiler::init();
 
     unit_tests::test();
-
-    log_file.close();
 
     return 0;
 }

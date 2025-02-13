@@ -10,6 +10,6 @@ namespace amasm::compiler {
         std::string scan_from_file(std::fstream& file);
         std::string scan_from_file(const std::string& filename);
 
-        std::string scan_from_string(const std::string& input);
+        std::string format_string(const std::string& input);
     };
 }

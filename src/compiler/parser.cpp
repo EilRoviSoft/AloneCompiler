@@ -50,23 +50,20 @@ namespace amasm::compiler::parser {
 namespace amasm::compiler {
     // public
 
-    Parser::Parser(Context& ctx) :
-        _ctx(ctx) {
-    }
-
-    ScopeContainer Parser::parse(token_vector tokens) {
-        _tokens = std::move(tokens);
-        _scopes = _ctx.get_proxy();
+    ScopeContainer Parser::parse(Context& ctx, const token_vector& tokens) {
+        _ctx = &ctx;
+        _tokens = tokens;
+        _scopes = _ctx->get_proxy();
 
         // preparing data for instructions names
-        static auto is_inst = [this](const token& item) { return _ctx.has_inst(item.literal); };
+        static auto is_inst = [this](const token& item) { return _ctx->has_inst(item.literal); };
         for (auto& inst : _tokens | std::views::filter(is_inst))
             inst.type = TokenType::InstName;
 
         for (size_t i = 0, di; i < _tokens.size(); i += di)
             di = _do_parse_logic(i);
 
-        return _ctx.release_container();
+        return _ctx->release_container();
     }
 
     // private
@@ -136,9 +133,9 @@ namespace amasm::compiler {
         while (_tokens[j].type != TokenType::RBrace) {
             size_t delta;
 
-            if (_ctx.has_inst(_tokens[j].literal)) {
+            if (_ctx->has_inst(_tokens[j].literal)) {
                 InstDecl decl;
-                const InstInfo& info = _ctx.get_inst(_tokens[j].literal);
+                const InstInfo& info = _ctx->get_inst(_tokens[j].literal);
 
                 if (info.name() == "ncall")
                     std::tie(delta, decl) = _parse_ncall(j, info);
@@ -339,7 +336,7 @@ namespace amasm::compiler {
 
             delta += 7;
         } else if (_current_scope_id != 0) {
-            inst_builder.set_info(_ctx.get_inst("push" + std::to_string(datatype.size() * 8)));
+            inst_builder.set_info(_ctx->get_inst("push" + std::to_string(datatype.size() * 8)));
             var_builder.set_relative_address(_tokens[i + 8].literal, -datatype.size());
         } else
             throw std::runtime_error("you cannot allocate variable inside global scope");

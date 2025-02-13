@@ -9,9 +9,6 @@
 #include "library/bytecode.hpp"
 
 //compiler_info
-#include <tuple>
-#include <tuple>
-
 #include "compiler/info/scope_container.hpp"
 
 namespace amasm::compiler {
