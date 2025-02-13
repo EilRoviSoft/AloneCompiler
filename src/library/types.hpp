@@ -21,66 +21,44 @@ namespace amasm {
     };
 
     enum RegisterType : uint8_t {
-        // 8-bit registers
-
-        AL = SYSTEM_MW_SIZE * 0,
-        AH = AL + 1,
-        BL = SYSTEM_MW_SIZE * 1,
-        BH = BL + 1,
-        CL = SYSTEM_MW_SIZE * 2,
-        CH = CL + 1,
-        DL = SYSTEM_MW_SIZE * 3,
-        DH = DL + 1,
-
         // 16-bit registers
 
-        AX    = AL,
-        BX    = BL,
-        CX    = CL,
-        DX    = DL,
-        SI    = SYSTEM_MW_SIZE * 4,
-        DI    = SYSTEM_MW_SIZE * 5,
-        IP    = SYSTEM_MW_SIZE * 6,
-        BP    = SYSTEM_MW_SIZE * 7,
-        SP    = SYSTEM_MW_SIZE * 8,
-        FLAGS = SYSTEM_MW_SIZE * 9,
-        GP    = SYSTEM_MW_SIZE * 10,
+        AX = SYSTEM_MW_SIZE * 0, BX = SYSTEM_MW_SIZE * 1,
+        CX = SYSTEM_MW_SIZE * 2, DX = SYSTEM_MW_SIZE * 3,
+        SI = SYSTEM_MW_SIZE * 4, DI = SYSTEM_MW_SIZE * 5,
+        IP = SYSTEM_MW_SIZE * 6, BP = SYSTEM_MW_SIZE * 7, SP = SYSTEM_MW_SIZE * 8,
+        GP = SYSTEM_MW_SIZE * 10,
 
         // 32-bit registers
 
-        EAX    = AL,
-        EBX    = BL,
-        ECX    = CL,
-        EDX    = DL,
-        ESI    = SI,
-        EDI    = DI,
-        EIP    = IP,
-        EBP    = BP,
-        ESP    = SP,
-        EFLAGS = FLAGS,
-        EGP    = GP,
+        EAX = AX, EBX = BX,
+        ECX = CX, EDX = DX,
+        ESI = SI, EDI = DI,
+        EIP = IP, EBP = BP, ESP = SP,
+        EGP = GP,
 
         // 64-bit registers
 
-        RAX    = AL,
-        RBX    = BL,
-        RCX    = CL,
-        RDX    = DL,
-        RSI    = SI,
-        RDI    = DI,
-        RIP    = IP,
-        RBP    = BP,
-        RSP    = SP,
-        RFLAGS = FLAGS,
-        RGP    = GP
+        RAX = AX, RBX = BX,
+        RCX = CX, RDX = DX,
+        RSI = SI, RDI = DI,
+        RIP = IP, RBP = BP, RSP = SP,
+        RGP = GP,
+
+        // FLAGS registers
+
+        FLAGS = SYSTEM_MW_SIZE * 9, EFLAGS = FLAGS, RFLAGS = FLAGS,
     };
 
     enum FlagType : uint8_t {
-        RF = 0,
-        ZF = 1,
-        SF = 2,
-        CF = 3,
-        OF = 4
+        RF = 0x00, // run
+        CF = 0x01, // carry
+        PF = 0x02, // parity
+        ZF = 0x03, // zero
+        SF = 0x04, // sign
+        IF = 0x05, // interrupt enable
+        DF = 0x06, // direction
+        OF = 0x07, // overflow
     };
 }
 

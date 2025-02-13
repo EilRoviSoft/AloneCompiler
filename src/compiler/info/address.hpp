@@ -9,7 +9,8 @@
 namespace amasm::compiler {
     struct address_info {
         std::string name;
-        ptrdiff_t value = 0;
+        size_t abs_value = 0;
+        ptrdiff_t sign_value = 0;
         AddressType type = AddressType::Empty;
     };
 }

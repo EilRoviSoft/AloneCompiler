@@ -3,6 +3,9 @@
 #include <functional>
 #include <vector>
 
+//library
+#include "library/logger.hpp"
+
 //compiler
 #include "compiler/context.hpp"
 #include "compiler/lexer.hpp"
@@ -11,12 +14,17 @@
 #include "compiler/translator.hpp"
 
 //executor
+#include "executor/context.hpp"
 #include "executor/virtual_machine.hpp"
 
-//library
-#include "library/logger.hpp"
-
 using namespace amasm;
+
+namespace natives {
+    void print_rax(const ExecutorContext& ctx, std::ostream& out) {
+        auto rax = *ctx.get(RAX);
+        out << rax << '\n';
+    }
+}
 
 namespace unit_tests {
     void f0() {
@@ -34,6 +42,10 @@ namespace unit_tests {
         auto vm = executor::VirtualMachine();
 
         vm.init();
+        vm.add_native_func("@print_rax()", [&](const ExecutorContext& ctx) {
+            natives::print_rax(ctx, lib::Logger::channel(lib::Logger::Output));
+        });
+
         vm.exec(bytecode);
     }
 
@@ -48,11 +60,9 @@ namespace unit_tests {
     }
 }
 
-std::ostream* lib::Logger::_out = nullptr;
-
 int main() {
     std::fstream log_file("log.txt", std::ios::out | std::ios::trunc);
-    lib::Logger::init(log_file);
+    lib::Logger::init();
 
     unit_tests::test();
 

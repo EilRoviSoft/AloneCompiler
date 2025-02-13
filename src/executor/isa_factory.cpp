@@ -22,6 +22,10 @@ namespace amasm::executor {
             .set_predicate(isa::halt)
             .get_product(),
             InstructionBuilder()
+            .set_id(0x1)
+            .set_predicate(isa::ncall)
+            .get_product(),
+            InstructionBuilder()
             .set_id(0x2)
             .set_predicate(isa::fcall)
             .set_memory_shift(8)

@@ -1,15 +1,12 @@
 #include "executor/instruction_builder.hpp"
 
-//std
-#include <stdexcept>
-
 namespace amasm::executor {
     InstructionBuilder& InstructionBuilder::set_id(lib::inst_code id) {
         m_product->m_id = id;
         _is_set.id = true;
         return *this;
     }
-    InstructionBuilder& InstructionBuilder::set_predicate(Instruction::Signature predicate) {
+    InstructionBuilder& InstructionBuilder::set_predicate(InstSignature predicate) {
         m_product->m_predicate = std::move(predicate);
         _is_set.predicate = true;
         return *this;

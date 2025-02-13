@@ -23,6 +23,11 @@ namespace amasm::executor {
         _init(min_size, max_size);
     }
 
+    void VirtualMachine::add_native_func(const std::string& key, const CallSignature& value) {
+        size_t hashed_key = lib::hash_string(key);
+        _natives.emplace(hashed_key, value);
+    }
+
     void VirtualMachine::exec(lib::Bytecode program) {
         Context ctx(*this);
 

@@ -23,7 +23,7 @@ namespace amasm::lib {
 
         T&& get_product() {
             if (!is_built()) {
-                Logger::out() << __FILE__ << ": " << get_error_message() << std::endl;
+                Logger::channel(Logger::Error) << __FILE__ << ": " << get_error_message() << std::endl;
                 throw std::invalid_argument("see logger for detailed information");
             }
 

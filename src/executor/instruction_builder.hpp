@@ -10,7 +10,7 @@ namespace amasm::executor {
 	class InstructionBuilder : public lib::IBuilder<Instruction> {
 	public:
 		InstructionBuilder& set_id(lib::inst_code id);
-		InstructionBuilder& set_predicate(Instruction::Signature predicate);
+		InstructionBuilder& set_predicate(InstSignature predicate);
 		InstructionBuilder& set_memory_shift(ptrdiff_t memory_shift);
 
 		bool is_built() const override;

@@ -51,7 +51,7 @@ add_executable(AloneCompiler
 	"src/executor/virtual_machine.cpp"
 	
 	"src/main.cpp"
-)
+ "src/library/logger.cpp")
 
 add_compile_definitions(DEBUG_STATUS)
 #add_compile_definitions(CONSTEXPR_COMPILE_DATA)

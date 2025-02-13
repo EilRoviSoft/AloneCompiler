@@ -1,23 +1,19 @@
 #pragma once
 
-//std
-#include <functional>
-
 //library
 #include "library/types.hpp"
 
-namespace amasm::executor {
-    class Context;
+//executor
+#include "executor/signatures.hpp"
 
+namespace amasm::executor {
     class Instruction {
         friend class InstructionBuilder;
         friend class VirtualMachine;
     public:
-        using Signature = std::function<void(const Context&, lib::args_data)>;
-
         lib::inst_code id() const { return m_id; }
         ptrdiff_t memory_shift() const { return m_memory_shift; }
-        const Signature& predicate() const { return m_predicate; }
+        const InstSignature& predicate() const { return m_predicate; }
 
         void operator()(const Context& ctx, const lib::args_data& data) const {
             return m_predicate(ctx, data);
@@ -25,7 +21,7 @@ namespace amasm::executor {
 
     protected:
         lib::inst_code m_id = 0;
-        Signature m_predicate;
+        InstSignature m_predicate;
         ptrdiff_t m_memory_shift = 0;
     };
 }

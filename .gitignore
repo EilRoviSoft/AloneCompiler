@@ -3,3 +3,4 @@
 .vs/
 out/
 src/_BACKUP/
+res/*.log

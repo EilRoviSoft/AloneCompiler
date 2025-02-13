@@ -140,7 +140,9 @@ namespace amasm::compiler {
                 InstDecl decl;
                 const InstInfo& info = _ctx.get_inst(_tokens[j].literal);
 
-                if (info.name() == "fcall")
+                if (info.name() == "ncall")
+                    std::tie(delta, decl) = _parse_ncall(j, info);
+                else if (info.name() == "fcall")
                     std::tie(delta, decl) = _parse_fcall(j, info);
                 else
                     std::tie(delta, decl) = _parse_inst(j, info);
@@ -168,18 +170,44 @@ namespace amasm::compiler {
         return j - i + 1;
     }
 
-    std::tuple<size_t, InstDecl> Parser::_parse_fcall(size_t i, const InstInfo& info) {
+    std::tuple<size_t, InstDecl> Parser::_parse_ncall(size_t i, const InstInfo& info) {
         size_t j = i + 1;
         InstDeclBuilder builder;
-        address_info on_add;
+        std::string name;
 
         builder.set_info(info);
         while (_tokens[j].type != TokenType::Semicolon) {
-            on_add.name += _tokens[j].literal;
+            name += _tokens[j].literal;
             j++;
         }
-        on_add.type = AddressType::Fixed;
-        builder.add_argument(std::move(on_add));
+        builder.add_argument({
+            .name = "",
+            .abs_value = lib::hash_string(name),
+            .sign_value = 0,
+            .type = AddressType::Fixed
+        });
+
+        return {
+            j - i + 1,
+            builder.get_product()
+        };
+    }
+    std::tuple<size_t, InstDecl> Parser::_parse_fcall(size_t i, const InstInfo& info) {
+        size_t j = i + 1;
+        InstDeclBuilder builder;
+        std::string name;
+
+        builder.set_info(info);
+        while (_tokens[j].type != TokenType::Semicolon) {
+            name += _tokens[j].literal;
+            j++;
+        }
+        builder.add_argument({
+            .name = name,
+            .abs_value = 0,
+            .sign_value = 0,
+            .type = AddressType::Fixed
+        });
 
         return {
             j - i + 1,
@@ -202,20 +230,22 @@ namespace amasm::compiler {
 
                 if (var.address().type == AddressType::RelativeWithDiff) {
                     true_var_name = var.address().name;
-                    var_offset += var.address().value;
+                    var_offset += var.address().sign_value;
                 } else
                     true_var_name = _tokens[j + 1].literal;
 
                 on_add = {
                     .name = std::move(true_var_name),
-                    .value = var_offset,
+                    .abs_value = (size_t) var_offset,
+                    .sign_value = var_offset,
                     .type = var_offset ? AddressType::RelativeWithDiff : AddressType::Relative
                 };
                 j += dj + 2;
             } else if (_tokens[j].type == TokenType::Number) {
                 on_add = {
                     .name = "",
-                    .value = std::stoll(_tokens[j].literal),
+                    .abs_value = std::stoull(_tokens[j].literal),
+                    .sign_value = 0,
                     .type = AddressType::Fixed
                 };
                 j++;
@@ -226,23 +256,24 @@ namespace amasm::compiler {
 
                 if (var.address().type == AddressType::RelativeWithDiff) {
                     true_var_name = var.address().name;
-                    var_offset += var.address().value;
+                    var_offset += var.address().sign_value;
                 } else
                     true_var_name = _tokens[j + 2].literal;
 
                 on_add = {
                     .name = std::move(true_var_name),
-                    .value = var_offset,
+                    .abs_value = 0,
+                    .sign_value = var_offset,
                     .type = AddressType::RelativeWithDiff
                 };
 
                 switch (_tokens[j + dj + 3].type) {
                 case TokenType::Plus:
-                    on_add.value += std::stoll(_tokens[j + dj + 4].literal);
+                    on_add.sign_value += std::stoll(_tokens[j + dj + 4].literal);
                     dj += 1;
                     break;
                 case TokenType::Minus:
-                    on_add.value -= std::stoll(_tokens[j + dj + 4].literal);
+                    on_add.sign_value -= std::stoll(_tokens[j + dj + 4].literal);
                     dj += 1;
                     break;
                 default:
@@ -292,7 +323,7 @@ namespace amasm::compiler {
         size_t delta = 6;
         VariableBuilder var_builder;
         InstDeclBuilder inst_builder;
-        const Datatype& datatype = _scopes.get_datatype(_tokens[i + 4].literal);
+        const auto& datatype = _scopes.get_datatype(_tokens[i + 4].literal);
 
         var_builder.set_name(_tokens[i + 2].literal)
             .set_datatype(datatype);
@@ -300,7 +331,7 @@ namespace amasm::compiler {
             if (!parser::match("indirect_argument", _tokens, i + 6))
                 throw std::runtime_error("wrong variable offset definition");
 
-            ptrdiff_t offset = std::stoull(_tokens[i + 10].literal);
+            ptrdiff_t offset = std::stoll(_tokens[i + 10].literal);
             if (_tokens[i + 9].type == TokenType::Minus)
                 offset *= -1;
 

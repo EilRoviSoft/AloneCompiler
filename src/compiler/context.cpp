@@ -29,8 +29,8 @@ namespace amasm::compiler::parser {
         { "int64", 8 }
     };
     static const std::array predefined_vars = {
-        std::make_pair<std::string, std::vector<std::string>>("uint8",
-            { "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh" }),
+        /*std::make_pair<std::string, std::vector<std::string>>("uint8",
+            { "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh" }),*/
         std::make_pair<std::string, std::vector<std::string>>("uint16",
             { "ax", "bx", "cx", "dx", "si", "di", "ip", "bp", "sp", "flags", "gp" }),
         std::make_pair<std::string, std::vector<std::string>>("uint32",

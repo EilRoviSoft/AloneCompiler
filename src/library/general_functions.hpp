@@ -42,10 +42,7 @@ namespace amasm::lib {
     }
 
     constexpr RegisterType cstr_to_register(const char* data, size_t size) {
-        // 8 + 11 * 3 = 41
-        constexpr frozen::unordered_map<frozen::string, RegisterType, 41> reference_dict = {
-            { "al", AL }, { "ah", AH }, { "bl", BL }, { "bh", BH },
-            { "cl", CL }, { "ch", CH }, { "dl", DL }, { "dh", DH },
+        constexpr frozen::unordered_map<frozen::string, RegisterType, 33> reference_dict = {
             { "ax", AX }, { "bx", BX }, { "cx", CX }, { "dx", DX }, { "si", SI }, { "di", DI },
             { "ip", IP }, { "bp", BP }, { "sp", SP }, { "flags", FLAGS }, { "gp", GP },
             { "eax", EAX }, { "ebx", EBX }, { "ecx", ECX }, { "edx", EDX }, { "esi", ESI }, { "edi", EDI },
@@ -82,11 +79,6 @@ namespace amasm::lib {
             init = bop(std::move(init), temp);
         }
         return init;
-    }
-
-    template<typename TOut, typename TIn>
-    TOut view_as(TIn* ptr) {
-        return reinterpret_cast<TOut>(ptr);
     }
 
     template<typename T>

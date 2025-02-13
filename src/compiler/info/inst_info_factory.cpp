@@ -13,6 +13,11 @@ namespace amasm::compiler {
             .set_code(0x0)
             .get_product(),
             InstInfoBuilder()
+            .set_name("ncall")
+            .set_code(0x1)
+            .set_arguments_count(1)
+            .get_product(),
+            InstInfoBuilder()
             .set_name("fcall")
             .set_code(0x2)
             .set_arguments_count(1)

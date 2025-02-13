@@ -27,8 +27,8 @@ namespace amasm::compiler {
 
     protected:
         std::string m_name;
-        ptrdiff_t m_offset;
-        const Datatype* m_datatype;
+        ptrdiff_t m_offset = 0;
+        const Datatype* m_datatype = nullptr;
     };
 
     class Datatype : public IScopeElement {

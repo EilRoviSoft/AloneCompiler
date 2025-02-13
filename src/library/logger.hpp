@@ -6,11 +6,14 @@
 namespace amasm::lib {
     class Logger {
     public:
-        static void init(std::ostream& out) { _out = &out; }
+        enum Channel : uint8_t {
+            General = 0,
+            Error,
+            Output,
+            Max
+        };
 
-        static std::ostream& out() { return *_out; }
-
-    private:
-        static std::ostream* _out;
+        static void init();
+        static std::ostream& channel(Channel id);
     };
 }

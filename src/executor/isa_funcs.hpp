@@ -1,8 +1,5 @@
 #pragma once
 
-//std
-#include <span>
-
 //library
 #include "library/types.hpp"
 
@@ -17,6 +14,10 @@ namespace amasm::executor::isa {
         ctx[IP] += lib::inst_size;
     }
 
+    inline void ncall(const Context& ctx, lib::args_data args) {
+        ctx.native_call(*ctx.get(ctx[IP] + lib::inst_size));
+        ctx[IP] += lib::inst_size + lib::address_size;
+    }
     inline void fcall(const Context& ctx, lib::args_data args) {
         *ctx.get(ctx[SP]) = ctx[BP];
         ctx[SP] += lib::machine_word_size;
@@ -27,12 +28,15 @@ namespace amasm::executor::isa {
     inline void ret(const Context& ctx, lib::args_data args) {
         auto func_start = *ctx.get(ctx[BP] - lib::machine_word_size);
         auto args_size = *ctx.get(func_start - 16);
-        auto ret_size = *ctx.get(func_start - 8);
-        auto data = ctx.get<std::byte>(ctx[IP] + lib::inst_size);
-        auto result = ctx.get<std::byte>(ret_size <= 8 ? AX : GP);
 
-        for (size_t i = 0; i < ret_size; i++)
-            result[i] = data[i];
+        if (args[0] != AddressType::Empty) {
+            auto ret_size = *ctx.get(func_start - 8);
+            auto data = ctx.get<std::byte>(ctx[IP] + lib::inst_size);
+            auto result = ctx.get<std::byte>(ret_size <= 8 ? AX : GP);
+
+            for (size_t i = 0; i < ret_size; i++)
+                result[i] = data[i];
+        }
 
         ctx[SP] -= args_size + lib::machine_word_size;
         ctx[IP] = ctx[BP];

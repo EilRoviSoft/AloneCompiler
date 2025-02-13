@@ -7,6 +7,7 @@ func @main() {
     push64 10;
     push32 20;
     fcall @add6432(int64, int32);
+    ncall @print_rax();
     halt;
 }
 

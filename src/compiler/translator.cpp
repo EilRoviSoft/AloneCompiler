@@ -56,6 +56,8 @@ namespace amasm::compiler {
         if (inst.info().name() == "fcall") {
             hints.emplace_back(inst.argument(0).name, bytecode.size());
             bytecode.append_value<lib::machine_word>(0);
+        } else if (inst.info().name() == "ncall") {
+            bytecode.append_value<lib::machine_word>(inst.argument(0).abs_value);
         } else {
             size_t arg_idx = 0;
             for (size_t i = 0; i < inst.arguments_count(); i++) {
@@ -65,14 +67,14 @@ namespace amasm::compiler {
 
                 switch (arg.type) {
                 case AddressType::Relative:
-                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name, scope_id).address().value);
+                    bytecode.append_value(_scopes.get_variable(arg.name, scope_id).address().abs_value);
                     break;
                 case AddressType::Fixed:
-                    bytecode.append_value((lib::address) arg.value, inst.info().bit_depth() / 8);
+                    bytecode.append_value(arg.abs_value, inst.info().bit_depth() / 8);
                     break;
                 case AddressType::RelativeWithDiff:
-                    bytecode.append_value((lib::address) _scopes.get_variable(arg.name, scope_id).address().value);
-                    bytecode.append_value(arg.value, lib::machine_word_size);
+                    bytecode.append_value(_scopes.get_variable(arg.name, scope_id).address().abs_value);
+                    bytecode.append_value(arg.sign_value, lib::machine_word_size);
                     break;
                 default:
                     throw std::runtime_error("wrong instruction definition");

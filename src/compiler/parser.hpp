@@ -31,6 +31,7 @@ namespace amasm::compiler {
         size_t _parse_datatype(size_t i);
         size_t _parse_function(size_t i);
 
+        std::tuple<size_t, InstDecl> _parse_ncall(size_t i, const InstInfo& info);
         std::tuple<size_t, InstDecl> _parse_fcall(size_t i, const InstInfo& info);
         std::tuple<size_t, InstDecl> _parse_inst(size_t i, const InstInfo& info);
 
