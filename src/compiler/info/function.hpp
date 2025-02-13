@@ -1,6 +1,7 @@
 #pragma once
 
 //std
+#include <variant>
 #include <vector>
 
 //compiler_info
@@ -9,6 +10,14 @@
 #include "compiler/info/scope_element.hpp"
 
 namespace amasm::compiler {
+    struct line_variant {
+        std::variant<InstDecl, std::string> value;
+        enum : uint8_t {
+            Inst,
+            Label
+        } type;
+    };
+
     class Function : public IScopeElement {
         friend class FunctionBuilder;
         friend class ScopeContainer;
@@ -29,11 +38,6 @@ namespace amasm::compiler {
             return result;
         }
 
-        size_t scope_id() const { return m_scope_id; }
-
-        const InstDecl& line(size_t idx) const { return m_lines[idx]; }
-        size_t lines_size() const { return m_lines.size(); }
-
         const Datatype& return_type() const { return *m_types.front(); }
         const Datatype& argument_type(size_t idx) const { return *m_types[idx + 1]; }
         size_t arguments_count() const { return m_types.size() - 1; }
@@ -44,15 +48,20 @@ namespace amasm::compiler {
             return result;
         }
 
+        size_t scope_id() const { return m_scope_id; }
+
+        const line_variant& line(size_t idx) const { return m_lines[idx]; }
+        size_t lines_size() const { return m_lines.size(); }
+
         ScopeElement clone() const override {
             return std::make_shared<Function>(*this);
         }
 
     protected:
         // [0] for return type
-        // [1..size] for arguments' types
+        // [1 .. size - 1] for arguments' types
         std::vector<const Datatype*> m_types;
         size_t m_scope_id = 0;
-        std::vector<InstDecl> m_lines;
+        std::vector<line_variant> m_lines;
     };
 }

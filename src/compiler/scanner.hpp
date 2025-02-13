@@ -7,9 +7,9 @@
 namespace amasm::compiler {
     class Scanner {
     public:
-        std::string scan_from_file(std::fstream& file);
-        std::string scan_from_file(const std::string& filename);
+        static std::string scan_from_file(std::fstream& file);
+        static std::string scan_from_file(const std::string& filename);
 
-        std::string format_string(const std::string& input);
+        static std::string format_string(const std::string& input);
     };
 }

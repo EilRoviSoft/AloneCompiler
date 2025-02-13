@@ -21,13 +21,13 @@ namespace amasm::compiler {
 
         bool is_built() const override;
 
+        InstInfo&& get_product() override;
+
     private:
         struct {
             bool name : 1 = false;
             bool code : 1 = false;
         } _is_set;
-
-        const char* get_error_message() const override;
     };
 
     class InstDeclBuilder : public lib::IBuilder<InstDecl> {
@@ -37,11 +37,11 @@ namespace amasm::compiler {
 
         bool is_built() const override;
 
+        InstDecl&& get_product() override;
+
     private:
         struct {
             bool info : 1 = false;
         } _is_set;
-
-        const char* get_error_message() const override;
     };
 }

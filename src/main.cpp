@@ -23,7 +23,7 @@ namespace natives {
 
 namespace unit_tests {
     void f0() {
-        auto bytecode = Compiler::compile_from("example.amasm");
+        auto bytecode = Compiler::process_from("example.amasm");
         auto vm = executor::VirtualMachine();
 
         vm.init();
@@ -47,7 +47,6 @@ namespace unit_tests {
 
 int main() {
     lib::Logger::init();
-    Compiler::init();
 
     unit_tests::test();
 

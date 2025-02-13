@@ -26,9 +26,11 @@ namespace amasm::compiler {
     bool PoleBuilder::is_built() const {
         return _is_set.name && _is_set.datatype;
     }
+    Pole&& PoleBuilder::get_product() {
+        if (!is_built())
+            throw std::runtime_error("you have to specify name and datatype of Pole");
 
-    const char* PoleBuilder::get_error_message() const {
-        return "you have to specify name and datatype of Pole";
+        return IBuilder::get_product();
     }
 
     // DatatypeBuilder
@@ -65,7 +67,10 @@ namespace amasm::compiler {
         return _is_set.name;
     }
 
-    const char* DatatypeBuilder::get_error_message() const {
-        return "you have to specify name and size of Datatype";
+    Datatype&& DatatypeBuilder::get_product() {
+        if (!is_built())
+            throw std::runtime_error("you have to specify name and size of Datatype");
+
+        return IBuilder::get_product();
     }
 }

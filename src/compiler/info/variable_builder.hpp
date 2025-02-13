@@ -1,8 +1,8 @@
 #pragma once
 
 //library
-#include "library/types.hpp"
 #include "library/builder.hpp"
+#include "library/types.hpp"
 
 //compiler_info
 #include "compiler/info/variable.hpp"
@@ -17,13 +17,13 @@ namespace amasm::compiler {
 
         bool is_built() const override;
 
+        Variable&& get_product() override;
+
     private:
         struct {
             bool name     : 1 = false;
             bool address  : 1 = false;
             bool datatype : 1 = false;
         } _is_set;
-
-        const char* get_error_message() const override;
     };
 }

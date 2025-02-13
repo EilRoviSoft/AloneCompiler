@@ -7,7 +7,6 @@
 
 //library
 #include "library/general_functions.hpp"
-#include "library/types.hpp"
 
 //compiler_info
 #include "compiler/info/scope_element.hpp"

@@ -1,5 +1,8 @@
 #include "executor/instruction_builder.hpp"
 
+//std
+#include <stdexcept>
+
 namespace amasm::executor {
     InstructionBuilder& InstructionBuilder::set_id(lib::inst_code id) {
         m_product->m_id = id;
@@ -20,7 +23,10 @@ namespace amasm::executor {
         return _is_set.id && _is_set.predicate;
     }
 
-    const char* InstructionBuilder::get_error_message() const {
-        return "you have to specify id and predicate of Instruction";
+    Instruction&& InstructionBuilder::get_product() {
+        if (!is_built())
+            throw std::runtime_error("you have to specify id and predicate of Instruction");
+
+        return IBuilder::get_product();
     }
 }

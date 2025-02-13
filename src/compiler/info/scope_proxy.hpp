@@ -2,7 +2,6 @@
 
 //std
 #include <list>
-#include <ranges>
 
 //compiler_info
 #include "compiler/info/datatype.hpp"

@@ -39,7 +39,10 @@ namespace amasm::compiler {
         return _is_set.name && _is_set.address && _is_set.datatype;
     }
 
-    const char* VariableBuilder::get_error_message() const {
-        return "you have to specify name, address and datatype of Variable";
+    Variable&& VariableBuilder::get_product() {
+        if (!is_built())
+            throw std::runtime_error("you have to specify name, address and datatype of Variable");
+
+        return IBuilder::get_product();
     }
 }

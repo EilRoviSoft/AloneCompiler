@@ -14,13 +14,13 @@ namespace amasm::compiler {
 
         bool is_built() const override;
 
+        Pole&& get_product() override;
+
     private:
         struct {
             bool name     : 1 = false;
             bool datatype : 1 = false;
         } _is_set;
-
-        const char* get_error_message() const override;
     };
 
     class DatatypeBuilder : public lib::IBuilder<Datatype> {
@@ -31,11 +31,11 @@ namespace amasm::compiler {
 
         bool is_built() const override;
 
+        Datatype&& get_product() override;
+
     private:
         struct {
             bool name : 1 = false;
         } _is_set;
-
-        const char* get_error_message() const override;
     };
 }

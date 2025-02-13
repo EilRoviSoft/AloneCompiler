@@ -20,9 +20,12 @@ namespace amasm::compiler {
         FunctionBuilder& set_scope(ScopeProxy proxy, size_t scope_id);
         // firstly specify scope
         FunctionBuilder& add_to_scope(ScopeElement&& elem);
-        FunctionBuilder& add_line(InstDecl&& decl);
+        FunctionBuilder& add_line(InstDecl&& inst);
+        FunctionBuilder& add_label(std::string&& label);
 
         bool is_built() const override;
+
+        Function&& get_product() override;
 
     private:
         ScopeProxy _proxy;
@@ -32,7 +35,5 @@ namespace amasm::compiler {
             bool return_type : 1 = false;
             bool scope       : 1 = false;
         } _is_set;
-
-        const char* get_error_message() const override;
     };
 }

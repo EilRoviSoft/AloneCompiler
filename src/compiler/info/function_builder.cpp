@@ -39,8 +39,12 @@ namespace amasm::compiler {
 
         return *this;
     }
-    FunctionBuilder& FunctionBuilder::add_line(InstDecl&& decl) {
-        m_product->m_lines.emplace_back(std::move(decl));
+    FunctionBuilder& FunctionBuilder::add_line(InstDecl&& inst) {
+        m_product->m_lines.emplace_back(std::move(inst), line_variant::Inst);
+        return *this;
+    }
+    FunctionBuilder& FunctionBuilder::add_label(std::string&& label) {
+        m_product->m_lines.emplace_back(std::move(label), line_variant::Label);
         return *this;
     }
 
@@ -48,7 +52,10 @@ namespace amasm::compiler {
         return _is_set.name && _is_set.return_type && _is_set.scope;
     }
 
-    const char* FunctionBuilder::get_error_message() const {
-        return "you have to specify name, return_type and scope_id";
+    Function&& FunctionBuilder::get_product() {
+        if (!is_built())
+            throw std::runtime_error("you have to specify name, return_type and scope_id");
+
+        return IBuilder::get_product();
     }
 }

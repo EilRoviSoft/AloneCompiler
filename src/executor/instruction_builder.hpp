@@ -15,12 +15,12 @@ namespace amasm::executor {
 
 		bool is_built() const override;
 
+		Instruction&& get_product() override;
+
 	private:
 		struct {
 			bool id        : 1 = false;
 			bool predicate : 1 = false;
 		} _is_set;
-
-		const char* get_error_message() const override;
 	};
 }
