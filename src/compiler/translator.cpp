@@ -87,19 +87,19 @@ namespace amasm::compiler {
 
             for (size_t i = 0; i < it.lines_size(); i++) {
                 const auto& item = it.line(i);
-                if (item.type == line_variant::Inst) {
-                    const auto& inst = std::get<InstDecl>(it.line(i).value);
-
-                    auto [new_bytecode, new_hints] = translator::generate_inst_bytecode(scopes, inst, it.scope_id());
+                if (item.type() == LineVariant::Inst) {
+                    auto [new_bytecode, new_hints] = translator::generate_inst_bytecode(
+                        scopes,
+                        it.line(i).inst(),
+                        it.scope_id()
+                    );
                     for (auto& hint : new_hints)
                         hint.offset += bytecode.size();
 
                     hints.append_range(new_hints);
                     bytecode.append_sequence(new_bytecode);
-                } else if (item.type == line_variant::Label) {
-                    const auto& label = std::get<std::string>(it.line(i).value);
-
-                    labels.emplace(label, bytecode.size());
+                } else if (item.type() == LineVariant::Label) {
+                    labels.emplace(it.line(i).label(), bytecode.size());
                 } else
                     throw std::runtime_error("how the fuck did you get here?");
             }

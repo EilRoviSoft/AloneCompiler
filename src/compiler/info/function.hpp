@@ -10,12 +10,24 @@
 #include "compiler/info/scope_element.hpp"
 
 namespace amasm::compiler {
-    struct line_variant {
-        std::variant<InstDecl, std::string> value;
-        enum : uint8_t {
+    class LineVariant {
+        friend class LineVariantBuilder;
+
+    public:
+        enum Type : uint8_t {
+            None,
             Inst,
             Label
-        } type;
+        };
+
+        const InstDecl& inst() const { return std::get<InstDecl>(m_value); }
+        const std::string& label() const { return std::get<std::string>(m_value); }
+
+        Type type() const { return m_type; }
+
+    protected:
+        std::variant<InstDecl, std::string> m_value;
+        Type m_type = None;
     };
 
     class Function : public IScopeElement {
@@ -50,7 +62,7 @@ namespace amasm::compiler {
 
         size_t scope_id() const { return m_scope_id; }
 
-        const line_variant& line(size_t idx) const { return m_lines[idx]; }
+        const LineVariant& line(size_t idx) const { return m_lines[idx]; }
         size_t lines_size() const { return m_lines.size(); }
 
         ScopeElement clone() const override {
@@ -62,6 +74,6 @@ namespace amasm::compiler {
         // [1 .. size - 1] for arguments' types
         std::vector<const Datatype*> m_types;
         size_t m_scope_id = 0;
-        std::vector<line_variant> m_lines;
+        std::vector<LineVariant> m_lines;
     };
 }

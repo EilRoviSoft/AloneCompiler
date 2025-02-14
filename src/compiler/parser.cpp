@@ -319,7 +319,9 @@ namespace amasm::compiler::parser {
                 else
                     std::tie(delta, decl) = parse_inst(j, info, data);
 
-                builder.add_line(std::move(decl));
+                builder.add_line(LineVariantBuilder()
+                    .set_inst(std::move(decl))
+                    .get_product());
             } else if (data.tokens[j].type == KwVar) {
                 Variable var;
                 std::optional<InstDecl> opt_decl;
@@ -328,13 +330,17 @@ namespace amasm::compiler::parser {
 
                 data.scopes.add(std::move(var), data.current_scope_id);
                 if (opt_decl.has_value())
-                    builder.add_line(std::move(opt_decl.value()));
+                    builder.add_line(LineVariantBuilder()
+                        .set_inst(std::move(opt_decl.value()))
+                        .get_product());
             } else if (data.tokens[j].type == KwLabel) {
                 std::string label;
 
                 std::tie(delta, label) = parse_label(j, data);
 
-                builder.add_label(std::move(label));
+                builder.add_line(LineVariantBuilder()
+                    .set_label(std::move(label))
+                    .get_product());
             } else
                 throw std::invalid_argument("expected instruction, variable or label");
 

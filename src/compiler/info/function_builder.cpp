@@ -4,6 +4,34 @@
 #include <stdexcept>
 
 namespace amasm::compiler {
+    // LineVariantBuilder
+
+    LineVariantBuilder& LineVariantBuilder::set_inst(InstDecl&& inst) {
+        m_product->m_value = std::move(inst);
+        m_product->m_type = LineVariant::Inst;
+        _is_set.value = true;
+        return *this;
+    }
+    LineVariantBuilder& LineVariantBuilder::set_label(std::string label) {
+        m_product->m_value = std::move(label);
+        m_product->m_type = LineVariant::Label;
+        _is_set.value = true;
+        return *this;
+    }
+
+    bool LineVariantBuilder::is_built() const {
+        return _is_set.value;
+    }
+
+    LineVariant&& LineVariantBuilder::get_product() {
+        if (!is_built())
+            throw std::runtime_error("you have to specify inst or label of LineVariant");
+
+        return IBuilder::get_product();
+    }
+
+    // FunctionBuilder
+
     FunctionBuilder::FunctionBuilder() {
         m_product->m_types.emplace_back(nullptr);
     }
@@ -39,12 +67,8 @@ namespace amasm::compiler {
 
         return *this;
     }
-    FunctionBuilder& FunctionBuilder::add_line(InstDecl&& inst) {
-        m_product->m_lines.emplace_back(std::move(inst), line_variant::Inst);
-        return *this;
-    }
-    FunctionBuilder& FunctionBuilder::add_label(std::string&& label) {
-        m_product->m_lines.emplace_back(std::move(label), line_variant::Label);
+    FunctionBuilder& FunctionBuilder::add_line(LineVariant&& line) {
+        m_product->m_lines.emplace_back(std::move(line));
         return *this;
     }
 
@@ -54,7 +78,7 @@ namespace amasm::compiler {
 
     Function&& FunctionBuilder::get_product() {
         if (!is_built())
-            throw std::runtime_error("you have to specify name, return_type and scope_id");
+            throw std::runtime_error("you have to specify name, return_type and scope_id of Function");
 
         return IBuilder::get_product();
     }

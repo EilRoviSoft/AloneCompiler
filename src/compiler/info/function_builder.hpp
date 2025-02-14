@@ -10,6 +10,21 @@
 #include "compiler/info/scope_proxy.hpp"
 
 namespace amasm::compiler {
+    class LineVariantBuilder : public lib::IBuilder<LineVariant> {
+    public:
+        LineVariantBuilder& set_inst(InstDecl&& inst);
+        LineVariantBuilder& set_label(std::string label);
+
+        bool is_built() const override;
+
+        LineVariant&& get_product() override;
+
+    private:
+        struct {
+            bool value : 1 = false;
+        } _is_set;
+    };
+
     class FunctionBuilder : public lib::IBuilder<Function> {
     public:
         FunctionBuilder();
@@ -20,8 +35,7 @@ namespace amasm::compiler {
         FunctionBuilder& set_scope(ScopeProxy proxy, size_t scope_id);
         // firstly specify scope
         FunctionBuilder& add_to_scope(ScopeElement&& elem);
-        FunctionBuilder& add_line(InstDecl&& inst);
-        FunctionBuilder& add_label(std::string&& label);
+        FunctionBuilder& add_line(LineVariant&& line);
 
         bool is_built() const override;
 
