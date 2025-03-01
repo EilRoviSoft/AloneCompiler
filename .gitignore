@@ -1,6 +1,8 @@
 .git/
 .github/
 .vs/
+.idea/
+cmake-build-debug/
 out/
 src/_BACKUP/
 res/*.log

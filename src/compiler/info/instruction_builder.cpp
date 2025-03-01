@@ -33,7 +33,8 @@ namespace amasm::compiler {
     }
 
     bool InstInfoBuilder::is_built() const {
-        return _is_set.name && _is_set.code;
+        return _is_set.name
+            && _is_set.code;
     }
 
     InstInfo&& InstInfoBuilder::get_product() {

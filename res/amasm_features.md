@@ -59,8 +59,10 @@ var %b: uint64;               # in bytecode will be replaced with `push64`
 ## Predefined data aka Constants
 
 Also allocate data before main program as constants.
+Elements inside const can't be larger than 8 bytes.
 
 ```asm
+const %val: int64, 69420;
 const %arr: [int32 * 3], [18, 24, 34];
 str %msg: "Hello world\n";
 ```
@@ -85,11 +87,9 @@ Registers are predefined as variables and can be accessed at any time using `%` 
 
 ## Different bit modes
 
-If you need **8-bit** register, use `h` or `l` instead of `x` on the end to point on `high` or `low` part of register respectivly (`%ax` -> `%ah`).
-
 If you need **32-bit** register, add `e` (shortcut from `extended`) at the start (`%ax` -> `%eax`).
 
-If you need **64-bit** register, add `r` (shortcut for `register`) at the start (`%ax` -> `%rax`).
+If you need **64-bit** register, add `r` (shortcut from `register`) at the start (`%ax` -> `%rax`).
 
 If you need other parts of registers set, just use absolute adresses or make your own shortcuts inside functions.
 

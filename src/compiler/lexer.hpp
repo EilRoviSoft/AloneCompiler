@@ -6,6 +6,6 @@
 namespace amasm::compiler {
     class Lexer {
     public:
-        static token_vector tokenize_code(const std::string& code);
+        static token_vector tokenize(const std::string& code);
     };
 }

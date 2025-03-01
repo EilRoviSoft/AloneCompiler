@@ -14,6 +14,8 @@ namespace amasm::compiler {
     static constexpr frozen::unordered_map<frozen::string, TokenType, 6> defined_tokens = {
         { "this", TokenType::KwThis },
         { "var", TokenType::KwVar },
+        { "const", TokenType::KwConst },
+        { "string", TokenType::KwString },
         { "section", TokenType::KwSection },
         { "label", TokenType::KwLabel },
         { "func", TokenType::KwFunc },

@@ -20,7 +20,8 @@ namespace amasm::executor {
     }
 
     bool InstructionBuilder::is_built() const {
-        return _is_set.id && _is_set.predicate;
+        return _is_set.id
+            && _is_set.predicate;
     }
 
     Instruction&& InstructionBuilder::get_product() {

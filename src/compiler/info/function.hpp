@@ -37,7 +37,22 @@ namespace amasm::compiler {
     public:
         Function() : IScopeElement(2) {}
 
-        std::string fullname() const {
+        const Datatype& return_type() const { return *m_types.front(); }
+        const Datatype& argument_type(size_t idx) const { return *m_types[idx + 1]; }
+        size_t arguments_count() const { return m_types.size() - 1; }
+
+        size_t scope_id() const { return m_scope_id; }
+
+        const LineVariant& line(size_t idx) const { return m_lines[idx]; }
+        size_t lines_size() const { return m_lines.size(); }
+
+        ScopeElement clone() const override {
+            return std::make_shared<Function>(*this);
+        }
+
+        // expensive methods
+
+        std::string calc_fullname() const {
             std::string result;
             size_t args_count = m_types.size();
             result += '@' + m_name + '(';
@@ -49,24 +64,11 @@ namespace amasm::compiler {
             result += ')';
             return result;
         }
-
-        const Datatype& return_type() const { return *m_types.front(); }
-        const Datatype& argument_type(size_t idx) const { return *m_types[idx + 1]; }
-        size_t arguments_count() const { return m_types.size() - 1; }
-        size_t arguments_size() const {
+        size_t calc_arguments_size() const {
             size_t result = 0;
             for (size_t i = 1; i < m_types.size(); i++)
                 result += m_types[i]->size();
             return result;
-        }
-
-        size_t scope_id() const { return m_scope_id; }
-
-        const LineVariant& line(size_t idx) const { return m_lines[idx]; }
-        size_t lines_size() const { return m_lines.size(); }
-
-        ScopeElement clone() const override {
-            return std::make_shared<Function>(*this);
         }
 
     protected:

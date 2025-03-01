@@ -73,7 +73,9 @@ namespace amasm::compiler {
     }
 
     bool FunctionBuilder::is_built() const {
-        return _is_set.name && _is_set.return_type && _is_set.scope;
+        return _is_set.name
+            && _is_set.return_type
+            && _is_set.scope;
     }
 
     Function&& FunctionBuilder::get_product() {

@@ -29,6 +29,7 @@ include_directories(src/vm)
 include_directories(src/library)
 
 add_executable(AloneCompiler
+	"src/compiler/info/constant_builder.cpp"
 	"src/compiler/info/datatype_builder.cpp"
 	"src/compiler/info/function_builder.cpp"
 	"src/compiler/info/instruction_builder.cpp"
@@ -52,20 +53,18 @@ add_executable(AloneCompiler
 
 	"src/library/logger.cpp"
 	
-	"src/main.cpp"
+	"examples/main_example.cpp"
 )
 
 add_compile_definitions(DEBUG_STATUS)
 #add_compile_definitions(CONSTEXPR_COMPILE_DATA)
 
-# TODO: Add tests and install targets if needed.
-
 target_include_directories(AloneCompiler PRIVATE
-		src
-		src/compiler
-		src/compiler/info
-		src/vm
-		src/library
+	examples
+	src/compiler
+	src/compiler/info
+	src/vm
+	src/library
 )
 target_link_libraries(AloneCompiler PRIVATE frozen-headers)
 

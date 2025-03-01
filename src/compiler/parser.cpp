@@ -7,6 +7,7 @@
 #include <tuple>
 
 //compiler_info
+#include "compiler/info/constant_builder.hpp"
 #include "compiler/info/datatype_builder.hpp"
 #include "compiler/info/function_builder.hpp"
 #include "compiler/info/instruction.hpp"
@@ -30,6 +31,8 @@ namespace amasm::compiler::parser {
     static const std::unordered_map<std::string, std::vector<TokenType>> rules = {
         { "struct_define", { KwStruct, Identifier, LBrace } },
         { "var_define", { KwVar, Percent, Identifier, Colon, Identifier } },
+        { "const_define", { KwConst, Percent, Identifier, Colon } },
+        { "string_define", { KwString, Percent, Identifier } },
         { "func_define", { KwFunc, At, Identifier, LParen } },
         { "label_define", { KwLabel, Identifier, Colon } },
         { "direct_argument", { Percent, Identifier } },
@@ -109,6 +112,47 @@ namespace amasm::compiler::parser {
             delta,
             var_builder.get_product(),
             inst_builder.is_built() ? std::optional(inst_builder.get_product()) : std::nullopt
+        };
+    }
+    std::tuple<size_t, Constant> parse_constant(size_t i, local_data& data) {
+        if (!match("const_define", data.tokens, i))
+            throw std::runtime_error("wrong constant definition");
+
+        size_t delta = 0;
+        ConstantBuilder constant_builder;
+        const Datatype* datatype;
+        lib::byte_vector bytes;
+
+        if (data.tokens[i + 4].type == Identifier) {
+            datatype = &data.scopes.get_datatype(data.tokens[i + 4].literal);
+            bytes.reserve(datatype->size());
+            size_t value = std::stoull(data.tokens[i + 6].literal);
+            const auto as_bytes = reinterpret_cast<std::byte*>(&value);
+            const size_t max_value = (1 << datatype->size()) * 8 - 1;
+
+            if (value >= max_value)
+                throw std::runtime_error("constant value is bigger than its datatype");
+
+            for (size_t j = 0; j < bytes.size(); j++)
+                bytes[j] = as_bytes[j];
+
+            delta = 8;
+        } else if (data.tokens[i + 4].type == LBracket) {
+            size_t j, count = std::stoull(data.tokens[i + 7].literal);
+            datatype = &data.scopes.get_datatype(data.tokens[i + 5].literal);
+            bytes.reserve(count * datatype->size());
+
+            for (j = i + 11; data.tokens[j + 1].type != RBracket; i += 2) {
+                const size_t idx = (j - i) / 2;
+            }
+
+            delta = j - i + 1;
+        } else
+            throw std::runtime_error("wrong constant definition");
+
+        return {
+            delta,
+            constant_builder.get_product()
         };
     }
 
@@ -264,7 +308,7 @@ namespace amasm::compiler::parser {
         };
     }
     std::tuple<size_t, std::string> parse_label(size_t i, local_data& data) {
-        if (!parser::match("label_define", data.tokens, i))
+        if (!match("label_define", data.tokens, i))
             throw std::runtime_error("wrong variable definition");
 
         return {
@@ -367,8 +411,6 @@ namespace amasm::compiler::parser {
 }
 
 namespace amasm::compiler {
-    // public
-
     ScopeContainer Parser::parse(Context& ctx, token_vector tokens) {
         // preparing data for instructions names
         static auto is_inst = [&](const token& item) { return ctx.has_inst(item.literal); };
@@ -386,5 +428,10 @@ namespace amasm::compiler {
             di = do_logic(i, data);
 
         return ctx.release_container();
+    }
+
+    // TODO
+    ScopeContainer Parser::simplify(ScopeContainer&& container) {
+        return std::move(container);
     }
 }

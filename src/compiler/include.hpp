@@ -1,8 +1,5 @@
 #pragma once
 
-//std
-#include <memory>
-
 //library
 #include "library/bytecode.hpp"
 
@@ -22,7 +19,7 @@ namespace amasm {
         }
         static lib::Bytecode process(const std::string& text) {
             CompilerContext ctx;
-            const auto tokens = compiler::Lexer::tokenize_code(text);
+            const auto tokens = compiler::Lexer::tokenize(text);
             const auto composed_data = compiler::Parser::parse(ctx, tokens);
             return compiler::Translator::translate(composed_data);
         }

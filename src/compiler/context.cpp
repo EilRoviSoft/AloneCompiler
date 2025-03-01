@@ -16,7 +16,7 @@
 #include "compiler/info/inst_info_factory.hpp"
 #include "compiler/info/variable_builder.hpp"
 
-namespace amasm::compiler::parser {
+namespace amasm::compiler::context {
     static constexpr frozen::unordered_map<frozen::string, size_t, 9> predefined_datatypes = {
         { "void", 0 },
         { "uint8", 1 },
@@ -28,6 +28,7 @@ namespace amasm::compiler::parser {
         { "int32", 4 },
         { "int64", 8 }
     };
+
     static const std::array predefined_vars = {
         /*std::make_pair<std::string, std::vector<std::string>>("uint8",
             { "al", "ah", "bl", "bh", "cl", "ch", "dl", "dh" }),*/
@@ -88,7 +89,7 @@ namespace amasm::compiler {
     }
 
     void Context::_init_datatypes() {
-        for (const auto& [name, size] : parser::predefined_datatypes) {
+        for (const auto& [name, size] : context::predefined_datatypes) {
             auto datatype = DatatypeBuilder()
                 .set_name(name.data())
                 .set_size(size)
@@ -97,7 +98,7 @@ namespace amasm::compiler {
         }
     }
     void Context::_init_global_variables() {
-        for (const auto& [type_name, collection] : parser::predefined_vars)
+        for (const auto& [type_name, collection] : context::predefined_vars)
             for (const auto& var_name : collection) {
                 const auto& type = _proxy.get_datatype(type_name);
                 auto var = VariableBuilder()

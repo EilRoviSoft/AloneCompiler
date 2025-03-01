@@ -81,7 +81,7 @@ namespace amasm::compiler {
 
         // adds total size of program to the front of the code
         for (const auto& it : functions) {
-            bytecode.append_value<lib::machine_word>(it.arguments_size());
+            bytecode.append_value<lib::machine_word>(it.calc_arguments_size());
             bytecode.append_value<lib::machine_word>(it.return_type().size());
             labels.emplace(it.fullname(), bytecode.size());
 

@@ -36,7 +36,9 @@ namespace amasm::compiler {
     }
 
     bool VariableBuilder::is_built() const {
-        return _is_set.name && _is_set.address && _is_set.datatype;
+        return _is_set.name
+            && _is_set.address
+            && _is_set.datatype;
     }
 
     Variable&& VariableBuilder::get_product() {

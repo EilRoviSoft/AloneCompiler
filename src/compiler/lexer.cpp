@@ -22,7 +22,7 @@ namespace amasm::compiler::lexer {
 }
 
 namespace amasm::compiler {
-    token_vector Lexer::tokenize_code(const std::string& code) {
+    token_vector Lexer::tokenize(const std::string& code) {
         token_vector result;
         std::string temp;
 

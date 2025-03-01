@@ -42,7 +42,7 @@ namespace amasm::lib {
     }
 
     constexpr RegisterType cstr_to_register(const char* data, size_t size) {
-        constexpr frozen::unordered_map<frozen::string, RegisterType, 33> reference_dict = {
+        static constexpr frozen::unordered_map<frozen::string, RegisterType, 33> reference_dict = {
             { "ax", AX }, { "bx", BX }, { "cx", CX }, { "dx", DX }, { "si", SI }, { "di", DI },
             { "ip", IP }, { "bp", BP }, { "sp", SP }, { "flags", FLAGS }, { "gp", GP },
             { "eax", EAX }, { "ebx", EBX }, { "ecx", ECX }, { "edx", EDX }, { "esi", ESI }, { "edi", EDI },
