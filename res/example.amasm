@@ -1,21 +1,9 @@
-struct vector2 {
-    var %x: uint64;
-    var %y: uint64;
-}
-
 func @main() {
-    push64 10;
-    push32 20;
-    fcall @add6432(int64, int32);
-    ncall @print_rax();
-    halt;
-}
-
-func @add6432(int64, int32): int64 {
-    var %arg0: uint64, [%rsp - 20];
-    var %arg1: uint32, [%rsp - 12];
-    mov64 %rcx, %arg0;
-    mov32 %rdx, %arg1;
+    mov64 %rdi, 24;
+    ncall @read(uint64);
+    mov64 %rdi, 16;
+    ncall @read(uint64);
     add64i %rax, %rcx, %rdx;
-    ret;
+    mov64 %rdi, 0;
+    ncall @print();
 }

@@ -61,9 +61,9 @@ namespace amasm::executor {
         // TODO: get_array
 
         void native_call(lib::address address) const {
-            (*this)[IP] = true;
+            (*this)[IF] = true;
             _vm._natives.at(address)(*this);
-            (*this)[IP] = false;
+            (*this)[IF] = false;
         }
 
     protected:

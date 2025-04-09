@@ -1,6 +1,8 @@
 //std
 #include <array>
+#include <chrono>
 #include <functional>
+#include <iostream>
 
 //library
 #include "library/logger.hpp"
@@ -14,10 +16,17 @@
 
 using namespace amasm;
 
+std::istringstream input_stream("10 20");
+
 namespace natives {
-    void print_rax(const ExecutorContext& ctx, std::ostream& out) {
-        auto rax = *ctx.get(RAX);
-        out << rax << '\n';
+    void read(const ExecutorContext& ctx, std::istream& in) {
+        lib::machine_word value;
+        in >> value;
+        *ctx.get_direct<lib::machine_word>(RDI) = value;
+    }
+    void print(const ExecutorContext& ctx, std::ostream& out) {
+        auto value = *ctx.get_direct<lib::machine_word>(RDI);
+        out << value << '\n';
     }
 }
 
@@ -27,8 +36,11 @@ namespace unit_tests {
         auto vm = executor::VirtualMachine();
 
         vm.init();
-        vm.add_native_func("@print_rax()", [&](const ExecutorContext& ctx) {
-            natives::print_rax(ctx, lib::Logger::channel(lib::Logger::Output));
+        vm.add_native_func("@read(uint64)", [&](const ExecutorContext& ctx) {
+            natives::read(ctx, input_stream);
+        });
+        vm.add_native_func("@print()", [&](const ExecutorContext& ctx) {
+            natives::print(ctx, std::cout);
         });
 
         vm.exec(bytecode);
@@ -48,7 +60,18 @@ namespace unit_tests {
 int main() {
     lib::Logger::init();
 
-    unit_tests::test();
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+
+    {
+        auto t1 = high_resolution_clock::now();
+        unit_tests::test();
+        auto t2 = high_resolution_clock::now();
+
+        duration<double, std::milli> ms_double = t2 - t1;
+        std::cout << '\n' << ms_double << '\n';
+    }
 
     return 0;
 }
