@@ -3,6 +3,7 @@
 #include <chrono>
 #include <functional>
 #include <iostream>
+#include <istream>
 
 //library
 #include "library/logger.hpp"
@@ -15,8 +16,6 @@
 #include "executor/virtual_machine.hpp"
 
 using namespace amasm;
-
-std::istringstream input_stream("10 20");
 
 namespace natives {
     void read(const ExecutorContext& ctx, std::istream& in) {
@@ -32,15 +31,21 @@ namespace natives {
 
 namespace unit_tests {
     void f0() {
-        auto bytecode = Compiler::process_from("example.amasm");
+        auto bytecode = Compiler::process_from("code.amasm");
         auto vm = executor::VirtualMachine();
+
+        std::fstream ifile("input.txt");
+        std::istream& is = ifile.is_open() ? ifile : std::cin;
+
+        std::fstream ofile("output.txt");
+        std::ostream& os = ofile.is_open() ? ofile : std::cout;
 
         vm.init();
         vm.add_native_func("@read(uint64)", [&](const ExecutorContext& ctx) {
-            natives::read(ctx, input_stream);
+            natives::read(ctx, is);
         });
         vm.add_native_func("@print()", [&](const ExecutorContext& ctx) {
-            natives::print(ctx, std::cout);
+            natives::print(ctx, os);
         });
 
         vm.exec(bytecode);

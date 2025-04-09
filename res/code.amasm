@@ -1,0 +1,9 @@
+func @main() {
+    mov64 %rdi, 24;
+    ncall @read(uint64);
+    mov64 %rdi, 16;
+    ncall @read(uint64);
+    add64i %rax, %rcx, %rdx;
+    mov64 %rdi, 0;
+    ncall @print();
+}
